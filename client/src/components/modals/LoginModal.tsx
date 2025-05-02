@@ -1,7 +1,8 @@
-// src/components/modals/LoginModal.tsx
 import { useCallback, useState } from "react";
 import { AiOutlineMail } from "react-icons/ai";
 import { RiLockPasswordLine } from "react-icons/ri";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 import useLoginModal from "@/hooks/useLoginModal";
 import useRegisterModal from "@/hooks/useRegisterModal";
@@ -20,14 +21,14 @@ const LoginModal = () => {
     registerModal.onOpen();
   }, [loginModal, registerModal]);
 
-  const onSubmit = useCallback(() => {
+  const onSubmit = useCallback(async () => {
     try {
       setIsLoading(true);
-      // Här lägger du in logik för att logga in med API
-      console.log("Loggar in med", { email, password });
+      const res = await axios.post("/api/auth/login", { email, password });
+      toast.success("Du är nu inloggad!");
       loginModal.onClose();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      toast.error("Fel vid inloggning");
     } finally {
       setIsLoading(false);
     }
@@ -88,12 +89,9 @@ const LoginModal = () => {
       actionLabel="Fortsätt"
       onClose={loginModal.onClose}
       onSubmit={onSubmit}
-    >
-      <div className="flex flex-col gap-4">
-        {bodyContent}
-        {footerContent}
-      </div>
-    </Modal>
+      body={bodyContent}
+      footer={footerContent}
+    />
   );
 };
 

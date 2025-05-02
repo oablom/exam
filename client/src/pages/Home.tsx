@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React from "react";
 import useLoginModal from "../hooks/useLoginModal";
 import LoginModal from "@/components/modals/LoginModal";
