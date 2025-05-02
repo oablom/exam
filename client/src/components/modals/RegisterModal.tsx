@@ -25,37 +25,51 @@ const RegisterModal = () => {
     }
   };
 
+  const body = (
+    <div className="space-y-4">
+      <input
+        name="name"
+        placeholder="Namn"
+        className="w-full border p-2"
+        onChange={handleChange}
+      />
+      <input
+        name="email"
+        placeholder="Email"
+        className="w-full border p-2"
+        onChange={handleChange}
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="Lösenord"
+        className="w-full border p-2"
+        onChange={handleChange}
+      />
+    </div>
+  );
+
+  const footer = (
+    <div className="pt-4 text-right">
+      <button
+        onClick={handleSubmit}
+        className="bg-black text-white px-4 py-2 rounded"
+      >
+        Registrera
+      </button>
+    </div>
+  );
+
   return (
-    <Modal isOpen={registerModal.isOpen} onClose={registerModal.onClose}>
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold">Skapa konto</h2>
-        <input
-          name="name"
-          placeholder="Namn"
-          className="w-full border p-2"
-          onChange={handleChange}
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          className="w-full border p-2"
-          onChange={handleChange}
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Lösenord"
-          className="w-full border p-2"
-          onChange={handleChange}
-        />
-        <button
-          onClick={handleSubmit}
-          className="bg-black text-white px-4 py-2 rounded"
-        >
-          Registrera
-        </button>
-      </div>
-    </Modal>
+    <Modal
+      isOpen={registerModal.isOpen}
+      onClose={registerModal.onClose}
+      onSubmit={handleSubmit}
+      title="Skapa konto"
+      actionLabel="Registrera"
+      body={body}
+      footer={footer}
+    />
   );
 };
 

@@ -1,81 +1,74 @@
-import { useCallback, useState } from "react";
-import { AiOutlineMail } from "react-icons/ai";
-import { RiLockPasswordLine } from "react-icons/ri";
 import axios from "axios";
-import { toast } from "react-hot-toast";
-
+import { useState } from "react";
+import { useAuth } from "@/store/auth";
 import useLoginModal from "@/hooks/useLoginModal";
 import useRegisterModal from "@/hooks/useRegisterModal";
-import Modal from "@/components/modals/Modal";
+import Modal from "./Modal";
+import Input from "../Input";
+import Heading from "../Heading";
+import toast from "react-hot-toast";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
+  const { setAuth } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const onToggle = useCallback(() => {
-    loginModal.onClose();
-    registerModal.onOpen();
-  }, [loginModal, registerModal]);
-
-  const onSubmit = useCallback(async () => {
+  const onSubmit = async () => {
+    setLoading(true);
     try {
-      setIsLoading(true);
-      const res = await axios.post("/api/auth/login", { email, password });
-      toast.success("Du är nu inloggad!");
-      loginModal.onClose();
-    } catch (error: any) {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      const { token, user } = res.data;
+
+      setAuth(user, token);                     
+      localStorage.setItem("token", token);     
+      toast.success("Inloggad!");
+      loginModal.onClose();                    
+    } catch (error) {
       toast.error("Fel vid inloggning");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }, [email, password, loginModal]);
+  };
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <div className="relative">
-        <AiOutlineMail
-          className="absolute top-3 left-3 text-gray-400"
-          size={20}
-        />
-        <input
-          disabled={isLoading}
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          placeholder="E-post"
-          type="email"
-          className="pl-10 p-2 border rounded-md w-full"
-        />
-      </div>
-      <div className="relative">
-        <RiLockPasswordLine
-          className="absolute top-3 left-3 text-gray-400"
-          size={20}
-        />
-        <input
-          disabled={isLoading}
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          placeholder="Lösenord"
-          type="password"
-          className="pl-10 p-2 border rounded-md w-full"
-        />
-      </div>
+      <Heading title="Välkommen tillbaka" subtitle="Logga in för att fortsätta" />
+      <Input
+        placeholder="Email"
+        disabled={loading}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <Input
+        placeholder="Lösenord"
+        type="password"
+        disabled={loading}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
     </div>
   );
 
   const footerContent = (
     <div className="text-neutral-500 text-center mt-4">
       <p>
-        Har du inget konto?
+        Har inget konto?{" "}
         <span
-          onClick={onToggle}
-          className="text-blue-500 cursor-pointer hover:underline ml-1"
+          onClick={() => {
+            loginModal.onClose();
+            registerModal.onOpen();
+          }}
+          className="text-sky-500 cursor-pointer hover:underline"
         >
-          Skapa ett konto
+          Skapa konto
         </span>
       </p>
     </div>
@@ -83,7 +76,7 @@ const LoginModal = () => {
 
   return (
     <Modal
-      disabled={isLoading}
+      disabled={loading}
       isOpen={loginModal.isOpen}
       title="Logga in"
       actionLabel="Fortsätt"
