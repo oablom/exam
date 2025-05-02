@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 router.post("/register", async (req: Request, res: Response) => {
+  console.log("Request body:", req.body);
   const { name, email, password } = req.body;
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
