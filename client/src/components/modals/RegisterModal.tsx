@@ -1,74 +1,133 @@
-import { useState } from "react";
-import Modal from "./Modal";
-import useRegisterModal from "@/hooks/useRegisterModal";
 import axios from "axios";
+import { AiFillGithub } from "react-icons/ai";
+import { useCallback, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import Modal from "./Modal";
+import Heading from "../Heading";
+import Input from "../Input";
+import Button from "../Button";
+import toast from "react-hot-toast";
+import useRegisterModal from "@/hooks/useRegisterModal";
+import useLoginModal from "@/hooks/useLoginModal";
+import { FcGoogle } from "react-icons/fc";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+  const loginModal = useLoginModal();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
+      isAdmin: false,
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    setIsLoading(true);
 
-  const handleSubmit = async () => {
     try {
-      const response = await axios.post("/api/auth/register", formData);
-      console.log("Registrerad:", response.data);
+      await axios.post("http://localhost:5000/api/auth/register", data);
+      toast.success("Registreringen lyckades!");
       registerModal.onClose();
-    } catch (error) {
-      console.error("Registreringsfel:", error);
+      loginModal.onOpen();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Fel vid registrering");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const body = (
-    <div className="space-y-4">
-      <input
-        name="name"
-        placeholder="Namn"
-        className="w-full border p-2"
-        onChange={handleChange}
+  const toggle = useCallback(() => {
+    registerModal.onClose();
+    loginModal.onOpen();
+  }, [registerModal, loginModal]);
+
+  const bodyContent = (
+    <div className="flex flex-col gap-4">
+      <Heading
+        title="Välkommen till PillowPod"
+        subtitle="Skapa ett konto"
+        center
       />
-      <input
-        name="email"
-        placeholder="Email"
-        className="w-full border p-2"
-        onChange={handleChange}
+      <Input
+        id="email"
+        label="Email"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
       />
-      <input
-        name="password"
+      <Input
+        id="name"
+        label="Namn"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
+      />
+      <Input
+        id="password"
+        label="Lösenord"
         type="password"
-        placeholder="Lösenord"
-        className="w-full border p-2"
-        onChange={handleChange}
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+        required
       />
+      <Input
+        id="phoneNumber"
+        label="Telefonnummer"
+        disabled={isLoading}
+        register={register}
+        errors={errors}
+      />
+      <div className="flex items-center gap-2">
+        <input
+          id="isAdmin"
+          type="checkbox"
+          disabled={isLoading}
+          {...register("isAdmin")}
+        />
+        <label htmlFor="isAdmin">Admin-konto</label>
+      </div>
     </div>
   );
 
-  const footer = (
-    <div className="pt-4 text-right">
-      <button
-        onClick={handleSubmit}
-        className="bg-black text-white px-4 py-2 rounded"
-      >
-        Registrera
-      </button>
+  const footerContent = (
+    <div className="flex flex-col gap-4 mt-3">
+      <hr />
+      <div className="text-neutral-500 text-center mt-4 font-light">
+        <p>
+          Har du redan ett konto?
+          <span
+            onClick={toggle}
+            className="text-sky-500 cursor-pointer hover:underline ml-1"
+          >
+            Logga in
+          </span>
+        </p>
+      </div>
     </div>
   );
 
   return (
     <Modal
+      disabled={isLoading}
       isOpen={registerModal.isOpen}
-      onClose={registerModal.onClose}
-      onSubmit={handleSubmit}
       title="Skapa konto"
-      actionLabel="Registrera"
-      body={body}
-      footer={footer}
+      actionLabel="Fortsätt"
+      onClose={registerModal.onClose}
+      onSubmit={handleSubmit(onSubmit)}
+      body={bodyContent}
+      footer={footerContent}
     />
   );
 };

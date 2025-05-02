@@ -52,34 +52,57 @@ const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-800/70 flex items-center justify-center">
-      <div className="relative w-full max-w-lg bg-white rounded-lg shadow-lg p-6">
-        <button
-          onClick={handleOnClose}
-          className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-black"
+    <div className="fixed inset-0 z-50 bg-neutral-800/70 flex items-center justify-center overflow-x-hidden overflow-y-auto">
+      <div className="relative w-full md:w-4/6 lg:w-3/6 xl:w-2/5 my-6 mx-auto h-full lg:h-auto md:h-auto">
+        <div
+          className={`
+            translate duration-300 h-full
+            ${
+              showModal
+                ? "translate-y-0 opacity-100"
+                : "translate-y-full opacity-0"
+            }
+          `}
         >
-          <IoMdClose />
-        </button>
+          <div className="translate h-full lg:h-auto md:h-auto border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white dark:bg-gray-700 outline-none focus:outline-none">
+            {/* Header */}
+            <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px] border-gray-200 dark:border-gray-600">
+              <button
+                onClick={handleOnClose}
+                className="p-1 border-0 hover:opacity-70 transition absolute left-9 text-gray-500 dark:text-gray-300"
+              >
+                <IoMdClose size={18} />
+              </button>
+              <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {title}
+              </div>
+            </div>
 
-        {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
-        <div>{body}</div>
+            {/* Body */}
+            <div className="relative p-6 flex-auto text-gray-700 dark:text-gray-200">
+              {body}
+            </div>
 
-        <div className="flex justify-end gap-2 mt-6">
-          {secondaryAction && secondaryActionLabel && (
-            <Button
-              disabled={disabled}
-              label={secondaryActionLabel}
-              onClick={handleSecondaryAction}
-            />
-          )}
-          <Button
-            disabled={disabled}
-            label={actionLabel}
-            onClick={handleSubmit}
-          />
+            {/* Footer */}
+            <div className="flex flex-col gap-2 p-6">
+              <div className="flex flex-row items-center gap-4 w-full">
+                {secondaryAction && secondaryActionLabel && (
+                  <Button
+                    disabled={disabled}
+                    label={secondaryActionLabel}
+                    onClick={handleSecondaryAction}
+                  />
+                )}
+                <Button
+                  disabled={disabled}
+                  label={actionLabel}
+                  onClick={handleSubmit}
+                />
+              </div>
+              {footer}
+            </div>
+          </div>
         </div>
-
-        {footer && <div className="mt-4">{footer}</div>}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import axios from "axios";
+"use client";
+
 import { useState } from "react";
 import { useAuth } from "@/store/auth";
 import useLoginModal from "@/hooks/useLoginModal";
@@ -20,17 +21,21 @@ const LoginModal = () => {
   const onSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
-      const { token, user } = res.data;
+      const data = await res.json();
 
-      setAuth(user, token);                     
-      localStorage.setItem("token", token);     
+      if (!res.ok) throw new Error(data.message || "Något gick fel");
+
+      const { token, user } = data;
+      setAuth(user, token);
+      localStorage.setItem("token", token);
       toast.success("Inloggad!");
-      loginModal.onClose();                    
+      loginModal.onClose();
     } catch (error) {
       toast.error("Fel vid inloggning");
     } finally {
@@ -42,13 +47,17 @@ const LoginModal = () => {
     <div className="flex flex-col gap-4">
       <Heading title="Välkommen tillbaka" subtitle="Logga in för att fortsätta" />
       <Input
-        placeholder="Email"
+        id="email"
+        label="Email"
+       
         disabled={loading}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <Input
-        placeholder="Lösenord"
+        id="password"
+        label="Lösenord"
+       
         type="password"
         disabled={loading}
         value={password}
