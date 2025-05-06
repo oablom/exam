@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
 import { FcGoogle } from "react-icons/fc";
+import { VITE_API_URL } from "@/lib/api";
 
 const RegisterModal = () => {
   const registerModal = useRegisterModal();
@@ -34,10 +35,13 @@ const RegisterModal = () => {
     setIsLoading(true);
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", data);
+      await axios.post(`${VITE_API_URL}/api/auth/register`, data);
       toast.success("Registreringen lyckades!");
       registerModal.onClose();
       loginModal.onOpen();
+
+      //   setAuth(user, token);
+      //   localStorage.setItem("user", JSON.stringify(user));
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Fel vid registrering");
     } finally {
@@ -53,7 +57,7 @@ const RegisterModal = () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
-        title="Välkommen till PillowPod"
+        title="Välkommen till TodoApp"
         subtitle="Skapa ett konto"
         center
       />

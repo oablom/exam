@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useAuth } from "@/store/auth";
 import useLoginModal from "@/hooks/useLoginModal";
@@ -8,6 +6,8 @@ import Modal from "./Modal";
 import Input from "../Input";
 import Heading from "../Heading";
 import toast from "react-hot-toast";
+import { VITE_API_URL } from "@/lib/api";
+import { set } from "react-hook-form";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
@@ -21,19 +21,18 @@ const LoginModal = () => {
   const onSubmit = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${VITE_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Något gick fel");
 
-      const { token, user } = data;
-      setAuth(user, token);
-      localStorage.setItem("token", token);
+      setAuth(data.user);
       toast.success("Inloggad!");
       loginModal.onClose();
     } catch (error) {
@@ -45,11 +44,13 @@ const LoginModal = () => {
 
   const bodyContent = (
     <div className="flex flex-col gap-4">
-      <Heading title="Välkommen tillbaka" subtitle="Logga in för att fortsätta" />
+      <Heading
+        title="Välkommen tillbaka!"
+        subtitle="Logga in för att fortsätta"
+      />
       <Input
         id="email"
         label="Email"
-       
         disabled={loading}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -57,7 +58,6 @@ const LoginModal = () => {
       <Input
         id="password"
         label="Lösenord"
-       
         type="password"
         disabled={loading}
         value={password}
