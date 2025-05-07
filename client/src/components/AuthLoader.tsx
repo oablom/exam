@@ -8,9 +8,12 @@ const AuthLoader = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/me", {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/auth/me`,
+          {
+            withCredentials: true,
+          }
+        );
         setAuth(res.data);
       } catch (err) {
         console.error("Not logged in", err);

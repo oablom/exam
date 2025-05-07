@@ -10,7 +10,7 @@ export async function sendManualPush() {
     },
   };
 
-  const res = await fetch("http://localhost:5000/api/manual-push", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/manual-push`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(subscription),

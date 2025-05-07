@@ -16,7 +16,7 @@ const App = () => {
   } | null>(null);
 
   const scheduleReminder = async () => {
-    await fetch("http://localhost:5000/api/scheduleReminder", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/scheduleReminder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: USER_ID }),
@@ -25,10 +25,11 @@ const App = () => {
     alert("⏳ Påminnelse lagd – modalen visas om 10 sekunder!");
   };
 
-  // Polla backend var 5:e sekund
   useEffect(() => {
     const interval = setInterval(async () => {
-      const res = await fetch(`http://localhost:5000/api/reminders/${USER_ID}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/reminders/${USER_ID}`
+      );
       const data = await res.json();
       if (data.trigger) {
         setNotificationData({
