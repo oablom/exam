@@ -6,6 +6,7 @@ import ToasterProvider from "@/providers/ToasterProvider";
 import Header from "@/components/layout/Header";
 import AuthLoader from "@/components/AuthLoader";
 import { subscribeToPush } from "@/utils/push";
+import InstallPrompt from "@/components/InstallPrompt";
 
 const USER_ID = "abc123"; // ← ändra om du vill använda riktig auth senare
 
@@ -47,6 +48,7 @@ const App = () => {
       <ToasterProvider />
       <AuthLoader />
       <Header />
+      <InstallPrompt />
 
       <main className="flex-grow flex flex-col gap-4 items-center justify-center">
         <Home />
