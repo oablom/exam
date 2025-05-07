@@ -5,10 +5,14 @@ import "./index.css";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").then(
-      (reg) => console.log("✅ SW registrerad", reg),
-      (err) => console.error("❌ SW-fel", err)
-    );
+    navigator.serviceWorker.register("/sw.js").then((reg) => {
+      console.log("✅ SW registrerad", reg);
+      if (!navigator.serviceWorker.controller) {
+        console.warn("⚠️ Fliken är inte kontrollerad av SW – ladda om!");
+      } else {
+        console.log("🎮 Fliken är kontrollerad av SW");
+      }
+    });
   });
 }
 

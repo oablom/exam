@@ -11,7 +11,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://exam-rho-brown.vercel.app"],
     credentials: true,
   })
 );
@@ -104,4 +104,31 @@ app.post("/api/manual-push", async (req, res) => {
     console.error("❌ Fel vid manuell push:", err);
     res.status(500).json({ error: "Misslyckades att skicka notis" });
   }
+});
+
+// Enkel reminder-array (i minnet)
+let reminders: { userId: string; time: number }[] = [];
+
+// Skapa en påminnelse som ska triggas om 1 minut
+app.post("/api/scheduleReminder", (req, res) => {
+  const { userId } = req.body;
+  const delay = 60 * 1000;
+
+  reminders.push({ userId, time: Date.now() + delay });
+  console.log("⏱ Påminnelse lagd för:", userId);
+  res.json({ message: "Schemalagd" });
+});
+
+// Frontend pollar här – och får "trigger: true" när det är dags
+app.get("/api/reminders/:userId", (req, res) => {
+  const { userId } = req.params;
+  const now = Date.now();
+
+  const match = reminders.find((r) => r.userId === userId && r.time <= now);
+  if (match) {
+    reminders = reminders.filter((r) => r !== match); // ta bort efter visning
+    return res.json({ trigger: true });
+  }
+
+  res.json({ trigger: false });
 });

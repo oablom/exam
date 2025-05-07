@@ -1,21 +1,30 @@
 self.addEventListener("push", (event) => {
   console.log("📩 Push mottagen i service worker");
 
-  let payloadText = "[❌ Ingen data mottagen]";
+  let data = { title: "Push", body: "Default" };
   try {
     if (event.data) {
-      const data = event.data.text();
-      payloadText = data;
+      data = event.data.json();
       console.log("📦 Rå push-data:", data);
-    } else {
-      console.warn("⚠️ event.data saknas");
     }
   } catch (err) {
-    console.error("❌ Kunde inte läsa push-data", err);
+    console.error("❌ Kunde inte parsa push-data", err);
   }
 
-  self.registration.showNotification("🔔 Push mottagen!", {
-    body: payloadText,
+  // 🔔 Visa systemnotis
+  self.registration.showNotification(data.title, {
+    body: data.body,
     icon: "/vite.svg",
   });
+
+  // 📬 Skicka data till öppna flikar
+  self.clients
+    .matchAll({ includeUncontrolled: true, type: "window" })
+    .then((clients) => {
+      console.log("🧪 Flikar hittade:", clients.length);
+      clients.forEach((client) => {
+        console.log("📤 Skickar message till client:", client.url);
+        client.postMessage(data);
+      });
+    });
 });
