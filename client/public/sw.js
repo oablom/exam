@@ -1,7 +1,6 @@
 self.addEventListener("push", (event) => {
-  console.log("📩 Push mottagen i service worker");
+  console.log("📩 PUSH mottagen i service worker");
 
-  // Standardvärden om inget skickas
   let data = {
     title: "Påminnelse!",
     body: "Det är dags att göra något!",
@@ -23,23 +22,23 @@ self.addEventListener("push", (event) => {
     vibrate: [200, 100, 200],
     requireInteraction: true,
     data: {
-      url: data.url || "/", // används om du vill öppna specifik sida
+      url: "/", // öppna startsidan vid klick
     },
   };
 
   event.waitUntil(
     (async () => {
-      // 🔔 Visa notisen – fungerar även om appen är stängd
+      // 🔔 Visa systemnotis (alltid!)
       await self.registration.showNotification(data.title, options);
 
-      // 💬 Skicka meddelande till öppen flik (om den finns)
+      // 💬 Skicka till öppen flik (om den finns – så modal visas)
       const clientsList = await self.clients.matchAll({
         includeUncontrolled: true,
         type: "window",
       });
 
       for (const client of clientsList) {
-        client.postMessage(data); // t.ex. visa modal i frontend
+        client.postMessage(data); // Frontend visar modal
       }
     })()
   );
@@ -47,7 +46,5 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
-  // 🚪 Öppna appen vid klick på notisen
   event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
 });

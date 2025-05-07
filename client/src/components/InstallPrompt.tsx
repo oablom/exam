@@ -38,12 +38,7 @@ const InstallPrompt = () => {
 
   return (
     <div className="fixed bottom-4 right-4 p-4 bg-blue-600 text-white rounded-xl shadow-xl z-50">
-      <button
-        onClick={handleInstallClick}
-        className="px-4 py-2 bg-green-500 rounded hover:bg-green-600"
-      >
-        📲 Installera appen
-      </button>
+      <button onClick={handleInstallClick}>📲 Installera appen</button>
     </div>
   );
 };
