@@ -1,5 +1,6 @@
 export async function subscribeToPush() {
-  console.log("🔔 Försöker aktivera push...");
+  alert("✅ Du tryckte på knappen!");
+  console.log("📱 Mobil eller dator försöker aktivera push");
 
   if (!("serviceWorker" in navigator)) return;
 
