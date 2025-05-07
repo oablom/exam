@@ -65,7 +65,7 @@ app.post("/api/sendDelayed", async (req, res) => {
 
   const payload = JSON.stringify({
     title: "⏰ Påminnelse!",
-    body: "Det har gått 1 minut – dags att göra något!",
+    body: "Det har gått 10 sekunder – dags att göra något!",
   });
 
   console.log("⏳ Schemalägger payload:", payload);
@@ -112,7 +112,7 @@ let reminders: { userId: string; time: number }[] = [];
 // Skapa en påminnelse som ska triggas om 1 minut
 app.post("/api/scheduleReminder", (req, res) => {
   const { userId } = req.body;
-  const delay = 60 * 1000;
+  const delay = 60 * 100;
 
   reminders.push({ userId, time: Date.now() + delay });
   console.log("⏱ Påminnelse lagd för:", userId);

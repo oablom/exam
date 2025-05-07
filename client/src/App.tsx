@@ -22,7 +22,7 @@ const App = () => {
       body: JSON.stringify({ userId: USER_ID }),
     });
 
-    alert("⏳ Påminnelse lagd – modalen visas om 1 minut!");
+    alert("⏳ Påminnelse lagd – modalen visas om 10 sekunder!");
   };
 
   // Polla backend var 5:e sekund
@@ -33,7 +33,7 @@ const App = () => {
       if (data.trigger) {
         setNotificationData({
           title: "⏰ Påminnelse!",
-          body: "Det har gått en minut – dags att göra något!",
+          body: "Det har gått 10 sekunder – dags att göra något!",
         });
       }
     }, 5000);
