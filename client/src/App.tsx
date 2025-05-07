@@ -49,6 +49,12 @@ const App = () => {
 
       <main className="flex-grow flex flex-col gap-4 items-center justify-center">
         <Home />
+        <button
+          onClick={() => alert("Button clicked!")}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          AAlert test
+        </button>
 
         <button
           onClick={subscribeToPush}
@@ -80,14 +86,7 @@ const App = () => {
               Stäng
             </button>
           </div>
-          <div>
-            <button
-              onClick={() => alert("Button clicked!")}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              AAlert test
-            </button>
-          </div>
+          <div></div>
         </div>
       )}
 
