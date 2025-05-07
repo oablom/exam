@@ -23,7 +23,7 @@ export async function subscribeToPush() {
 
   alert("✅ Prenumeration skapad");
 
-  const res = await fetch("https://exam-rho-brown.vercel.app/api/subscribe", {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/subscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(subscription),
