@@ -80,6 +80,14 @@ const App = () => {
               Stäng
             </button>
           </div>
+          <div>
+            <button
+              onClick={() => alert("Button clicked!")}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              AAlert test
+            </button>
+          </div>
         </div>
       )}
 
