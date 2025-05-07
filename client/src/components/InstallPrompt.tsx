@@ -12,18 +12,24 @@ const InstallPrompt = () => {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+    };
   }, []);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
+
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      console.log("✅ Installerad");
+
+    const result = await deferredPrompt.userChoice;
+    if (result.outcome === "accepted") {
+      console.log("✅ Appen installerades");
     } else {
-      console.log("❌ Nekad");
+      console.log("❌ Användaren nekade installation");
     }
+
     setDeferredPrompt(null);
     setShowButton(false);
   };
@@ -32,7 +38,12 @@ const InstallPrompt = () => {
 
   return (
     <div className="fixed bottom-4 right-4 p-4 bg-blue-600 text-white rounded-xl shadow-xl z-50">
-      <button onClick={handleInstallClick}>📲 Installera appen</button>
+      <button
+        onClick={handleInstallClick}
+        className="px-4 py-2 bg-green-500 rounded hover:bg-green-600"
+      >
+        📲 Installera appen
+      </button>
     </div>
   );
 };
