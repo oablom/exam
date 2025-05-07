@@ -48,7 +48,6 @@ const App = () => {
       <ToasterProvider />
       <AuthLoader />
       <Header />
-      <InstallPrompt />
 
       <main className="flex-grow flex flex-col gap-4 items-center justify-center">
         <Home />
@@ -58,7 +57,7 @@ const App = () => {
         >
           AAlert test
         </button>
-
+        <InstallPrompt />
         <button
           onClick={subscribeToPush}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
