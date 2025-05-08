@@ -109,26 +109,21 @@ app.post("/api/manual-push", async (req, res) => {
 // Enkel reminder-array (i minnet)
 let reminders: { userId: string; time: number }[] = [];
 
-// Skapa en påminnelse som ska triggas om 1 minut
 app.post("/api/scheduleReminder", (req, res) => {
-  const { userId } = req.body;
-  const delay = 60 * 100;
+  const delay = 10000; // 10 sekunder
 
-  reminders.push({ userId, time: Date.now() + delay });
-  console.log("⏱ Påminnelse lagd för:", userId);
-  res.json({ message: "Schemalagd" });
-});
+  const payload = JSON.stringify({
+    title: "⏰ Påminnelse!",
+    body: "Det har gått 10 sekunder – dags att göra något!",
+  });
 
-// Frontend pollar här – och får "trigger: true" när det är dags
-app.get("/api/reminders/:userId", (req, res) => {
-  const { userId } = req.params;
-  const now = Date.now();
+  setTimeout(() => {
+    subscriptions.forEach((sub, i) => {
+      webpush.sendNotification(sub, payload).catch((err) => {
+        console.error("❌ Fel vid push", err);
+      });
+    });
+  }, delay);
 
-  const match = reminders.find((r) => r.userId === userId && r.time <= now);
-  if (match) {
-    reminders = reminders.filter((r) => r !== match); // ta bort efter visning
-    return res.json({ trigger: true });
-  }
-
-  res.json({ trigger: false });
+  res.status(200).json({ message: "Push skickas om 10 sekunder" });
 });
