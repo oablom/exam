@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Home from "@/pages/Home";
+import Header from "@/components/layout/Header";
 import LoginModal from "@/components/modals/LoginModal";
 import RegisterModal from "@/components/modals/RegisterModal";
-import Home from "@/pages/Home";
+import InstallPrompt from "@/components/InstallPrompt";
 import ToasterProvider from "@/providers/ToasterProvider";
-import Header from "@/components/layout/Header";
 import AuthLoader from "@/components/AuthLoader";
 import { subscribeToPush } from "@/utils/push";
-import InstallPrompt from "@/components/InstallPrompt";
-
-const USER_ID = "abc123"; // ← ändra om du vill använda riktig auth senare
 
 const App = () => {
   const [notificationData, setNotificationData] = useState<{
@@ -16,32 +14,22 @@ const App = () => {
     body: string;
   } | null>(null);
 
+  useEffect(() => {
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      const data = event.data;
+      if (data?.title && data?.body) {
+        setNotificationData(data);
+      }
+    });
+  }, []);
+
   const scheduleReminder = async () => {
     await fetch(`${import.meta.env.VITE_API_URL}/api/scheduleReminder`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: USER_ID }),
     });
-
-    alert("⏳ Påminnelse lagd – modalen visas om 10 sekunder!");
+    alert("⏳ Påminnelse skickas om 10 sekunder");
   };
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/reminders/${USER_ID}`
-      );
-      const data = await res.json();
-      if (data.trigger) {
-        setNotificationData({
-          title: "⏰ Påminnelse!",
-          body: "Det har gått 10 sekunder – dags att göra något!",
-        });
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -52,28 +40,20 @@ const App = () => {
       <main className="flex-grow flex flex-col gap-4 items-center justify-center">
         <Home />
         <button
-          onClick={() => alert("Button clicked!")}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          AAlert test
-        </button>
-        <InstallPrompt />
-        <button
           onClick={subscribeToPush}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Aktivera push-notiser
         </button>
-
         <button
           onClick={scheduleReminder}
           className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
         >
-          Visa modal efter 1 minut
+          Visa modal efter 10 sek
         </button>
+        <InstallPrompt />
       </main>
 
-      {/* Modal som visas när backend säger till */}
       {notificationData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-md max-w-sm">
@@ -88,7 +68,6 @@ const App = () => {
               Stäng
             </button>
           </div>
-          <div></div>
         </div>
       )}
 

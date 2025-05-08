@@ -1,12 +1,48 @@
 self.addEventListener("push", (event) => {
-  console.log("📩 PUSH mottagen");
+  console.log("📩 PUSH mottagen i service worker");
 
-  const data = event.data?.json() || {};
-  const title = data.title || "Testnotis";
-  const options = {
-    body: data.body || "Funkar det här?",
-    // icon: undefined, // tillfälligt! Testa utan ikon
+  let data = {
+    title: "Påminnelse!",
+    body: "Det är dags att göra något!",
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  try {
+    if (event.data) {
+      data = event.data.json();
+      console.log("📦 Push-data:", data);
+    }
+  } catch (err) {
+    console.error("❌ Kunde inte tolka push-data", err);
+  }
+
+  const options = {
+    body: data.body,
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    vibrate: [200, 100, 200],
+    requireInteraction: true,
+    data: {
+      url: "/", // öppna startsidan vid klick
+    },
+  };
+
+  event.waitUntil(
+    (async () => {
+      await self.registration.showNotification(data.title, options);
+
+      const clientsList = await self.clients.matchAll({
+        includeUncontrolled: true,
+        type: "window",
+      });
+
+      for (const client of clientsList) {
+        client.postMessage(data);
+      }
+    })()
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
 });
