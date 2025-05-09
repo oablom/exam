@@ -1,33 +1,35 @@
-export async function subscribeToPush() {
-  alert("🔔 Startar test för push...");
+import axios from "axios";
+import { urlBase64ToUint8Array } from "@/utils/urlBase64ToUint8Array";
 
-  if (!("serviceWorker" in navigator)) {
-    alert("❌ Service workers stöds inte");
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+
+export const subscribeToPush = async () => {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    console.warn("❌ Push-notiser stöds inte i denna webbläsare");
     return;
   }
 
   const registration = await navigator.serviceWorker.ready;
 
-  const permission = await Notification.requestPermission();
-  alert("📛 Tillstånd: " + permission);
-
-  if (permission !== "granted") {
-    alert("❌ Du måste tillåta notiser");
-    return;
+  // 🧨 Ta bort gammal prenumeration (om den finns)
+  const existingSubscription = await registration.pushManager.getSubscription();
+  if (existingSubscription) {
+    await existingSubscription.unsubscribe();
+    console.log("♻️ Tidigare prenumeration togs bort");
   }
 
-  const subscription = await registration.pushManager.subscribe({
+  // 🆕 Skapa ny
+  const newSubscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
   });
 
-  alert("✅ Prenumeration skapad");
+  // ☁️ Skicka till backend
+  await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/subscribe`,
+    newSubscription
+  );
 
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/subscribe`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(subscription),
-  });
-
-  alert("📬 Server-svar: " + res.status);
-}
+  console.log("✅ Ny push-prenumeration skapad");
+  return newSubscription;
+};
