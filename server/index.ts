@@ -37,8 +37,19 @@ const subscriptions: any[] = [];
 
 // ✅ Tar emot ny prenumeration
 app.post("/api/subscribe", (req, res) => {
-  subscriptions.push(req.body);
-  console.log("🔔 Ny prenumeration mottagen");
+  const newSub = req.body;
+
+  const alreadyExists = subscriptions.some(
+    (sub) => sub.endpoint === newSub.endpoint
+  );
+
+  if (!alreadyExists) {
+    subscriptions.push(newSub);
+    console.log("🔔 Ny prenumeration mottagen");
+  } else {
+    console.log("⚠️ Prenumeration finns redan");
+  }
+
   console.log("Totalt sparade:", subscriptions.length);
   res.status(201).json({ message: "Prenumeration mottagen ✅" });
 });
@@ -53,23 +64,20 @@ app.post("/api/send", async (req, res) => {
 
   const validSubscriptions: any[] = [];
 
-  const results = await Promise.allSettled(
+  await Promise.allSettled(
     subscriptions.map((sub, i) =>
-      webpush.sendNotification(sub, payload).then(
-        () => {
+      webpush
+        .sendNotification(sub, payload)
+        .then(() => {
           console.log(`✅ Notis skickad till sub ${i}`);
           validSubscriptions.push(sub);
-        },
-        (err) => {
+        })
+        .catch((err) => {
           console.error(`❌ Push-fel till sub ${i}:`, err.message);
-
           if (err.statusCode === 404 || err.statusCode === 410) {
-            console.log(
-              `🧼 Tog bort sub ${i} – ogiltig eller raderad prenumeration`
-            );
+            console.log(`🧼 Tog bort sub ${i}`);
           }
-        }
-      )
+        })
     )
   );
 
@@ -87,12 +95,29 @@ app.post("/api/scheduleReminder", (req, res) => {
     body: "Det har gått 10 sekunder – dags att göra något!",
   });
 
-  setTimeout(() => {
-    subscriptions.forEach((sub, i) => {
-      webpush.sendNotification(sub, payload).catch((err) => {
-        console.error("❌ Fel vid push", err);
-      });
-    });
+  setTimeout(async () => {
+    console.log("🚀 Skickar schemalagd notis...");
+    const validSubscriptions: any[] = [];
+
+    const results = await Promise.allSettled(
+      subscriptions.map((sub, i) =>
+        webpush.sendNotification(sub, payload).then(
+          () => {
+            console.log(`✅ Notis skickad till sub ${i}`);
+            validSubscriptions.push(sub);
+          },
+          (err) => {
+            console.error(`❌ Push-fel till sub ${i}:`, err.message);
+            if (err.statusCode === 404 || err.statusCode === 410) {
+              console.log(`🧼 Sub ${i} är ogiltig – tas bort`);
+            }
+          }
+        )
+      )
+    );
+
+    subscriptions.length = 0;
+    subscriptions.push(...validSubscriptions);
   }, delay);
 
   res.status(200).json({ message: "Push skickas om 10 sekunder" });
