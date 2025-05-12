@@ -8,7 +8,10 @@ const AuthLoader = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("/api/auth/me", { withCredentials: true });
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/auth/me`,
+          { withCredentials: true }
+        );
         setAuth(res.data);
       } catch {
         logout();
@@ -17,24 +20,6 @@ const AuthLoader = () => {
 
     checkAuth();
   }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/auth/me`,
-          {
-            withCredentials: true,
-          }
-        );
-        setAuth(res.data);
-      } catch (err) {
-        console.error("Not logged in", err);
-      }
-    };
-
-    checkAuth();
-  }, [setAuth]);
 
   return null;
 };

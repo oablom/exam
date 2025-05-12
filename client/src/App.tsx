@@ -25,9 +25,7 @@ const App = () => {
         setNotificationData(data);
       }
     };
-
     navigator.serviceWorker.addEventListener("message", listener);
-
     return () => {
       navigator.serviceWorker.removeEventListener("message", listener);
     };
@@ -49,60 +47,62 @@ const App = () => {
         setIsSubscribed(!!sub);
       }
     };
-
     checkSubscription();
   }, []);
 
-  if (loading) {
-    return <LoadingSpinner fullPage message="Ansluter till server..." />;
-  } else
-    return (
-      <div className="min-h-screen bg-gray-100 flex flex-col">
-        <ToasterProvider />
-        <AuthLoader />
-        <Header />
+  return (
+    <>
+      <AuthLoader />
+      {loading ? (
+        <LoadingSpinner fullPage message="Ansluter till server..." />
+      ) : (
+        <div className="min-h-screen bg-gray-100 flex flex-col">
+          <ToasterProvider />
+          <Header />
 
-        <main className="flex-grow flex flex-col gap-4 items-center justify-center">
-          <Home />
-          {!isSubscribed && (
+          <main className="flex-grow flex flex-col gap-4 items-center justify-center">
+            <Home />
+            {!isSubscribed && (
+              <button
+                onClick={subscribeToPush}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Aktivera push-notiser
+              </button>
+            )}
+
             <button
-              onClick={subscribeToPush}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              onClick={scheduleReminder}
+              className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
             >
-              Aktivera push-notiser
+              Visa modal efter 10 sek
             </button>
+            <InstallPrompt />
+          </main>
+
+          {notificationData && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded shadow-md max-w-sm">
+                <h2 className="text-xl font-semibold mb-2">
+                  {notificationData.title}
+                </h2>
+                <p className="mb-4">{notificationData.body}</p>
+                <button
+                  onClick={() => setNotificationData(null)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Stäng
+                </button>
+              </div>
+            </div>
           )}
 
-          <button
-            onClick={scheduleReminder}
-            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
-          >
-            Visa modal efter 10 sek
-          </button>
-          <InstallPrompt />
-        </main>
-
-        {notificationData && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded shadow-md max-w-sm">
-              <h2 className="text-xl font-semibold mb-2">
-                {notificationData.title}
-              </h2>
-              <p className="mb-4">{notificationData.body}</p>
-              <button
-                onClick={() => setNotificationData(null)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Stäng
-              </button>
-            </div>
-          </div>
-        )}
-
-        <LoginModal />
-        <RegisterModal />
-      </div>
-    );
+          <LoginModal />
+          <RegisterModal />
+        </div>
+      )}
+    </>
+  );
 };
 
 export default App;
