@@ -35,7 +35,6 @@ webpush.setVapidDetails(
 // 🔄 In-Memory lista med subscriptions
 const subscriptions: any[] = [];
 
-// ✅ Tar emot ny prenumeration
 app.post("/api/subscribe", (req, res) => {
   const newSub = req.body;
 
@@ -45,12 +44,11 @@ app.post("/api/subscribe", (req, res) => {
 
   if (!alreadyExists) {
     subscriptions.push(newSub);
-    console.log("🔔 Ny prenumeration mottagen");
-  } else {
-    console.log("⚠️ Prenumeration finns redan");
+    console.log("📌 Lade till ny prenumeration");
   }
 
-  console.log("Totalt sparade:", subscriptions.length);
+  console.log("Unika prenumerationer:", subscriptions.length);
+
   res.status(201).json({ message: "Prenumeration mottagen ✅" });
 });
 
