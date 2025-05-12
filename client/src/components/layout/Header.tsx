@@ -11,7 +11,7 @@ const Header = () => {
     <header className="bg-white shadow-md dark:bg-gray-900 dark:text-white">
       <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          TodoApp
+          My little planner📝
         </h1>
 
         <nav className="hidden md:flex space-x-6">

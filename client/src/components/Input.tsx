@@ -1,18 +1,4 @@
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
-import { ChangeEvent } from "react";
-
-interface InputProps {
-  id: string;
-  label: string;
-  type?: string;
-  disabled?: boolean;
-
-  required?: boolean;
-  register?: UseFormRegister<FieldValues>;
-  errors?: FieldErrors;
-  value?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-}
+import { InputProps } from "@/types";
 
 const Input: React.FC<InputProps> = ({
   id,

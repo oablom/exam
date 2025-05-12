@@ -35,12 +35,15 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const { userId } = req as AuthRequest;
-  const { title } = req.body;
+  const { title, priority, estimatedTime, dueDate } = req.body;
 
   const todo = await prisma.todo.create({
     data: {
       title,
       userId,
+      priority,
+      estimatedTime,
+      dueDate: dueDate ? new Date(dueDate) : undefined,
     },
   });
 
@@ -48,11 +51,11 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
 });
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
-  const { title, completed } = req.body;
+  const { title, completed, priority, estimatedTime, dueDate } = req.body;
 
   const todo = await prisma.todo.update({
     where: { id: req.params.id },
-    data: { title, completed },
+    data: { title, completed, priority, estimatedTime, dueDate },
   });
 
   res.json(todo);
