@@ -11,25 +11,31 @@ export const subscribeToPush = async () => {
 
   const registration = await navigator.serviceWorker.ready;
 
-  // 🧨 Ta bort gammal prenumeration (om den finns)
-  const existingSubscription = await registration.pushManager.getSubscription();
-  if (existingSubscription) {
-    await existingSubscription.unsubscribe();
-    console.log("♻️ Tidigare prenumeration togs bort");
+  try {
+    // ♻️ Ta bort gammal prenumeration
+    const existingSubscription =
+      await registration.pushManager.getSubscription();
+    if (existingSubscription) {
+      await existingSubscription.unsubscribe();
+      console.log("♻️ Tidigare prenumeration togs bort");
+    }
+
+    // 🆕 Skapa ny prenumeration
+    const newSubscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    });
+
+    // ☁️ Skicka till backend
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/subscribe`,
+      newSubscription,
+      { withCredentials: true }
+    );
+
+    console.log("✅ Ny push-prenumeration skapad");
+    return newSubscription;
+  } catch (err) {
+    console.error("❌ Fel vid prenumeration:", err);
   }
-
-  // 🆕 Skapa ny
-  const newSubscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
-  });
-
-  // ☁️ Skicka till backend
-  await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/subscribe`,
-    newSubscription
-  );
-
-  console.log("✅ Ny push-prenumeration skapad");
-  return newSubscription;
 };
