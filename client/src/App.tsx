@@ -15,12 +15,18 @@ const App = () => {
   } | null>(null);
 
   useEffect(() => {
-    navigator.serviceWorker.addEventListener("message", (event) => {
+    const listener = (event: MessageEvent) => {
       const data = event.data;
       if (data?.title && data?.body) {
         setNotificationData(data);
       }
-    });
+    };
+
+    navigator.serviceWorker.addEventListener("message", listener);
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("message", listener);
+    };
   }, []);
 
   const scheduleReminder = async () => {

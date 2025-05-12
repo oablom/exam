@@ -22,7 +22,7 @@ self.addEventListener("push", (event) => {
     vibrate: [200, 100, 200],
     requireInteraction: true,
     data: {
-      url: "/", // öppna startsidan vid klick
+      url: "/",
     },
   };
 
