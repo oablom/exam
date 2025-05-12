@@ -1,21 +1,20 @@
-import React from "react";
-import useLoginModal from "../hooks/useLoginModal";
-import LoginModal from "@/components/modals/LoginModal";
-
+import { useState } from "react";
 import TodoList from "@/components/todo/TodoList";
+import FilterBar from "@/components/todo/FilterBar";
+
 const Home = () => {
-  const loginModal = useLoginModal();
+  const [filter, setFilter] = useState<"all" | "focus" | "quick">("all");
 
   return (
-    <>
-      <LoginModal />
-      <div className="flex flex-col items-center justify-center h-screen space-y-4">
-        <h1 className="text-4xl font-bold text-center">
-          Välkommen till startsidan!
-        </h1>
-        <TodoList></TodoList>
-      </div>
-    </>
+    <div className="w-full px-4 max-w-md flex flex-col gap-4">
+      <h1 className="text-2xl font-hand text-center mt-6">
+        📝 Min Att-göra-bok
+      </h1>
+
+      <FilterBar filter={filter} setFilter={setFilter} />
+
+      <TodoList filter={filter} />
+    </div>
   );
 };
 

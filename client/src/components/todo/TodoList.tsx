@@ -10,12 +10,18 @@ interface Todo {
   completed: boolean;
 }
 
-const TodoList: React.FC = () => {
+interface TodoListProps {
+  filter: "all" | "focus" | "quick";
+}
+
+const TodoList: React.FC<TodoListProps> = ({ filter }) => {
   const { user } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
 
   useEffect(() => {
+    console.log("API_URL:", VITE_API_URL);
+
     if (!user) return;
 
     const fetchTodos = async () => {

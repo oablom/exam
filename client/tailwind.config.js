@@ -1,8 +1,17 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        hand: ['"Patrick Hand"', "cursive"],
+      },
+      colors: {
+        scrapPink: "#FFD3DA",
+        scrapBlue: "#D0EFFF",
+        scrapYellow: "#FFF5C3",
+      },
+    },
   },
   plugins: [],
 };
