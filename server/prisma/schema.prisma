@@ -23,7 +23,7 @@ model Todo {
   completed Boolean  @default(false)
   userId    String   @db.ObjectId
   user      User     @relation("UserTodos", fields: [userId], references: [id])
-  priority       Int
+  priority       Int?
   estimatedTime  Int?
   dueDate        DateTime?
   createdAt DateTime @default(now())

@@ -3,6 +3,7 @@ import TodoItem from "./TodoItem";
 import { VITE_API_URL } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "@/store/auth";
+import NewTodoForm from "./NewTodoForm";
 
 interface Todo {
   id: string;
@@ -100,22 +101,6 @@ const TodoList: React.FC<TodoListProps> = ({ filter }) => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="Ny todo..."
-          className="border p-2 rounded w-64"
-        />
-        <button
-          onClick={handleAdd}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Lägg till
-        </button>
-      </div>
-
       {!user ? (
         <p>Logga in för att se dina todos</p>
       ) : (
@@ -134,6 +119,7 @@ const TodoList: React.FC<TodoListProps> = ({ filter }) => {
           />
         ))}
       </div>
+      <NewTodoForm onAdd={(todo) => setTodos((prev) => [...prev, todo])} />
     </div>
   );
 };
