@@ -10,7 +10,9 @@ const Home = () => {
     <>
       <LoginModal />
       <div className="flex flex-col items-center justify-center h-screen space-y-4">
-        <h1 className="text-4xl font-bold">Välkommen till startsidan!</h1>
+        <h1 className="text-4xl font-bold text-center">
+          Välkommen till startsidan!
+        </h1>
         <TodoList></TodoList>
       </div>
     </>

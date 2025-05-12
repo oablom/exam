@@ -3,7 +3,20 @@ import axios from "axios";
 import { useAuth } from "@/store/auth";
 
 const AuthLoader = () => {
-  const { setAuth } = useAuth();
+  const { setAuth, logout } = useAuth();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get("/api/auth/me", { withCredentials: true });
+        setAuth(res.data);
+      } catch {
+        logout();
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const checkAuth = async () => {

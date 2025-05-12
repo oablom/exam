@@ -110,7 +110,11 @@ const TodoList: React.FC = () => {
         </button>
       </div>
 
-      {todos.length === 0 && <p className="text-gray-500">Inga todos ännu.</p>}
+      {!user ? (
+        <p>Logga in för att se dina todos</p>
+      ) : (
+        todos.length === 0 && <p className="text-gray-500">Inga todos ännu.</p>
+      )}
 
       <div className="flex flex-col gap-2 w-full items-center">
         {todos.map((todo) => (
