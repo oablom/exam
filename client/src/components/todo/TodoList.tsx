@@ -1,125 +1,73 @@
-import React, { useEffect, useState } from "react";
-import TodoItem from "./TodoItem";
+import { useEffect, useState } from "react";
 import { VITE_API_URL } from "@/lib/api";
-import toast from "react-hot-toast";
-import { useAuth } from "@/store/auth";
-import NewTodoForm from "./NewTodoForm";
+import { Todo } from "@/types";
+import TodoItem from "./TodoItem";
+import FilterBar from "./FilterBar";
+import Button from "@/components/Button";
+import NewTodoModal from "./NewTodoModal";
 
-interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-
-interface TodoListProps {
-  filter: "all" | "focus" | "quick";
-}
-
-const TodoList: React.FC<TodoListProps> = ({ filter }) => {
-  const { user } = useAuth();
+const TodoList = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<1 | 2 | 3 | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    console.log("API_URL:", VITE_API_URL);
-
-    if (!user) return;
-
     const fetchTodos = async () => {
-      try {
-        const res = await fetch(`${VITE_API_URL}/api/todos`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-        setTodos(data);
-      } catch {
-        toast.error("Kunde inte hämta todos");
-      }
+      const res = await fetch(`${VITE_API_URL}/api/todos`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      setTodos(data);
     };
 
     fetchTodos();
-  }, [user]);
+  }, []);
 
-  const handleAdd = async () => {
-    if (!newTodo.trim()) return;
+  const filteredTodos = priorityFilter
+    ? todos.filter((todo) => todo.priority === priorityFilter)
+    : todos;
 
-    try {
-      const res = await fetch(`${VITE_API_URL}/api/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ title: newTodo }),
-      });
-
-      const data = await res.json();
-      setTodos((prev) => [...prev, data]);
-      setNewTodo("");
-    } catch {
-      toast.error("Kunde inte lägga till todo");
-    }
+  const handleDelete = (id: string) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
-  const handleToggle = async (id: string) => {
-    const todo = todos.find((t) => t.id === id);
-    if (!todo) return;
-
-    try {
-      const res = await fetch(`${VITE_API_URL}/api/todos/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ completed: !todo.completed, title: todo.title }),
-      });
-
-      const updated = await res.json();
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
-    } catch {
-      toast.error("Kunde inte uppdatera todo");
-    }
+  const handleAdd = (todo: Todo) => {
+    setTodos((prev) => [...prev, todo]);
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await fetch(`${VITE_API_URL}/api/todos/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      setTodos((prev) => prev.filter((t) => t.id !== id));
-    } catch {
-      toast.error("Kunde inte ta bort todo");
-    }
-  };
-
-  if (!user) {
-    return (
-      <p className="text-center text-gray-500 mt-10">
-        Logga in för att se dina todos.
-      </p>
+  const handleToggle = (id: string, newValue: boolean) => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: newValue } : todo
+      )
     );
-  }
+  };
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {!user ? (
-        <p>Logga in för att se dina todos</p>
-      ) : (
-        todos.length === 0 && <p className="text-gray-500">Inga todos ännu.</p>
-      )}
-
-      <div className="flex flex-col gap-2 w-full items-center">
-        {todos.map((todo) => (
+    <div className="space-y-4">
+      <FilterBar
+        active={priorityFilter}
+        onChange={(priority) =>
+          setPriorityFilter(priority === priorityFilter ? null : priority)
+        }
+      />
+      <div className="space-y-2">
+        {filteredTodos.map((todo) => (
           <TodoItem
             key={todo.id}
-            id={todo.id}
-            title={todo.title}
-            completed={todo.completed}
-            onToggle={handleToggle}
+            todo={todo}
             onDelete={handleDelete}
+            onToggle={handleToggle}
           />
         ))}
       </div>
-      <NewTodoForm onAdd={(todo) => setTodos((prev) => [...prev, todo])} />
+
+      <NewTodoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAdd}
+      />
+      <Button label="Ny Todo" onClick={() => setIsModalOpen(true)} />
     </div>
   );
 };

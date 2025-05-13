@@ -17,16 +17,12 @@ export interface HeadingProps {
   center?: boolean;
 }
 
-export interface InputProps {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label: string;
-  type?: string;
-  disabled?: boolean;
-  required?: boolean;
   register?: UseFormRegister<FieldValues>;
   errors?: FieldErrors;
-  value?: string;
-  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface ConfirmModalProps {

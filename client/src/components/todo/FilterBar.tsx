@@ -1,24 +1,39 @@
-interface FilterBarProps {
-  filter: "all" | "focus" | "quick";
-  setFilter: (f: "all" | "focus" | "quick") => void;
+import React from "react";
+
+export interface FilterBarProps {
+  active: 1 | 2 | 3 | null;
+  onChange: (priority: 1 | 2 | 3) => void;
 }
 
-const FilterBar = ({ filter, setFilter }: FilterBarProps) => (
-  <div className="flex justify-center gap-2 mt-2">
-    {(["all", "focus", "quick"] as const).map((f) => (
-      <button
-        key={f}
-        className={`px-3 py-1 rounded-full text-sm border ${
-          filter === f ? "bg-blue-600 text-white" : "bg-white text-gray-600"
-        }`}
-        onClick={() => setFilter(f)}
-      >
-        {f === "all" && "All"}
-        {f === "focus" && "🎯 Focus"}
-        {f === "quick" && "⚡ Quick tasks"}
-      </button>
-    ))}
-  </div>
-);
+const FilterBar: React.FC<FilterBarProps> = ({ active, onChange }) => {
+  return (
+    <div className="flex justify-center gap-2">
+      {([1, 2, 3] as const).map((priority) => {
+        const isActive = active === priority;
+        return (
+          <button
+            key={priority}
+            onClick={() => onChange(priority)}
+            className={`px-4 py-2 rounded-md text-white ${
+              priority === 1
+                ? isActive
+                  ? "bg-red-600"
+                  : "bg-red-300"
+                : priority === 2
+                ? isActive
+                  ? "bg-yellow-500"
+                  : "bg-yellow-300"
+                : isActive
+                ? "bg-green-600"
+                : "bg-green-300"
+            }`}
+          >
+            {priority === 1 ? "🔴 Hög" : priority === 2 ? "🟡 Medel" : "🟢 Låg"}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
 
 export default FilterBar;
