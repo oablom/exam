@@ -45,19 +45,21 @@ const TodoList = () => {
 
   return (
     <div className="space-y-4">
-      <FilterBar
+      {/* <FilterBar
         active={priorityFilter}
         onChange={(priority) =>
           setPriorityFilter(priority === priorityFilter ? null : priority)
         }
-      />
+      /> */}
       <div className="space-y-2">
         {filteredTodos.map((todo) => (
           <TodoItem
             key={todo.id}
-            todo={todo}
+            id={todo.id}
+            title={todo.title}
+            completed={todo.completed}
             onDelete={handleDelete}
-            onToggle={handleToggle}
+            onToggle={(id) => handleToggle(id, !todo.completed)}
           />
         ))}
       </div>

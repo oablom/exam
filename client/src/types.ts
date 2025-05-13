@@ -48,12 +48,11 @@ export interface ModalProps {
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
 }
-
 export interface TodoItemProps {
   id: string;
   title: string;
   completed: boolean;
-  onToggle: (id: string) => void;
+  onToggle: (id: string, newValue: boolean) => void;
   onDelete: (id: string) => void;
 }
 

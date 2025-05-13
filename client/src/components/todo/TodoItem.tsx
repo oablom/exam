@@ -1,49 +1,39 @@
-import { Todo } from "@/types";
+import React from "react";
+import { TodoItemProps } from "@/types";
 
-interface TodoItemProps {
-  todo: Todo;
-  onDelete: (id: string) => void;
-  onToggle: (id: string, newValue: boolean) => void;
-}
-
-const TodoItem: React.FC<TodoItemProps> = ({ todo, onDelete, onToggle }) => {
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("CHECKED:", e.target.checked);
-    onToggle(todo.id, e.target.checked);
-  };
-
+const TodoItem: React.FC<TodoItemProps> = ({
+  id,
+  title,
+  completed,
+  onToggle,
+  onDelete,
+}) => {
   return (
-    <div className="border p-4 rounded-md flex justify-between items-center gap-4">
-      <div className="flex items-start gap-3 flex-1">
-        <div className="flex-shrink-0 w-6 h-6">
-          <input
-            type="checkbox"
-            checked={todo.completed}
-            onChange={(e) => onToggle(todo.id, e.target.checked)}
-            className="w-6 h-6 min-w-[1.5rem] min-h-[1.5rem] accent-green-600 cursor-pointer"
-          />
-        </div>
-        <div className="flex-grow">
-          <p
-            className={`text-lg font-semibold break-words ${
-              todo.completed ? "line-through text-gray-400" : ""
-            }`}
-          >
-            {todo.title}
-          </p>
-          <p className="text-sm text-gray-500">
-            Prioritet: {todo.priority}{" "}
-            {todo.estimatedTime && `| Tid: ${todo.estimatedTime} min`}{" "}
-            {todo.dueDate && `| Deadline: ${todo.dueDate}`} |{" "}
-            {todo.completed ? "✔️ Comppleted" : "⏳ Not completed"}
-          </p>
-        </div>
+    <div
+      className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl bg-white dark:bg-zinc-800 shadow-md transition-all duration-200 ${
+        completed ? "opacity-50 line-through" : ""
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => onToggle(id, !completed)}
+          className={`w-5 h-5 rounded-full border-2 shrink-0 transition ${
+            completed
+              ? "bg-green-500 border-green-500"
+              : "border-gray-400 hover:border-blue-500"
+          }`}
+        />
+        <span className="text-base sm:text-lg font-medium text-zinc-800 dark:text-zinc-100 break-words">
+          {title}
+        </span>
       </div>
+
       <button
-        onClick={() => onDelete(todo.id)}
-        className="text-red-500 hover:underline"
+        onClick={() => onDelete(id)}
+        className="text-zinc-400 hover:text-red-500 transition text-sm"
+        aria-label="Ta bort todo"
       >
-        Ta bort
+        ✖
       </button>
     </div>
   );
