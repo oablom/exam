@@ -11,8 +11,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
 }) => {
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 ${
-        completed ? "opacity-50 line-through" : ""
+      onClick={() => onToggle(id)}
+      className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 hover:cursor-pointer ${
+        completed ? "opacity-50 " : ""
       } ${
         isSelected
           ? "ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/40"
@@ -20,17 +21,17 @@ const TodoItem: React.FC<TodoItemProps> = ({
       }`}
     >
       <div className="flex items-center gap-3">
-        <button
-          onClick={() => onToggle(id)}
-          className={`w-5 h-5 rounded-full border-2 shrink-0 transition ${
+        <span
+          className={`w-5 h-5  border-2 shrink-0 transition ${
             completed
               ? "bg-green-500 border-green-500"
               : "border-gray-400 hover:border-blue-500"
-          }`}
+          } ${isSelected ? "border-blue-500" : ""}`}
         />
         <span className="text-base sm:text-lg font-medium text-zinc-800 dark:text-zinc-100 break-words">
           {title}
         </span>
+        <span className="text-sm text-zinc-500"></span>
       </div>
 
       <button

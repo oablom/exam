@@ -1,4 +1,4 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import { TodoActionsProps } from "@/types";
 
 const TodoActions: React.FC<TodoActionsProps> = ({
@@ -8,15 +8,16 @@ const TodoActions: React.FC<TodoActionsProps> = ({
   onDelete,
   onComplete,
 }) => {
+  const navigate = useNavigate();
+
   if (!selectedIds || selectedIds.length === 0) return null;
 
   const selectedTodos = todos.filter((todo) => selectedIds.includes(todo.id));
   const allAreCompleted = selectedTodos.every((todo) => todo.completed);
-
   const newValue = !allAreCompleted;
 
   return (
-    <div className="flex gap-3 items-center justify-center p-3 bg-zinc-100 dark:bg-zinc-700 rounded-2xl shadow-inner">
+    <div className="flex flex-wrap gap-3 justify-center p-3 bg-zinc-100 dark:bg-zinc-700 rounded-2xl shadow-inner">
       <button
         onClick={() => onDelete(selectedIds)}
         className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
@@ -29,7 +30,12 @@ const TodoActions: React.FC<TodoActionsProps> = ({
       >
         {allAreCompleted ? "↩ Ångra klarmarkering" : "✅ Klarmarkera"}
       </button>
-
+      <button
+        onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
+        className="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+      >
+        🎯 Fokusläge
+      </button>
       <button
         onClick={onClear}
         className="text-sm text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-200"
