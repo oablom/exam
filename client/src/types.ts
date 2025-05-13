@@ -52,8 +52,9 @@ export interface TodoItemProps {
   id: string;
   title: string;
   completed: boolean;
-  onToggle: (id: string, newValue: boolean) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: string) => void;
+  onDelete: (ids: string[]) => void;
+  isSelected?: boolean;
 }
 
 export interface Todo {
@@ -63,6 +64,14 @@ export interface Todo {
   priority: 1 | 2 | 3;
   estimatedTime?: number;
   dueDate?: string;
+}
+
+export interface TodoActionsProps {
+  todos: Todo[];
+  selectedIds: string[];
+  onClear: () => void;
+  onDelete: (ids: string[]) => void;
+  onComplete: (ids: string[], newValue: boolean) => void;
 }
 
 export interface LoginModalStore {
