@@ -27,15 +27,7 @@ const NewTodoModal: React.FC<NewTodoModalProps> = ({
       onSubmit={handleSubmit}
       actionLabel="Lägg till"
       title="Ny Todo"
-      body={
-        <NewTodoForm
-          onAdd={(todo) => {
-            onAdd(todo);
-            onClose();
-          }}
-          setFormRef={setFormRef}
-        />
-      }
+      body={<NewTodoForm setFormRef={setFormRef} />}
     />
   );
 };
