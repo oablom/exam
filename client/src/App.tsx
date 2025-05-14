@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import FocusPage from "@/pages/FocusPage";
@@ -8,13 +7,10 @@ import RegisterModal from "@/components/modals/RegisterModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
-import { useAuth } from "@/store/auth";
-import LoadingSpinner from "@/components/LoadingSpinner";
+
 import BackendStatus from "./system/BackendStatus";
 
 const App = () => {
-  const { loading } = useAuth();
-
   return (
     <>
       <BackendStatus />
