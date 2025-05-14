@@ -32,7 +32,6 @@ const BackendStatus = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center px-4">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-zinc-500 mb-4"></div>
       <LoadingSpinner message="Connecting to server..." />
       {fallbackMessage && (
         <p className="text-sm text-zinc-500 mt-2 max-w-sm">
