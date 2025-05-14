@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
-import { VITE_API_URL } from "@/lib/api";
 import toast from "react-hot-toast";
-import { useAuth } from "@/store/auth";
-import { Todo } from "@/types";
+import { useTodo } from "@/hooks/useTodo";
 import Input from "@/components/Input";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
 
 interface NewTodoFormProps {
-  onAdd: (todo: Todo) => void;
   setFormRef?: (ref: { submit: () => void }) => void;
 }
 
-const NewTodoForm: React.FC<NewTodoFormProps> = ({ onAdd, setFormRef }) => {
-  const { user } = useAuth();
+const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef }) => {
+  const { addTodo } = useTodo();
+
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<1 | 2 | 3>(2);
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [estimatedTime, setEstimatedTime] = useState<number | "">("");
   const [dueDate, setDueDate] = useState<string>("");
 
@@ -24,22 +21,18 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ onAdd, setFormRef }) => {
     if (!title.trim()) return;
 
     try {
-      const res = await fetch(`${VITE_API_URL}/api/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ title, priority, estimatedTime, dueDate }),
+      await addTodo({
+        title,
+        priority,
+        estimatedTime: estimatedTime === "" ? undefined : estimatedTime,
+        dueDate,
+        completed: false,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Något gick fel");
-
-      onAdd(data);
       setTitle("");
       setEstimatedTime("");
       setDueDate("");
       setPriority(2);
-      setShowAdvanced(false);
       toast.success("Todo tillagd!");
     } catch (err: any) {
       toast.error(err.message || "Fel vid skapande");
