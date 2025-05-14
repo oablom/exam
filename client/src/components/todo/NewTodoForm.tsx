@@ -4,12 +4,14 @@ import { useTodo } from "@/hooks/useTodo";
 import Input from "@/components/Input";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
+import { useTodoStore } from "@/store/todo";
 
 interface NewTodoFormProps {
   setFormRef?: (ref: { submit: () => void }) => void;
+  onClose?: () => void;
 }
 
-const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef }) => {
+const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
   const { addTodo } = useTodo();
 
   const [title, setTitle] = useState("");
@@ -34,6 +36,7 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef }) => {
       setDueDate("");
       setPriority(2);
       toast.success("Todo tillagd!");
+      onClose?.();
     } catch (err: any) {
       toast.error(err.message || "Fel vid skapande");
     }

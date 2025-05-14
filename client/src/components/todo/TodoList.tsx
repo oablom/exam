@@ -5,9 +5,10 @@ import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
 import NewTodoModal from "./NewTodoModal";
 import TodoActions from "./TodoActions";
+import { useTodoStore } from "@/store/todo";
 
 const TodoList = () => {
-  const { todos, addTodo, deleteTodo, toggleTodo } = useTodo();
+  const { todos, deleteTodo, toggleTodo, fetchTodos } = useTodoStore();
   const [priorityFilter, setPriorityFilter] = useState<1 | 2 | 3 | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoIds, setSelectedTodoIds] = useState<string[]>([]);
@@ -85,7 +86,6 @@ const TodoList = () => {
       <NewTodoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAdd={addTodo}
       />
     </section>
   );

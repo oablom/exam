@@ -6,14 +6,9 @@ import { Todo } from "@/types";
 interface NewTodoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (todo: Todo) => void;
 }
 
-const NewTodoModal: React.FC<NewTodoModalProps> = ({
-  isOpen,
-  onClose,
-  onAdd,
-}) => {
+const NewTodoModal: React.FC<NewTodoModalProps> = ({ isOpen, onClose }) => {
   const [formRef, setFormRef] = useState<{ submit: () => void } | null>(null);
 
   const handleSubmit = () => {
@@ -27,7 +22,7 @@ const NewTodoModal: React.FC<NewTodoModalProps> = ({
       onSubmit={handleSubmit}
       actionLabel="Lägg till"
       title="Ny Todo"
-      body={<NewTodoForm setFormRef={setFormRef} />}
+      body={<NewTodoForm setFormRef={setFormRef} onClose={onClose} />}
     />
   );
 };
