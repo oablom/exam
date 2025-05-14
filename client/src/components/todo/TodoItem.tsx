@@ -10,7 +10,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   return (
     <div
       // onClick={() => onToggle(id)}
-      className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 hover:cursor-pointer ${
+      className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 hover:cursor-pointer border-2 ${
         completed ? "opacity-50 " : ""
       } ${
         isSelected
