@@ -49,9 +49,7 @@ export interface ModalProps {
   secondaryActionLabel?: string;
 }
 export interface TodoItemProps {
-  id: string;
-  title: string;
-  completed: boolean;
+  todo: Todo;
   onToggle: (id: string) => void;
   onDelete: (ids: string[]) => void;
   isSelected?: boolean;

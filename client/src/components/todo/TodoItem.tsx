@@ -2,9 +2,7 @@ import React from "react";
 import { TodoItemProps } from "@/types";
 
 const TodoItem: React.FC<TodoItemProps> = ({
-  id,
-  title,
-  completed,
+  todo: { id, title, completed, priority },
   onToggle,
   onDelete,
   isSelected,
@@ -18,6 +16,14 @@ const TodoItem: React.FC<TodoItemProps> = ({
         isSelected
           ? "ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/40"
           : "bg-white dark:bg-zinc-800"
+      } ${
+        priority === 1
+          ? "border-red-500"
+          : priority === 2
+          ? "border-yellow-500"
+          : priority === 3
+          ? "border-green-500"
+          : ""
       }`}
     >
       <div className="flex items-center gap-3">

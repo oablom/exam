@@ -68,9 +68,7 @@ const TodoList = () => {
         {filteredTodos.map((todo) => (
           <TodoItem
             key={todo.id}
-            id={todo.id}
-            title={todo.title}
-            completed={todo.completed}
+            todo={todo}
             onToggle={toggleSelected}
             onDelete={handleDelete}
             isSelected={selectedTodoIds.includes(todo.id)}
