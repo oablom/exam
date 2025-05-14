@@ -10,33 +10,35 @@ import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
 import { useAuth } from "@/store/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import PingBackend from "./system/PingBackend";
+import BackendStatus from "./system/BackendStatus";
 
 const App = () => {
   const { loading } = useAuth();
 
   return (
     <>
-      <PingBackend />
-      <AuthLoader />
       {loading ? (
-        <LoadingSpinner fullPage message="Ansluter till server..." />
+        <LoadingSpinner fullPage message="Logging in..." />
       ) : (
-        <BrowserRouter>
-          <ToasterProvider />
-          <Header />
+        <>
+          <BackendStatus />
+          <AuthLoader />
+          <BrowserRouter>
+            <ToasterProvider />
+            <Header />
 
-          <main className="flex-grow flex flex-col gap-4 items-center justify-center mt-20">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/focus" element={<FocusPage />} />
-            </Routes>
-            <InstallPrompt />
-          </main>
+            <main className="flex-grow flex flex-col gap-4 items-center justify-center mt-20">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/focus" element={<FocusPage />} />
+              </Routes>
+              <InstallPrompt />
+            </main>
 
-          <LoginModal />
-          <RegisterModal />
-        </BrowserRouter>
+            <LoginModal />
+            <RegisterModal />
+          </BrowserRouter>
+        </>
       )}
     </>
   );

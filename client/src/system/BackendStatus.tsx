@@ -1,0 +1,47 @@
+import { useEffect, useState } from "react";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
+const BackendStatus = () => {
+  const [isOnline, setIsOnline] = useState(false);
+  const [fallbackMessage, setFallbackMessage] = useState(false);
+
+  useEffect(() => {
+    const ping = async () => {
+      try {
+        const res = await fetch("https://exam-92d2.onrender.com/api/ping");
+        if (res.ok) {
+          setIsOnline(true);
+        }
+      } catch (err) {
+        setIsOnline(false);
+      }
+    };
+
+    ping();
+
+    const interval = setInterval(ping, 5000);
+    const fallbackTimeout = setTimeout(() => setFallbackMessage(true), 10000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(fallbackTimeout);
+    };
+  }, []);
+
+  if (isOnline) return null;
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-zinc-500 mb-4"></div>
+      <LoadingSpinner message="Connecting to server..." />
+      {fallbackMessage && (
+        <p className="text-sm text-zinc-500 mt-2 max-w-sm">
+          The server is hosted via Render and can sometimes take up to 30
+          seconds to wake up. Thank you for your patience!
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default BackendStatus;
