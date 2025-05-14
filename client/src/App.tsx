@@ -17,29 +17,23 @@ const App = () => {
 
   return (
     <>
-      {loading ? (
-        <LoadingSpinner fullPage message="Logging in..." />
-      ) : (
-        <>
-          <BackendStatus />
-          <AuthLoader />
-          <BrowserRouter>
-            <ToasterProvider />
-            <Header />
+      <BackendStatus />
+      <AuthLoader />
+      <BrowserRouter>
+        <ToasterProvider />
+        <Header />
 
-            <main className="flex-grow flex flex-col gap-4 items-center justify-center mt-20">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/focus" element={<FocusPage />} />
-              </Routes>
-              <InstallPrompt />
-            </main>
+        <main className="flex-grow flex flex-col gap-4 items-center justify-center mt-20">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/focus" element={<FocusPage />} />
+          </Routes>
+          <InstallPrompt />
+        </main>
 
-            <LoginModal />
-            <RegisterModal />
-          </BrowserRouter>
-        </>
-      )}
+        <LoginModal />
+        <RegisterModal />
+      </BrowserRouter>
     </>
   );
 };

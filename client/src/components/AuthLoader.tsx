@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/store/auth";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const AuthLoader = () => {
   const { setAuth, logout } = useAuth();
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -15,11 +17,17 @@ const AuthLoader = () => {
         setAuth(res.data);
       } catch {
         logout();
+      } finally {
+        setChecking(false);
       }
     };
 
     checkAuth();
   }, []);
+
+  if (checking) {
+    return <LoadingSpinner fullPage message="🔐 Logging in..." />;
+  }
 
   return null;
 };
