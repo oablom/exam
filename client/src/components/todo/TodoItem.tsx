@@ -9,7 +9,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
 }) => {
   return (
     <div
-      onClick={() => onToggle(id)}
+      // onClick={() => onToggle(id)}
       className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 hover:cursor-pointer ${
         completed ? "opacity-50 " : ""
       } ${
@@ -41,7 +41,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
       </div>
 
       <button
-        onClick={() => onDelete([id])}
+        onClick={(e) => {
+          e.stopPropagation();
+          console.log("🗑 Deleting:", id);
+          onDelete(id);
+        }}
         className="text-zinc-400 hover:text-red-500 transition text-sm"
         aria-label="Ta bort todo"
       >

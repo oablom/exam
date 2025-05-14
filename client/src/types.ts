@@ -51,7 +51,8 @@ export interface ModalProps {
 export interface TodoItemProps {
   todo: Todo;
   onToggle: (id: string) => void;
-  onDelete: (ids: string[]) => void;
+  onDelete: (id: string) => void;
+
   isSelected?: boolean;
 }
 

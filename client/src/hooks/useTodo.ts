@@ -29,10 +29,17 @@ export const useTodo = () => {
   };
 
   const deleteTodo = async (id: string) => {
-    await fetch(`${API_URL}/api/todos/${id}`, {
+    const res = await fetch(`${API_URL}/api/todos/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
+
+    if (!res.ok) {
+      const msg = await res.text();
+      console.error("❌ Delete failed:", msg);
+      return;
+    }
+
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
 
@@ -42,7 +49,7 @@ export const useTodo = () => {
     const updated = { ...todo, completed: !todo.completed };
 
     await fetch(`${API_URL}/api/todos/${id}`, {
-      method: "PUT",
+      method: "PATCH", //
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify(updated),
