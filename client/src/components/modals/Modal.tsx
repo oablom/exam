@@ -1,19 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { IoMdClose } from "react-icons/io";
 import Button from "../Button";
-
-interface ModalProps {
-  isOpen?: boolean;
-  onClose: () => void;
-  onSubmit: () => void;
-  title?: string;
-  body?: React.ReactNode;
-  footer?: React.ReactNode;
-  actionLabel: string;
-  disabled?: boolean;
-  secondaryAction?: () => void;
-  secondaryActionLabel?: string;
-}
+import { ModalProps } from "@/types";
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,

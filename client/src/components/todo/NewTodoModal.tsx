@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import Modal from "../modals/Modal";
+import { MouseEvent } from "react";
 import NewTodoForm from "./NewTodoForm";
-import { Todo } from "@/types";
 
 interface NewTodoModalProps {
   isOpen: boolean;
@@ -9,21 +7,19 @@ interface NewTodoModalProps {
 }
 
 const NewTodoModal: React.FC<NewTodoModalProps> = ({ isOpen, onClose }) => {
-  const [formRef, setFormRef] = useState<{ submit: () => void } | null>(null);
+  if (!isOpen) return null;
 
-  const handleSubmit = () => {
-    formRef?.submit();
+  const closeOnBackdrop = (e: MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) onClose();
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      actionLabel="Lägg till"
-      title="Ny Todo"
-      body={<NewTodoForm setFormRef={setFormRef} onClose={onClose} />}
-    />
+    <div
+      onClick={closeOnBackdrop}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm "
+    >
+      <NewTodoForm onClose={onClose} />
+    </div>
   );
 };
 
