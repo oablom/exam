@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-const BackendStatus = () => {
+interface BackendStatusProps {
+  message?: string;
+}
+
+const BackendStatus = ({ message }: BackendStatusProps) => {
   const [isOnline, setIsOnline] = useState(false);
   const [fallbackMessage, setFallbackMessage] = useState(false);
 
@@ -32,11 +36,12 @@ const BackendStatus = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen text-center px-4">
-      <LoadingSpinner message="Connecting to server..." />
+      <LoadingSpinner message={message} />
       {fallbackMessage && (
         <p className="text-sm text-zinc-500 mt-2 max-w-sm">
-          The server is hosted via Render and can sometimes take up to 30
-          seconds to wake up. Thank you for your patience!
+          The server is hosted via a third party and may take some time to
+          respond. If the issue persists, please try refreshing the page or
+          check back later. Thank you for your understanding!
         </p>
       )}
     </div>

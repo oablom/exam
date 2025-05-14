@@ -13,7 +13,7 @@ import BackendStatus from "./system/BackendStatus";
 const App = () => {
   return (
     <>
-      <BackendStatus />
+      <BackendStatus message="Connecting to server..." />
       <AuthLoader />
       <BrowserRouter>
         <ToasterProvider />
