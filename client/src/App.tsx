@@ -10,12 +10,14 @@ import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
 import { useAuth } from "@/store/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import PingBackend from "./system/PingBackend";
 
 const App = () => {
   const { loading } = useAuth();
 
   return (
     <>
+      <PingBackend />
       <AuthLoader />
       {loading ? (
         <LoadingSpinner fullPage message="Ansluter till server..." />

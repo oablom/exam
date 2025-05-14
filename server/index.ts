@@ -32,7 +32,6 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 );
 
-// 🔄 In-Memory lista med subscriptions
 const subscriptions: any[] = [];
 
 app.post("/api/subscribe", (req, res) => {
@@ -119,4 +118,8 @@ app.post("/api/scheduleReminder", (req, res) => {
   }, delay);
 
   res.status(200).json({ message: "Push skickas om 10 sekunder" });
+});
+
+app.get("/api/ping", (req, res) => {
+  res.status(200).json({ message: "Pong 🏓" });
 });
