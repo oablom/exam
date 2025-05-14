@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useTodo } from "@/hooks/useTodo";
 import Input from "@/components/Input";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
@@ -12,7 +11,7 @@ interface NewTodoFormProps {
 }
 
 const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
-  const { addTodo } = useTodo();
+  const { addTodo } = useTodoStore();
 
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<1 | 2 | 3>(2);

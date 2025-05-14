@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useTodo } from "@/hooks/useTodo";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
