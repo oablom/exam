@@ -1,14 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { TodoActionsProps } from "@/types";
+import { useTodo } from "@/hooks/useTodo";
 
-const TodoActions: React.FC<TodoActionsProps> = ({
+interface Props {
+  selectedIds: string[];
+  onClear: () => void;
+  onDelete: (ids: string[]) => void;
+  onComplete: (ids: string[], value: boolean) => void;
+}
+
+const TodoActions: React.FC<Props> = ({
   selectedIds,
-  todos,
   onClear,
   onDelete,
   onComplete,
 }) => {
   const navigate = useNavigate();
+  const { todos } = useTodo();
 
   if (!selectedIds || selectedIds.length === 0) return null;
 
@@ -28,19 +35,16 @@ const TodoActions: React.FC<TodoActionsProps> = ({
         onClick={() => onComplete(selectedIds, newValue)}
         className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition"
       >
-        {allAreCompleted ? "↩ Ångra klarmarkering" : "✅ Klarmarkera"}
+        ✅ Mark as {newValue ? "Completed" : "Uncompleted"}
       </button>
       <button
-        onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
-        className="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
+        onClick={() => {
+          navigate("/focus", { state: { todos: selectedTodos } });
+          onClear();
+        }}
+        className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
       >
-        🎯 Fokusläge
-      </button>
-      <button
-        onClick={onClear}
-        className="text-sm text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-200"
-      >
-        Avbryt
+        🎯 Focus Mode
       </button>
     </div>
   );

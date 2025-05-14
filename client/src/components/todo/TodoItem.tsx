@@ -1,49 +1,46 @@
 import React from "react";
-import { TodoItemProps } from "@/types";
+import { Todo } from "@/types";
+import { useTodo } from "@/hooks/useTodo";
 
-const TodoItem: React.FC<TodoItemProps> = ({
-  todo: { id, title, completed, priority },
-  onToggle,
-  onDelete,
-  isSelected,
-}) => {
+interface TodoItemProps {
+  todo: Todo;
+  isSelected?: boolean;
+  small?: boolean;
+}
+
+const TodoItem: React.FC<TodoItemProps> = ({ todo, isSelected }) => {
+  const { toggleTodo, deleteTodo } = useTodo();
+
   return (
     <div
-      onClick={() => onToggle(id)}
+      onClick={() => toggleTodo(todo.id)}
       className={`flex items-center justify-between gap-4 px-4 py-3 rounded-2xl shadow-md transition-all duration-200 hover:cursor-pointer ${
-        completed ? "opacity-50 " : ""
+        todo.completed ? "opacity-50 " : ""
       } ${
         isSelected
           ? "ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/40"
           : "bg-white dark:bg-zinc-800"
-      } ${
-        priority === 1
-          ? "border-red-500"
-          : priority === 2
-          ? "border-yellow-500"
-          : priority === 3
-          ? "border-green-500"
-          : ""
       }`}
     >
       <div className="flex items-center gap-3">
         <span
           className={`w-5 h-5  border-2 shrink-0 transition ${
-            completed
+            todo.completed
               ? "bg-green-500 border-green-500"
               : "border-gray-400 hover:border-blue-500"
           } ${isSelected ? "border-blue-500" : ""}`}
         />
         <span className="text-base sm:text-lg font-medium text-zinc-800 dark:text-zinc-100 break-words">
-          {title}
+          {todo.title}
         </span>
-        <span className="text-sm text-zinc-500"></span>
       </div>
 
       <button
-        onClick={() => onDelete([id])}
-        className="text-zinc-400 hover:text-red-500 transition text-sm"
-        aria-label="Ta bort todo"
+        onClick={(e) => {
+          e.stopPropagation();
+          deleteTodo(todo.id);
+        }}
+        className="text-red-500 text-sm hover:underline"
       >
         ✖
       </button>

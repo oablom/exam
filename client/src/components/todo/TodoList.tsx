@@ -1,88 +1,83 @@
-import { useEffect, useState } from "react";
-import { VITE_API_URL } from "@/lib/api";
-import { Todo } from "@/types";
+import { useState } from "react";
+import { useTodo } from "@/hooks/useTodo";
 import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
 import NewTodoModal from "./NewTodoModal";
 import TodoActions from "./TodoActions";
 
 const TodoList = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const { todos, addTodo, deleteTodo, toggleTodo } = useTodo();
   const [priorityFilter, setPriorityFilter] = useState<1 | 2 | 3 | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoIds, setSelectedTodoIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchTodos = async () => {
-      const res = await fetch(`${VITE_API_URL}/api/todos`, {
-        credentials: "include",
-      });
-      const data = await res.json();
-      setTodos(data);
-    };
-
-    fetchTodos();
-  }, []);
 
   const filteredTodos = priorityFilter
     ? todos.filter((todo) => todo.priority === priorityFilter)
     : todos;
 
   const handleDelete = (ids: string[]) => {
-    setTodos((prev) => prev.filter((todo) => !ids.includes(todo.id)));
+    ids.forEach(deleteTodo);
     setSelectedTodoIds([]);
   };
 
-  const handleAdd = (todo: Todo) => {
-    setTodos((prev) => [...prev, todo]);
-  };
-
-  const handleComplete = (ids: string[], newValue: boolean) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        ids.includes(todo.id) ? { ...todo, completed: newValue } : todo
-      )
-    );
+  const handleComplete = (ids: string[], value: boolean) => {
+    ids.forEach((id) => {
+      const todo = todos.find((t) => t.id === id);
+      if (todo && todo.completed !== value) toggleTodo(id);
+    });
     setSelectedTodoIds([]);
   };
-
-  const toggleSelected = (id: string) => {
-    setSelectedTodoIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
-  const clearSelected = () => setSelectedTodoIds([]);
 
   return (
-    <div className="space-y-4">
-      <TodoActions
-        todos={todos}
-        selectedIds={selectedTodoIds}
-        onDelete={handleDelete}
-        onComplete={handleComplete}
-        onClear={clearSelected}
-      />
-
-      <div className="space-y-2">
-        {filteredTodos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onToggle={toggleSelected}
-            onDelete={handleDelete}
-            isSelected={selectedTodoIds.includes(todo.id)}
+    <section className="flex flex-col gap-4">
+      <div className="flex gap-2 justify-center">
+        {[1, 2, 3].map((p) => (
+          <Button
+            key={p}
+            label={p === 1 ? "🔴 High" : p === 2 ? "🟡 Medium" : "🟢 Low"}
+            onClick={() =>
+              setPriorityFilter(priorityFilter === p ? null : (p as 1 | 2 | 3))
+            }
+            outline={priorityFilter !== p}
+            small
           />
         ))}
       </div>
 
+      <TodoActions
+        selectedIds={selectedTodoIds}
+        onClear={() => setSelectedTodoIds([])}
+        onDelete={handleDelete}
+        onComplete={handleComplete}
+      />
+
+      <div className="flex flex-col gap-3">
+        {filteredTodos.map((todo) => (
+          <div
+            key={todo.id}
+            onClick={() =>
+              setSelectedTodoIds((prev) =>
+                prev.includes(todo.id)
+                  ? prev.filter((id) => id !== todo.id)
+                  : [...prev, todo.id]
+              )
+            }
+          >
+            <TodoItem
+              todo={todo}
+              isSelected={selectedTodoIds.includes(todo.id)}
+            />
+          </div>
+        ))}
+      </div>
+
+      <Button label="➕ Add Todo" onClick={() => setIsModalOpen(true)} />
       <NewTodoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onAdd={handleAdd}
+        onAdd={addTodo}
       />
-      <Button label="Ny Todo" onClick={() => setIsModalOpen(true)} />
-    </div>
+    </section>
   );
 };
 
