@@ -35,19 +35,39 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const { userId } = req as AuthRequest;
-  const { title, priority, estimatedTime, dueDate } = req.body;
+  const { title, priority, estimatedTime, dueDate, completed } = req.body;
 
-  const todo = await prisma.todo.create({
-    data: {
-      title,
-      userId,
-      priority,
-      estimatedTime,
-      dueDate: dueDate ? new Date(dueDate) : undefined,
-    },
+  console.log("📩 Todo-mottaget i backend:", {
+    title,
+    priority,
+    estimatedTime,
+    dueDate,
+    completed,
+    userId,
   });
 
-  res.status(201).json(todo);
+  const parsedDueDate =
+    dueDate && !isNaN(Date.parse(dueDate)) ? new Date(dueDate) : undefined;
+
+  try {
+    const todo = await prisma.todo.create({
+      data: {
+        title,
+        userId,
+        priority,
+        estimatedTime,
+        completed,
+        dueDate: parsedDueDate,
+      },
+    });
+
+    console.log("✅ Todo sparad:", todo);
+
+    res.status(201).json(todo);
+  } catch (err) {
+    console.error("🔥 Fel när todo skulle sparas:", err);
+    res.status(500).json({ error: "Kunde inte spara todo" });
+  }
 });
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {

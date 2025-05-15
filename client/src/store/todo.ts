@@ -20,6 +20,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     });
     const data = await res.json();
     set({ todos: data });
+    console.log("Fetched todos:", data);
   },
 
   addTodo: async (todo) => {
@@ -31,6 +32,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     });
     const newTodo = await res.json();
     set({ todos: [...get().todos, newTodo] });
+    console.log("Added todo:", newTodo);
   },
 
   deleteTodo: async (id) => {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
@@ -15,6 +15,13 @@ const TodoList = () => {
   const filteredTodos = priorityFilter
     ? todos.filter((todo) => todo.priority === priorityFilter)
     : todos;
+
+  const allIds = filteredTodos.map((todo) => todo.id);
+  const isAllSelected = selectedTodoIds.length === allIds.length;
+
+  const handleSelectAll = () => {
+    setSelectedTodoIds(isAllSelected ? [] : allIds);
+  };
 
   const handleDelete = async (ids: string[]) => {
     console.log("🔁 Deleting todos:", ids);
@@ -35,6 +42,10 @@ const TodoList = () => {
     setSelectedTodoIds([]);
   };
 
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
   return (
     <section className="flex flex-col gap-4">
       <div className="flex gap-2 justify-center">
@@ -49,6 +60,16 @@ const TodoList = () => {
             small
           />
         ))}
+      </div>
+      <div className="flex justify-center">
+        {todos.length > 0 && (
+          <Button
+            label={isAllSelected ? "❌ Avmarkera alla" : "✔️ Markera alla"}
+            onClick={handleSelectAll}
+            outline
+            small
+          />
+        )}
       </div>
 
       <TodoActions

@@ -4,6 +4,7 @@ import { TodoActionsProps } from "@/types";
 const TodoActions: React.FC<TodoActionsProps> = ({
   selectedIds,
   todos,
+
   onClear,
   onDelete,
   onComplete,
