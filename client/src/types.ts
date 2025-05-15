@@ -71,6 +71,13 @@ export interface TodoActionsProps {
   onClear: () => void;
   onDelete: (ids: string[]) => void;
   onComplete: (ids: string[], newValue: boolean) => void;
+  extraButton?: ExtraButtonProps;
+}
+
+export interface ExtraButtonProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
 }
 
 export interface LoginModalStore {

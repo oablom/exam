@@ -4,17 +4,51 @@ import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
 import NewTodoModal from "./NewTodoModal";
 import TodoActions from "./TodoActions";
+import FocusModal from "../modals/FocusModal";
 import { useTodoStore } from "@/store/todo";
 
 const TodoList = () => {
   const { todos, deleteTodo, toggleTodo, fetchTodos } = useTodoStore();
-  const [priorityFilter, setPriorityFilter] = useState<1 | 2 | 3 | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTodoIds, setSelectedTodoIds] = useState<string[]>([]);
+  const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
+  const [isFocusOpen, setIsFocusOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
-  const filteredTodos = priorityFilter
-    ? todos.filter((todo) => todo.priority === priorityFilter)
-    : todos;
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const isToday = (dateString?: string) => {
+    if (!dateString) return false;
+    const today = new Date().toISOString().split("T")[0];
+    return dateString.startsWith(today);
+  };
+
+  const getSmartTodayTodos = () => {
+    const todayTodos = todos.filter((t) => isToday(t.dueDate));
+    if (todayTodos.length >= 4) return todayTodos;
+
+    const others = todos
+      .filter((t) => !isToday(t.dueDate))
+      .sort((a, b) => {
+        const dateA = new Date(a.dueDate || Infinity).getTime();
+        const dateB = new Date(b.dueDate || Infinity).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        return a.priority - b.priority;
+      });
+
+    return [...todayTodos, ...others.slice(0, 4 - todayTodos.length)];
+  };
+
+  const filteredTodos = showAll
+    ? [...todos].sort((a, b) => {
+        const dateA = new Date(a.dueDate || Infinity).getTime();
+        const dateB = new Date(b.dueDate || Infinity).getTime();
+        if (dateA !== dateB) return dateA - dateB;
+        return a.priority - b.priority;
+      })
+    : getSmartTodayTodos();
 
   const allIds = filteredTodos.map((todo) => todo.id);
   const isAllSelected = selectedTodoIds.length === allIds.length;
@@ -24,7 +58,6 @@ const TodoList = () => {
   };
 
   const handleDelete = async (ids: string[]) => {
-    console.log("🔁 Deleting todos:", ids);
     for (const id of ids) {
       await deleteTodo(id);
     }
@@ -42,27 +75,24 @@ const TodoList = () => {
     setSelectedTodoIds([]);
   };
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+  const handleStartFocus = () => {
+    const first = todos.find((t) => selectedTodoIds.includes(t.id));
+    if (first) {
+      setFocusTodo(first);
+      setIsFocusOpen(true);
+    }
+  };
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex gap-2 justify-center">
-        {[1, 2, 3].map((p) => (
-          <Button
-            key={p}
-            label={p === 1 ? "🔴 High" : p === 2 ? "🟡 Medium" : "🟢 Low"}
-            onClick={() =>
-              setPriorityFilter(priorityFilter === p ? null : (p as 1 | 2 | 3))
-            }
-            outline={priorityFilter !== p}
-            small
-          />
-        ))}
-      </div>
-      <div className="flex justify-center">
-        {todos.length > 0 && (
+      <div className="flex justify-center gap-2">
+        <Button
+          label={showAll ? "🔙 Visa dagens todos" : "📋 Visa alla todos"}
+          onClick={() => setShowAll(!showAll)}
+          outline
+          small
+        />
+        {filteredTodos.length > 0 && (
           <Button
             label={isAllSelected ? "❌ Avmarkera alla" : "✔️ Markera alla"}
             onClick={handleSelectAll}
@@ -71,7 +101,6 @@ const TodoList = () => {
           />
         )}
       </div>
-
       <TodoActions
         todos={todos}
         selectedIds={selectedTodoIds}
@@ -79,11 +108,11 @@ const TodoList = () => {
         onDelete={handleDelete}
         onComplete={handleComplete}
       />
-
       <div className="flex flex-col gap-3">
         {filteredTodos.map((todo) => (
           <div
             key={todo.id}
+            className="relative"
             onClick={() =>
               setSelectedTodoIds((prev) =>
                 prev.includes(todo.id)
@@ -106,6 +135,16 @@ const TodoList = () => {
       <NewTodoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      <FocusModal
+        todo={focusTodo}
+        isOpen={isFocusOpen}
+        onClose={() => setIsFocusOpen(false)}
+        onComplete={(id) => {
+          toggleTodo(id);
+          setIsFocusOpen(false);
+        }}
       />
     </section>
   );

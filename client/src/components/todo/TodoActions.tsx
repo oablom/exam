@@ -1,48 +1,60 @@
 import { useNavigate } from "react-router-dom";
 import { TodoActionsProps } from "@/types";
+import Button from "@/components/Button";
+import { useEffect, useState } from "react";
 
 const TodoActions: React.FC<TodoActionsProps> = ({
   selectedIds,
   todos,
-
   onClear,
   onDelete,
   onComplete,
 }) => {
   const navigate = useNavigate();
+  const [isSelected, setIsSelected] = useState(false);
 
-  if (!selectedIds || selectedIds.length === 0) return null;
+  useEffect(() => {
+    if (selectedIds.length > 0) {
+      setIsSelected(true);
+    } else {
+      setIsSelected(false);
+    }
+  }, [selectedIds]);
 
   const selectedTodos = todos.filter((todo) => selectedIds.includes(todo.id));
   const allAreCompleted = selectedTodos.every((todo) => todo.completed);
   const newValue = !allAreCompleted;
 
   return (
-    <div className="flex flex-wrap gap-3 justify-center p-3 bg-zinc-100 dark:bg-zinc-700 rounded-2xl shadow-inner">
-      <button
+    <div className="flex  justify- gap-5 px-2">
+      <Button
+        label={`🗑 Radera (${selectedIds.length})`}
         onClick={() => onDelete(selectedIds)}
-        className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
-      >
-        🗑 Radera ({selectedIds.length})
-      </button>
-      <button
+        outline
+        small
+        className={` ${isSelected ? "opacity-100" : "opacity-50"}`}
+      />
+      <Button
+        label={
+          selectedIds.length === 0
+            ? "✅ Klarmarkera"
+            : allAreCompleted
+            ? "↩ Ångra klarmarkering"
+            : "✅ Klarmarkera"
+        }
         onClick={() => onComplete(selectedIds, newValue)}
-        className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition"
-      >
-        {allAreCompleted ? "↩ Ångra klarmarkering" : "✅ Klarmarkera"}
-      </button>
-      <button
+        outline
+        small
+        className={` ${isSelected ? "opacity-100" : "opacity-50"} `}
+      />
+      <Button
+        label="🎯 Fokusläge"
         onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
-        className="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition"
-      >
-        🎯 Fokusläge
-      </button>
-      <button
-        onClick={onClear}
-        className="text-sm text-zinc-500 underline hover:text-zinc-800 dark:hover:text-zinc-200"
-      >
-        Avbryt
-      </button>
+        outline
+        small
+        className={` ${isSelected ? "opacity-100" : "opacity-50"}`}
+      />
+      {/* <Button label="❌ Avbryt" onClick={onClear} outline small /> */}
     </div>
   );
 };
