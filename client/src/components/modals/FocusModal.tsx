@@ -68,12 +68,16 @@ const FocusModal: React.FC<FocusModalProps> = ({
         </div>
       }
       footer={
-        <div className="flex justify-between items-center mt-4">
-          <Button label="Avbryt" onClick={onClose} outline />
-          <div className="flex gap-2">
-            <Button label="Start" onClick={handleStart} disabled={running} />
-            <Button label="Stop" onClick={handleStop} disabled={!running} />
-          </div>
+        <div className="flex flex-col gap-3 mt-4 w-full  items-center">
+          <Button
+            label={running ? "⏸ Pausa" : "▶ Starta"}
+            onClick={running ? handleStop : handleStart}
+            className={`w-full text-white font-semibold text-lg py-3 rounded-full ${
+              running
+                ? "bg-red-500 hover:bg-red-600"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          />
         </div>
       }
     />
