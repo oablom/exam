@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Todo } from "@/types";
-import Modal from "../modals/Modal";
+import Modal from "./Modal";
+import Button from "../Button";
 
 interface FocusModalProps {
   todo: Todo | null;
@@ -15,52 +16,64 @@ const FocusModal: React.FC<FocusModalProps> = ({
   onClose,
   onComplete,
 }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [active, setActive] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [running, setRunning] = useState(false);
 
+  // Load todo time when it changes
   useEffect(() => {
-    if (todo?.estimatedTime) {
-      setTimeLeft(todo.estimatedTime * 60); // convert min to sec
+    if (todo) {
+      setSecondsLeft((todo.estimatedTime ?? 0) * 60);
+      setRunning(false);
     }
   }, [todo]);
 
+  // Countdown
   useEffect(() => {
-    if (!active || timeLeft <= 0) return;
-    const interval = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(interval);
-  }, [active, timeLeft]);
+    if (!running) return;
+    if (secondsLeft === 0) {
+      if (todo) onComplete(todo.id);
+      setRunning(false);
+      return;
+    }
+    const intv = setInterval(() => {
+      setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
+    return () => clearInterval(intv);
+  }, [running, secondsLeft, todo, onComplete]);
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60)
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60)
       .toString()
       .padStart(2, "0");
-    const s = (seconds % 60).toString().padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
     return `${m}:${s}`;
   };
 
-  const handleDone = () => {
-    if (todo) onComplete(todo.id);
-    onClose();
-  };
+  const handleStart = () => setRunning(true);
+  const handleStop = () => setRunning(false);
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="🎯 Fokusläge"
-      actionLabel="Klar"
-      onSubmit={handleDone}
+      onSubmit={() => {}}
+      actionLabel=""
+      title={todo ? `Fokus: ${todo.title}` : "Fokus"}
       body={
-        <div className="space-y-4 text-center">
-          <h2 className="text-xl font-bold">{todo?.title}</h2>
-          <p className="text-zinc-500">Prioritet: {todo?.priority}</p>
-          <p className="text-2xl font-mono">{formatTime(timeLeft)}</p>
-          <button
-            onClick={() => setActive(!active)}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {active ? "Pausa" : "Starta"}
-          </button>
+        <div className="flex flex-col items-center gap-4 py-6">
+          <p className="text-6xl font-mono">{formatTime(secondsLeft)}</p>
+          <p className="text-sm text-zinc-500">
+            Klicka start för att börja nedräkningen
+          </p>
+        </div>
+      }
+      footer={
+        <div className="flex justify-between items-center mt-4">
+          <Button label="Avbryt" onClick={onClose} outline />
+          <div className="flex gap-2">
+            <Button label="Start" onClick={handleStart} disabled={running} />
+            <Button label="Stop" onClick={handleStop} disabled={!running} />
+          </div>
         </div>
       }
     />

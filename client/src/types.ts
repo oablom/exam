@@ -9,6 +9,7 @@ export interface ButtonProps {
   disabled?: boolean;
   outline?: boolean;
   small?: boolean;
+  className?: string;
 }
 
 export interface HeadingProps {
@@ -50,10 +51,10 @@ export interface ModalProps {
 }
 export interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
-
-  isSelected?: boolean;
+  isSelected: boolean;
+  onSelectToggle: (id: string) => void;
+  onDelete: (ids: string[]) => void;
+  onFocus: (todo: Todo) => void;
 }
 
 export interface Todo {
