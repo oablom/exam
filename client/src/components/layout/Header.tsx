@@ -1,6 +1,7 @@
 import { useAuth } from "@/store/auth";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
+import Button from "@/components/Button";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -29,18 +30,6 @@ const Header = () => {
             </svg>
           </span>
         </h1>
-        {/* 
-        <nav className="hidden md:flex space-x-6">
-          <a href="/" className="hover:text-sky-500 transition">
-            Hem
-          </a>
-          <a href="/about" className="hover:text-sky-500 transition">
-            Om oss
-          </a>
-          <a href="/contact" className="hover:text-sky-500 transition">
-            Kontakt
-          </a>
-        </nav> */}
 
         <div className="flex items-center space-x-4">
           {user ? (
@@ -48,27 +37,26 @@ const Header = () => {
               <span className="text-[16px] text-gray-600 dark:text-gray-300">
                 {`${user.name?.split(" ")[0]}'s todolist!`}
               </span>
-              <button
+              <Button
+                label="Logga ut"
                 onClick={logout}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition w-full md:w-auto"
-              >
-                Logga ut
-              </button>
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition w-full md:w-auto"
+                outline={false}
+              />
             </>
           ) : (
             <>
-              <button
+              <Button
+                label="Logga in"
                 onClick={loginModal.onOpen}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-              >
-                Logga in
-              </button>
-              <button
+                outline={false}
+              />
+              <Button
+                label="Registrera"
                 onClick={registerModal.onOpen}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
-              >
-                Registrera
-              </button>
+                outline
+                className="flex-1 bg-white text-zinc-800 font-medium py-3 rounded-full border-2 border-zinc-500 hover:  hover:bg-indigo-500 hover:border-indigo-500 hover:opacity-80 hover:text-white"
+              />
             </>
           )}
         </div>

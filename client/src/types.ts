@@ -55,6 +55,7 @@ export interface TodoItemProps {
   onSelectToggle: (id: string) => void;
   onDelete: (ids: string[]) => void;
   onFocus: (todo: Todo) => void;
+  onEdit: (todo: Todo) => void;
 }
 
 export interface Todo {

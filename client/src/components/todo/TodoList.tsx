@@ -3,10 +3,10 @@ import { Plus } from "lucide-react";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import Button from "@/components/Button";
-import NewTodoModal from "./NewTodoModal";
 import TodoActions from "./TodoActions";
 import FocusModal from "../modals/FocusModal";
 import { useTodoStore } from "@/store/todo";
+import TodoModal from "./TodoModal";
 
 // ...imports
 const TodoList = () => {
@@ -16,6 +16,10 @@ const TodoList = () => {
   const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [modal, setModal] = useState<{
+    mode: "new" | "edit";
+    todo?: Todo;
+  } | null>(null);
 
   useEffect(() => {
     fetchTodos();
@@ -62,6 +66,12 @@ const TodoList = () => {
     }
   };
 
+  const baseButton =
+    "text-xs border-2 transition rounded-full px-2 py-1 active:scale-95";
+
+  const activeStyle = "bg-blue-600 text-white border-blue-600";
+  const inactiveStyle = "bg-gray-100 text-gray-700 hover:bg-gray-200";
+
   function getSmartTodayTodos(): Todo[] {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -97,25 +107,11 @@ const TodoList = () => {
       <section className="flex flex-col gap-4 w-full max-w-md px-4 pb-28 sm:pb-4">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-hand">Mina Todos</h2>
-          <div className="flex gap-2">
-            <Button
-              label="Idag"
-              onClick={() => setShowAll(false)}
-              small
-              outline={showAll}
-            />
-            <Button
-              label="Alla"
-              onClick={() => setShowAll(true)}
-              small
-              outline={!showAll}
-            />
-          </div>
+          <h2 className="text-xl font-hand">Dagens prioriterade Todos!,</h2>
         </div>
 
         {filteredTodos.length > 1 && (
-          <div className="flex justify-start pr-2 -mt-2">
+          <div className="flex justify-between pr-2 -mt-2">
             <button
               onClick={handleToggleAll}
               className="text-xs text-gray-700 border-2 p-[1px]   transition rounded-full px-2 py-1 bg-gray-100 hover:bg-gray-200 active:scale-95"
@@ -124,6 +120,26 @@ const TodoList = () => {
                 ? "Avmarkera alla"
                 : "Markera alla"}
             </button>
+            <div className="flex gap-2">
+              <div className="flex gap-2">
+                <button
+                  className={`${baseButton} ${
+                    !showAll ? activeStyle : inactiveStyle
+                  }`}
+                  onClick={() => setShowAll(false)}
+                >
+                  Idag
+                </button>
+                <button
+                  className={`${baseButton} ${
+                    showAll ? activeStyle : inactiveStyle
+                  }`}
+                  onClick={() => setShowAll(true)}
+                >
+                  Alla
+                </button>
+              </div>
+            </div>
           </div>
         )}
         {/* Bulk actions */}
@@ -146,6 +162,7 @@ const TodoList = () => {
             onSelectToggle={handleSelectToggle}
             onDelete={handleDelete}
             onFocus={handleOpenFocus}
+            onEdit={(t) => setModal({ mode: "edit", todo: t })}
           />
         ))}
       </section>
@@ -153,7 +170,7 @@ const TodoList = () => {
       {/* FAB för mobil */}
       <button
         aria-label="Lägg till todo"
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => setModal({ mode: "new" })}
         className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors sm:hidden"
       >
         <Plus size={28} className="mx-auto" />
@@ -161,13 +178,15 @@ const TodoList = () => {
 
       {/* Add-knapp på desktop */}
       <div className="hidden sm:flex justify-center mt-4">
-        <Button label="➕ Add Todo" onClick={() => setIsModalOpen(true)} />
+        <Button label="➕ Add Todo" onClick={() => setModal({ mode: "new" })} />
       </div>
 
       {/* Modaler */}
-      <NewTodoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      <TodoModal
+        isOpen={!!modal}
+        mode={modal?.mode as "new" | "edit"}
+        todo={modal?.todo}
+        onClose={() => setModal(null)}
       />
       <FocusModal
         todo={focusTodo}

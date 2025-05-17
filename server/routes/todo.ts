@@ -71,14 +71,28 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
 });
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
-  const { title, completed, priority, estimatedTime, dueDate } = req.body;
+  try {
+    const { title, completed, priority, estimatedTime, dueDate } = req.body;
 
-  const todo = await prisma.todo.update({
-    where: { id: req.params.id },
-    data: { title, completed, priority, estimatedTime, dueDate },
-  });
+    const parsedDueDate =
+      dueDate && !isNaN(Date.parse(dueDate)) ? new Date(dueDate) : undefined;
 
-  res.json(todo);
+    const todo = await prisma.todo.update({
+      where: { id: req.params.id },
+      data: {
+        title,
+        completed,
+        priority,
+        estimatedTime,
+        dueDate: parsedDueDate,
+      },
+    });
+
+    res.json(todo);
+  } catch (err) {
+    console.error("❌ PATCH error:", err);
+    res.status(500).json({ error: "Kunde inte uppdatera todo" });
+  }
 });
 
 router.delete("/:id", authenticate, async (req: Request, res: Response) => {

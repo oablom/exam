@@ -75,7 +75,7 @@ const LoginModal = () => {
             loginModal.onClose();
             registerModal.onOpen();
           }}
-          className="text-sky-500 cursor-pointer hover:underline"
+          className="text-indigo-500 cursor-pointer hover:underline"
         >
           Skapa konto
         </span>

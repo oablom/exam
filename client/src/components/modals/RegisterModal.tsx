@@ -104,7 +104,7 @@ const RegisterModal = () => {
           Har du redan ett konto?
           <span
             onClick={toggle}
-            className="text-sky-500 cursor-pointer hover:underline ml-1"
+            className="text-indigo-500 cursor-pointer hover:underline ml-1"
           >
             Logga in
           </span>
