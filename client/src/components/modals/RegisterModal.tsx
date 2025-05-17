@@ -93,15 +93,6 @@ const RegisterModal = () => {
         register={register}
         errors={errors}
       />
-      <div className="flex items-center gap-2">
-        <input
-          id="isAdmin"
-          type="checkbox"
-          disabled={isLoading}
-          {...register("isAdmin")}
-        />
-        <label htmlFor="isAdmin">Admin-konto</label>
-      </div>
     </div>
   );
 
