@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import { Todo } from "@/types";
 import Modal from "./Modal";
-import Button from "../Button";
+import Button from "../layout/Button";
 
 /**
  * VisualTimer
@@ -201,7 +201,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
         </div>
       }
       footer={
-        <div className="flex flex-col gap-3 w-full items-center">
+        <div className="flex flex-col gap-3 w-full items-center max-w-md m-auto">
           <Button
             label={running ? "⏸ Pausa" : "▶ Starta"}
             onClick={() => setRunning((v) => !v)}
@@ -215,13 +215,15 @@ const FocusModal: React.FC<FocusModalProps> = ({
           <div className="flex flex-row gap-2 w-full max-w-md">
             <Button
               label="Reset"
+              outline
               onClick={reset}
               className="flex-1 bg-white hover:bg-zinc-300 text-zinc-800 font-medium py-3 rounded-full border-2 border-dotted border-zinc-600"
             />
             <Button
-              label=" Klart!"
+              label="Klart!"
               onClick={finishEarly}
-              className="flex-1 bg-white text-[#333333] font-medium py-3 rounded-full border-2 border-zinc-600"
+              outline
+              className="flex-1 bg-white text-zinc-800 font-medium py-3 rounded-full border-2 border-zinc-500 hover:bg-green-700 hover:border-green-700 hover:text-white"
             />
           </div>
         </div>

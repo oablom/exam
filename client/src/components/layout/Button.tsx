@@ -32,7 +32,7 @@ const Button: React.FC<ButtonProps> = ({
   ${
     outline
       ? "bg-white border-black text-black"
-      : "bg-blue-600 border-blue-600 text-white"
+      : "bg-indigo-500 border-indigo-500 text-white"
   }
   ${
     small

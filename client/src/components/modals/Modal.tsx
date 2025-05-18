@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { IoMdClose } from "react-icons/io";
-import Button from "../Button";
+import Button from "../layout/Button";
 import { ModalProps } from "@/types";
 
 const Modal: React.FC<ModalProps> = ({

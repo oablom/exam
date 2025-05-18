@@ -15,7 +15,7 @@ const Home = () => {
   }
   return (
     <div className="w-full px-4 max-w-md flex flex-col gap-4">
-      <h1 className="text-center text-xl font-bold">Fokuslistan topp 📝</h1>
+      {/* <h1 className="text-center text-xl font-bold">Fokuslistan topp 📝</h1> */}
       <TodoList />
     </div>
   );

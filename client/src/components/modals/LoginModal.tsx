@@ -3,7 +3,7 @@ import { useAuth } from "@/store/auth";
 import useLoginModal from "@/hooks/useLoginModal";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import Modal from "./Modal";
-import Input from "../Input";
+import Input from "../layout/Input";
 import Heading from "../Heading";
 import toast from "react-hot-toast";
 import { VITE_API_URL } from "@/lib/api";
@@ -75,7 +75,7 @@ const LoginModal = () => {
             loginModal.onClose();
             registerModal.onOpen();
           }}
-          className="text-sky-500 cursor-pointer hover:underline"
+          className="text-indigo-500 cursor-pointer hover:underline"
         >
           Skapa konto
         </span>

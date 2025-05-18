@@ -1,3 +1,4 @@
+// ✅ Skapa fil: src/store/todo.ts
 import { create } from "zustand";
 import { Todo } from "@/types";
 
@@ -9,6 +10,7 @@ interface TodoState {
   addTodo: (todo: Omit<Todo, "id">) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
   toggleTodo: (id: string) => Promise<void>;
+  updateTodo: (id: string, updates: Partial<Todo>) => Promise<void>;
 }
 
 export const useTodoStore = create<TodoState>((set, get) => ({
@@ -20,7 +22,6 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     });
     const data = await res.json();
     set({ todos: data });
-    console.log("Fetched todos:", data);
   },
 
   addTodo: async (todo) => {
@@ -32,7 +33,19 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     });
     const newTodo = await res.json();
     set({ todos: [...get().todos, newTodo] });
-    console.log("Added todo:", newTodo);
+  },
+
+  updateTodo: async (id: string, updates: Partial<Todo>) => {
+    const res = await fetch(`${API_URL}/api/todos/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(updates),
+    });
+    const updated = await res.json();
+    set({
+      todos: get().todos.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+    });
   },
 
   deleteTodo: async (id) => {
