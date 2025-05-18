@@ -3,9 +3,9 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        hand: ['"Patrick Hand"', "cursive"],
-      },
+      // fontFamily: {
+      //   hand: ['"Patrick Hand"', "cursive"],
+      // },
       colors: {
         scrapPink: "#FFD3DA",
         scrapBlue: "#D0EFFF",

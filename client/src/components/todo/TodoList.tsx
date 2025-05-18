@@ -220,7 +220,7 @@ const TodoList: React.FC = () => {
           />
         )}
 
-        {completedTodos.length > 0 && (
+        {completedTodos.length > 0 && view !== "prio" && (
           <TodoSection
             title="✅ Klart"
             todos={completedTodos}
