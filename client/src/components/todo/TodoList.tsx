@@ -33,6 +33,11 @@ const TodoList: React.FC = () => {
     todo?: Todo;
   } | null>(null);
 
+  const handleStartFocus = (todo: Todo) => {
+    setFocusTodo(todo);
+    setIsFocusOpen(true);
+  };
+
   useEffect(() => {
     void fetchTodos();
   }, [fetchTodos]);
@@ -70,7 +75,7 @@ const TodoList: React.FC = () => {
   today.setHours(0, 0, 0, 0);
 
   const dueToday = todos.filter((t) => {
-    if (!t.dueDate || t.completed || t.isFocus) return false;
+    if (!t.dueDate || t.completed) return false;
     const d = new Date(t.dueDate);
     d.setHours(0, 0, 0, 0);
     return d.getTime() === today.getTime();
@@ -109,22 +114,27 @@ const TodoList: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex justify-between items-center mb-2 px-2">
-          <button
-            onClick={() =>
-              setSelectedIds((prev) =>
-                prev.length === todos.length ? [] : todos.map((x) => x.id)
-              )
-            }
-            className={`${baseBtn} ${
-              selectedIds.length === todos.length ? activeBtn : inactiveBtn
-            }`}
-          >
-            {selectedIds.length === todos.length
-              ? "Avmarkera alla"
-              : "Markera alla"}
-          </button>
-
+        <div
+          className={`flex ${
+            todos.length > 0 ? "justify-between" : "justify-end"
+          } items-center mb-2 px-2`}
+        >
+          {todos.length > 0 && (
+            <button
+              onClick={() =>
+                setSelectedIds((prev) =>
+                  prev.length === todos.length ? [] : todos.map((x) => x.id)
+                )
+              }
+              className={`${baseBtn} ${
+                selectedIds.length === todos.length ? activeBtn : inactiveBtn
+              }`}
+            >
+              {selectedIds.length === todos.length
+                ? "Avmarkera alla"
+                : "Markera alla"}
+            </button>
+          )}
           <div className="flex gap-2">
             <button
               onClick={() => setView("today")}
@@ -169,7 +179,7 @@ const TodoList: React.FC = () => {
               todos={dueToday}
               selectedIds={selectedIds}
               onEdit={(t) => setModal({ mode: "edit", todo: t })}
-              onFocus={setFocusTodo}
+              onFocus={handleStartFocus}
               onSelectToggle={handleSelectToggle}
               onDelete={handleDelete}
             />
@@ -178,7 +188,7 @@ const TodoList: React.FC = () => {
               todos={overdue}
               selectedIds={selectedIds}
               onEdit={(t) => setModal({ mode: "edit", todo: t })}
-              onFocus={setFocusTodo}
+              onFocus={handleStartFocus}
               onSelectToggle={handleSelectToggle}
               onDelete={handleDelete}
             />
@@ -191,7 +201,7 @@ const TodoList: React.FC = () => {
             todos={focusTodos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
-            onFocus={setFocusTodo}
+            onFocus={handleStartFocus}
             onSelectToggle={handleSelectToggle}
             onDelete={handleDelete}
             onToggleFocus={handleToggleFocus}
@@ -204,7 +214,7 @@ const TodoList: React.FC = () => {
             todos={todos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
-            onFocus={setFocusTodo}
+            onFocus={handleStartFocus}
             onSelectToggle={handleSelectToggle}
             onDelete={handleDelete}
           />
