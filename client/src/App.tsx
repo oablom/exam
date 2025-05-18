@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "@/pages/Home";
 import FocusPage from "@/pages/FocusPage";
-import Header from "@/components/layout/Header";
+import Header from "@/components/layout/header/Header";
 import LoginModal from "@/components/modals/LoginModal";
 import RegisterModal from "@/components/modals/RegisterModal";
 import InstallPrompt from "@/components/InstallPrompt";
@@ -9,6 +10,10 @@ import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
 
 import BackendStatus from "./system/BackendStatus";
+
+useEffect(() => {
+  document.documentElement.classList.remove("dark");
+}, []);
 
 const App = () => {
   return (
