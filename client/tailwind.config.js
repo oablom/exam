@@ -4,7 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        hand: ['"Patrick Hand"', "cursive"],
+        sans: ["'Atkinson Hyperlegible'", "sans-serif"],
+        hand: ["'Quicksand'", "sans-serif"],
       },
       colors: {
         scrapPink: "#FFD3DA",

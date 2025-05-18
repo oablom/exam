@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: "Patrick Hand SC", cursive;
+html {
+  @apply text-zinc-800 dark:text-zinc-100 bg-white dark:bg-zinc-900 font-sans;
 }

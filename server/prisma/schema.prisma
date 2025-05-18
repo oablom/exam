@@ -28,4 +28,5 @@ model Todo {
   dueDate        DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  isFocus      Boolean  @default(false)
 }

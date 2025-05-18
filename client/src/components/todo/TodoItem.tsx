@@ -1,54 +1,75 @@
+// ------------------------------------------------------------
+// TodoItem.tsx  – Hel ersättning
+// ------------------------------------------------------------
 import React, { useState } from "react";
-import { CheckCircle, Circle, Trash2 } from "lucide-react";
+import { CheckCircle, Circle, Pencil, Play } from "lucide-react";
 import { TodoItemProps } from "@/types";
+import Button from "@/components/layout/Button";
 
-// Helpers ----------------------------------------------
+// Label helpers
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
 
-const getDeadlineLabel = (iso?: string) => {
-  if (!iso) return "Ingen";
-  const date = new Date(iso);
-
+/* Return TRUE om todo har deadline som är passerad */
+const isOverdue = (todo: TodoItemProps["todo"]): boolean => {
+  if (!todo.dueDate || todo.completed) return false;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const target = new Date(date);
+  const target = new Date(todo.dueDate);
   target.setHours(0, 0, 0, 0);
+  return target.getTime() < today.getTime();
+};
 
-  const diffMs = target.getTime() - today.getTime();
-  const dayMs = 86_400_000;
-
+const deadlineLabel = (iso?: string) => {
+  if (!iso) return "Ingen";
+  const date = new Date(iso);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = date.setHours(0, 0, 0, 0) - today.getTime();
+  const day = 86_400_000;
   if (diffMs === 0) return "Idag";
-  if (diffMs === dayMs) return "Imorgon";
-  if (diffMs > 0 && diffMs <= 6 * dayMs) return "Den här veckan";
-  if (diffMs > 6 * dayMs && diffMs <= 13 * dayMs) return "Nästa vecka";
-
+  if (diffMs === day) return "Imorgon";
+  if (diffMs > 0 && diffMs <= 6 * day) return "Den här veckan";
+  if (diffMs > 6 * day && diffMs <= 13 * day) return "Nästa vecka";
   return date.toLocaleDateString("sv-SE");
 };
-// ------------------------------------------------------
 
 const TodoItem: React.FC<TodoItemProps> = ({
-  todo: { id, title, completed, priority, estimatedTime, dueDate },
+  todo,
   isSelected,
   onSelectToggle,
-  onDelete,
+  onEdit,
   onFocus,
+  onToggleFocus,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { id, title, completed, priority, estimatedTime, dueDate } = todo;
+
+  const priorityBorder =
+    priority === 1
+      ? "border-red-500"
+      : priority === 2
+      ? "border-orange-400"
+      : "border-yellow-300";
+
+  const overdue = isOverdue(todo);
 
   return (
     <div
-      onClick={() => setIsOpen((p) => !p)}
-      className={`flex flex-col gap-2 p-4 rounded-2xl shadow-md transition-all duration-200
-        hover:cursor-pointer focus-visible:outline-none
-        ${completed ? "opacity-50" : ""}
-        ${
-          isSelected
-            ? "ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/40"
-            : "bg-white dark:bg-zinc-800"
-        }`}
+      onClick={() => setOpen((p) => !p)}
+      className={`flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
+      hover:shadow-lg hover:scale-[1.01] bg-white dark:bg-zinc-800 hover:bg-indigo-50
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+      
+      ${
+        isSelected
+          ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
+          : ""
+      }
+      ${overdue ? "bg-red-50 dark:bg-red-900/40" : ""}
+      border-l-[4px] ${priorityBorder}`}
     >
-      {/* Top row */}
+      {/* ─── Top row ──────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         {/* Checkbox */}
         <div
@@ -56,75 +77,83 @@ const TodoItem: React.FC<TodoItemProps> = ({
             e.stopPropagation();
             onSelectToggle(id);
           }}
-          className="shrink-0 cursor-pointer select-none"
+          className="shrink-0 cursor-pointer"
         >
           {isSelected ? (
-            <CheckCircle size={26} className="text-blue-500" />
+            <CheckCircle size={28} className="text-indigo-500" />
           ) : (
-            <Circle size={26} />
+            <Circle size={28} />
           )}
         </div>
 
         {/* Title */}
         <p
-          className={`flex-1 mx-3 font-semibold text-lg truncate ${
-            completed ? "line-through" : ""
-          }`}
+          className={`flex-1 mx-3 font-semibold text-lg truncate 
+          
+          `}
         >
           {title}
         </p>
 
-        {/* Delete */}
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete([id]);
-          }}
-          className="ml-2 shrink-0 text-zinc-400 hover:text-red-500 cursor-pointer transition-colors hover:animate-wiggle"
-        >
-          <Trash2 size={20} />
-        </div>
+        {/* Mini‑actions när raden är stängd */}
+        {!open && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(todo);
+              }}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-indigo-100"
+              aria-label="Redigera"
+            >
+              <Pencil size={22} className="text-indigo-600" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onFocus(todo);
+              }}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-100"
+              aria-label="Starta"
+            >
+              <Play size={22} className="text-green-600" />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Expanded */}
-      {isOpen && (
-        <div className="flex flex-wrap gap-3 text-sm text-zinc-600 dark:text-zinc-300 ml-8">
-          <span className="flex items-center gap-1">
-            📌 <span className="font-medium">Prio:</span>{" "}
-            {priorityLabel(priority)}
-          </span>
-
-          {estimatedTime !== undefined && (
-            <span className="flex items-center gap-1">
-              ⏱️ <span className="font-medium">Tid:</span> {estimatedTime} min
+      {/* ─── Expanded content ────────────────────────────────── */}
+      {open && (
+        <>
+          <div className="flex flex-wrap gap-3 text-sm text-zinc-600 dark:text-zinc-300 ml-8">
+            <span>
+              📌 <b>Prio:</b> {priorityLabel(priority)}
             </span>
-          )}
+            {estimatedTime !== undefined && (
+              <span>
+                ⏱️ <b>Tid:</b> {estimatedTime} min
+              </span>
+            )}
+            {dueDate && (
+              <span>
+                📅 <b>Deadline:</b> {deadlineLabel(dueDate)}
+              </span>
+            )}
+          </div>
 
-          {dueDate && (
-            <span className="flex items-center gap-1">
-              📅 <span className="font-medium">Deadline:</span>{" "}
-              {getDeadlineLabel(dueDate)}
-            </span>
-          )}
-          {/* <div className="flex justify-center w-full"> */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onFocus({
-                id,
-                title,
-                completed,
-                priority,
-                estimatedTime,
-                dueDate,
-              });
-            }}
-            className=" m-auto px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+          <div
+            className="flex gap-2 justify-center mt-4"
+            onClick={(e) => e.stopPropagation()}
           >
-            Starta task!
-          </button>
-          {/* </div> */}
-        </div>
+            <Button label="Starta" onClick={() => onFocus(todo)} />
+            <Button
+              outline
+              label="Redigera"
+              onClick={() => onEdit(todo)}
+              className="border-zinc-600"
+            />
+          </div>
+        </>
       )}
     </div>
   );

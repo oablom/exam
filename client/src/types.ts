@@ -55,6 +55,8 @@ export interface TodoItemProps {
   onSelectToggle: (id: string) => void;
   onDelete: (ids: string[]) => void;
   onFocus: (todo: Todo) => void;
+  onEdit: (todo: Todo) => void;
+  onToggleFocus?: (todo: Todo) => void;
 }
 
 export interface Todo {
@@ -64,6 +66,7 @@ export interface Todo {
   priority: 1 | 2 | 3;
   estimatedTime?: number;
   dueDate?: string;
+  isFocus?: boolean;
 }
 
 export interface TodoActionsProps {
@@ -73,6 +76,7 @@ export interface TodoActionsProps {
   onDelete: (ids: string[]) => void;
   onComplete: (ids: string[], newValue: boolean) => void;
   extraButton?: ExtraButtonProps;
+  onAddToFocus: (ids: string[]) => void;
 }
 
 export interface ExtraButtonProps {

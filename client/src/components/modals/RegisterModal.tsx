@@ -4,8 +4,8 @@ import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Modal from "./Modal";
 import Heading from "../Heading";
-import Input from "../Input";
-import Button from "../Button";
+import Input from "../layout/Input";
+import Button from "../layout/Button";
 import toast from "react-hot-toast";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
@@ -104,7 +104,7 @@ const RegisterModal = () => {
           Har du redan ett konto?
           <span
             onClick={toggle}
-            className="text-sky-500 cursor-pointer hover:underline ml-1"
+            className="text-indigo-500 cursor-pointer hover:underline ml-1"
           >
             Logga in
           </span>
