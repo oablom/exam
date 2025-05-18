@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { CheckCircle, Circle, Pencil, Play } from "lucide-react";
 import { TodoItemProps } from "@/types";
-import Button from "@/components/Button";
+import Button from "@/components/layout/Button";
 
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";

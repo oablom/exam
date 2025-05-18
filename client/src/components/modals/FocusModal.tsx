@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import { Todo } from "@/types";
 import Modal from "./Modal";
-import Button from "../Button";
+import Button from "../layout/Button";
 
 /**
  * VisualTimer

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { TodoActionsProps } from "@/types";
-import Button from "@/components/Button";
+import Button from "@/components/layout/Button";
 import { useEffect, useState } from "react";
 
 const TodoActions: React.FC<TodoActionsProps> = ({
@@ -9,6 +9,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
   onClear,
   onDelete,
   onComplete,
+  onAddToFocus,
 }) => {
   const navigate = useNavigate();
   const [isSelected, setIsSelected] = useState(false);
@@ -20,6 +21,8 @@ const TodoActions: React.FC<TodoActionsProps> = ({
       setIsSelected(false);
     }
   }, [selectedIds]);
+
+  if (selectedIds.length === 0) return null;
 
   const selectedTodos = todos.filter((todo) => selectedIds.includes(todo.id));
   const allAreCompleted = selectedTodos.every((todo) => todo.completed);
@@ -49,7 +52,8 @@ const TodoActions: React.FC<TodoActionsProps> = ({
       />
       <Button
         label="🎯 Fokusläge"
-        onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
+        // onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
+        onClick={() => onAddToFocus(selectedIds)}
         outline
         small
         className={` ${isSelected ? "opacity-100" : "opacity-50"}`}

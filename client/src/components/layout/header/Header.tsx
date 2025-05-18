@@ -1,7 +1,7 @@
 import { useAuth } from "@/store/auth";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
-import Button from "@/components/Button";
+import Button from "@/components/layout/Button";
 import WelcomeLabel from "./WelcomeLabel";
 import { Menu } from "lucide-react";
 import { useState } from "react";
