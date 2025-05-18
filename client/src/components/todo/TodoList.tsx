@@ -7,6 +7,7 @@ import TodoActions from "./TodoActions";
 import FocusModal from "../modals/FocusModal";
 import { useTodoStore } from "@/store/todo";
 import TodoModal from "./TodoModal";
+import { CalendarDays, CalendarRange } from "lucide-react";
 
 // ...imports
 const TodoList = () => {
@@ -69,7 +70,7 @@ const TodoList = () => {
   const baseButton =
     "text-xs border-2 transition rounded-full px-2 py-1 active:scale-95";
 
-  const activeStyle = "bg-blue-600 text-white border-blue-600";
+  const activeStyle = "bg-indigo-600 text-white border-indigo-600";
   const inactiveStyle = "bg-gray-100 text-gray-700 hover:bg-gray-200";
 
   function getSmartTodayTodos(): Todo[] {
@@ -114,7 +115,7 @@ const TodoList = () => {
           <div className="flex justify-between pr-2 -mt-2">
             <button
               onClick={handleToggleAll}
-              className="text-xs text-gray-700 border-2 p-[1px]   transition rounded-full px-2 py-1 bg-gray-100 hover:bg-gray-200 active:scale-95"
+              className="text-xs font-medium text-indigo-700 border-2 border-indigo-300 bg-zinc-100 hover:bg-indigo-100 transition rounded-md px-3 py-1 active:scale-95"
             >
               {selectedTodoIds.length === filteredTodos.length
                 ? "Avmarkera alla"
@@ -128,14 +129,17 @@ const TodoList = () => {
                   }`}
                   onClick={() => setShowAll(false)}
                 >
+                  <CalendarDays size={14} className="inline mr-1 -mt-0.5" />
                   Idag
                 </button>
+
                 <button
                   className={`${baseButton} ${
                     showAll ? activeStyle : inactiveStyle
                   }`}
                   onClick={() => setShowAll(true)}
                 >
+                  <CalendarRange size={14} className="inline mr-1 -mt-0.5" />
                   Alla
                 </button>
               </div>
@@ -171,14 +175,14 @@ const TodoList = () => {
       <button
         aria-label="Lägg till todo"
         onClick={() => setModal({ mode: "new" })}
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-700 transition-colors sm:hidden"
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors sm:hidden"
       >
         <Plus size={28} className="mx-auto" />
       </button>
 
       {/* Add-knapp på desktop */}
       <div className="hidden sm:flex justify-center mt-4">
-        <Button label="➕ Add Todo" onClick={() => setModal({ mode: "new" })} />
+        <Button label="Add Todo" onClick={() => setModal({ mode: "new" })} />
       </div>
 
       {/* Modaler */}

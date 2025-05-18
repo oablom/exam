@@ -46,17 +46,17 @@ const TodoItem: React.FC<TodoItemProps> = ({
   return (
     <div
       onClick={() => setIsOpen((p) => !p)}
-      className={`flex flex-col gap-2 p-4 ${
-        isOpen ? "py-4" : "py-2"
-      } rounded-2xl shadow-md transition-all duration-200
-        hover:cursor-pointer focus-visible:outline-none
-        ${completed ? "opacity-50" : ""} 
-        ${
-          isSelected
-            ? "ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-900/40"
-            : "bg-white dark:bg-zinc-800"
-        }
-        border-l-4 ${priorityColor}`}
+      className={`flex flex-col gap-2 p-4 ${isOpen ? "py-4" : "py-2"}
+  rounded-2xl transition-all duration-200 cursor-pointer
+  hover:shadow-lg hover:scale-[1.01] hover:bg-zinc-100 dark:hover:bg-zinc-700
+  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+  ${completed ? "opacity-50" : ""}
+  ${
+    isSelected
+      ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
+      : "bg-white dark:bg-zinc-800"
+  }
+  border-l-4 ${priorityColor}`}
     >
       {/* Top row */}
       <div className="flex items-center justify-between">
@@ -69,7 +69,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
           className="shrink-0 cursor-pointer select-none"
         >
           {isSelected ? (
-            <CheckCircle size={28} className="text-blue-500" />
+            <CheckCircle size={28} className="text-indigo-500" />
           ) : (
             <Circle size={28} />
           )}
@@ -92,10 +92,10 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 e.stopPropagation();
                 onEdit(todo);
               }}
-              className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-blue-100 transition "
+              className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-indigo-100 transition "
               aria-label="Redigera"
             >
-              <Pencil size={26} className="text-blue-600" />
+              <Pencil size={26} className="text-indigo-600" />
             </button>
             <button
               onClick={(e) => {
