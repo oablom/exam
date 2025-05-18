@@ -35,7 +35,8 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
 router.post("/", authenticate, async (req: Request, res: Response) => {
   const { userId } = req as AuthRequest;
-  const { title, priority, estimatedTime, dueDate, completed } = req.body;
+  const { title, priority, estimatedTime, dueDate, completed, isFocus } =
+    req.body;
 
   console.log("📩 Todo-mottaget i backend:", {
     title,
@@ -43,6 +44,7 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
     estimatedTime,
     dueDate,
     completed,
+    isFocus,
     userId,
   });
 
@@ -58,6 +60,7 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
         estimatedTime,
         completed,
         dueDate: parsedDueDate,
+        isFocus,
       },
     });
 
@@ -72,7 +75,8 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   try {
-    const { title, completed, priority, estimatedTime, dueDate } = req.body;
+    const { title, completed, priority, estimatedTime, dueDate, isFocus } =
+      req.body;
 
     const parsedDueDate =
       dueDate && !isNaN(Date.parse(dueDate)) ? new Date(dueDate) : undefined;
@@ -85,6 +89,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
         priority,
         estimatedTime,
         dueDate: parsedDueDate,
+        isFocus,
       },
     });
 

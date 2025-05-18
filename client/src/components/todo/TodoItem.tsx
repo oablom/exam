@@ -1,28 +1,36 @@
+// ------------------------------------------------------------
+// TodoItem.tsx  – Hel ersättning
+// ------------------------------------------------------------
 import React, { useState } from "react";
 import { CheckCircle, Circle, Pencil, Play } from "lucide-react";
 import { TodoItemProps } from "@/types";
 import Button from "@/components/layout/Button";
 
+// Label helpers
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
 
-const getDeadlineLabel = (iso?: string) => {
-  if (!iso) return "Ingen";
-  const date = new Date(iso);
-
+/* Return TRUE om todo har deadline som är passerad */
+const isOverdue = (todo: TodoItemProps["todo"]): boolean => {
+  if (!todo.dueDate || todo.completed) return false;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const target = new Date(date);
+  const target = new Date(todo.dueDate);
   target.setHours(0, 0, 0, 0);
+  return target.getTime() < today.getTime();
+};
 
-  const diffMs = target.getTime() - today.getTime();
-  const dayMs = 86_400_000;
-
+const deadlineLabel = (iso?: string) => {
+  if (!iso) return "Ingen";
+  const date = new Date(iso);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffMs = date.setHours(0, 0, 0, 0) - today.getTime();
+  const day = 86_400_000;
   if (diffMs === 0) return "Idag";
-  if (diffMs === dayMs) return "Imorgon";
-  if (diffMs > 0 && diffMs <= 6 * dayMs) return "Den här veckan";
-  if (diffMs > 6 * dayMs && diffMs <= 13 * dayMs) return "Nästa vecka";
-
+  if (diffMs === day) return "Imorgon";
+  if (diffMs > 0 && diffMs <= 6 * day) return "Den här veckan";
+  if (diffMs > 6 * day && diffMs <= 13 * day) return "Nästa vecka";
   return date.toLocaleDateString("sv-SE");
 };
 
@@ -34,32 +42,34 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onFocus,
   onToggleFocus,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
 
-  const priorityColor =
+  const priorityBorder =
     priority === 1
       ? "border-red-500"
       : priority === 2
-      ? "border-yellow-400"
-      : "border-green-500";
+      ? "border-orange-400"
+      : "border-yellow-300";
+
+  const overdue = isOverdue(todo);
 
   return (
     <div
-      onClick={() => setIsOpen((p) => !p)}
-      className={`flex flex-col gap-2 p-4 ${isOpen ? "py-4" : "py-2"}
-  rounded-2xl transition-all duration-200 cursor-pointer
-  hover:shadow-lg hover:scale-[1.01] hover:bg-zinc-100 dark:hover:bg-zinc-700
-  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
-  ${completed ? "opacity-50" : ""}
-  ${
-    isSelected
-      ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
-      : "bg-white dark:bg-zinc-800"
-  }
-  border-l-4 ${priorityColor}`}
+      onClick={() => setOpen((p) => !p)}
+      className={`flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
+      hover:shadow-lg hover:scale-[1.01] bg-white dark:bg-zinc-800 hover:bg-indigo-50
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+      
+      ${
+        isSelected
+          ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
+          : ""
+      }
+      ${overdue ? "bg-red-50 dark:bg-red-900/40" : ""}
+      border-l-[4px] ${priorityBorder}`}
     >
-      {/* Top row */}
+      {/* ─── Top row ──────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         {/* Checkbox */}
         <div
@@ -67,7 +77,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
             e.stopPropagation();
             onSelectToggle(id);
           }}
-          className="shrink-0 cursor-pointer select-none"
+          className="shrink-0 cursor-pointer"
         >
           {isSelected ? (
             <CheckCircle size={28} className="text-indigo-500" />
@@ -78,89 +88,69 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
         {/* Title */}
         <p
-          className={`flex-1 mx-3 font-semibold text-lg truncate ${
-            completed ? "line-through" : ""
-          }`}
+          className={`flex-1 mx-3 font-semibold text-lg truncate 
+          
+          `}
         >
           {title}
         </p>
 
-        {/* Actions – minimerat läge */}
-        {!isOpen && (
+        {/* Mini‑actions när raden är stängd */}
+        {!open && (
           <div className="flex items-center gap-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(todo);
               }}
-              className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-indigo-100 transition "
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-indigo-100"
               aria-label="Redigera"
             >
-              <Pencil size={26} className="text-indigo-600" />
+              <Pencil size={22} className="text-indigo-600" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onFocus(todo);
               }}
-              className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-green-100 transition"
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-100"
               aria-label="Starta"
             >
-              <Play size={26} className="text-green-600" />
+              <Play size={22} className="text-green-600" />
             </button>
           </div>
         )}
       </div>
 
-      {/* Expanded */}
-      {isOpen && (
+      {/* ─── Expanded content ────────────────────────────────── */}
+      {open && (
         <>
-          {/* Info badges */}
           <div className="flex flex-wrap gap-3 text-sm text-zinc-600 dark:text-zinc-300 ml-8">
-            <span className="flex items-center gap-1">
-              📌 <span className="font-medium">Prio:</span>{" "}
-              {priorityLabel(priority)}
+            <span>
+              📌 <b>Prio:</b> {priorityLabel(priority)}
             </span>
-
             {estimatedTime !== undefined && (
-              <span className="flex items-center gap-1">
-                ⏱️ <span className="font-medium">Tid:</span> {estimatedTime} min
+              <span>
+                ⏱️ <b>Tid:</b> {estimatedTime} min
               </span>
             )}
-
             {dueDate && (
-              <span className="flex items-center gap-1">
-                📅 <span className="font-medium">Deadline:</span>{" "}
-                {getDeadlineLabel(dueDate)}
+              <span>
+                📅 <b>Deadline:</b> {deadlineLabel(dueDate)}
               </span>
             )}
           </div>
 
-          {/* Stora knappar längst ner */}
           <div
             className="flex gap-2 justify-center mt-4"
             onClick={(e) => e.stopPropagation()}
           >
-            {onToggleFocus && (
-              <button
-                onClick={() => onToggleFocus(todo)}
-                className="text-xs px-3 py-1.5 rounded-full
-                     bg-yellow-100 hover:bg-yellow-200 text-yellow-800
-                     border border-yellow-300"
-              >
-                Ta bort från fokus
-              </button>
-            )}
+            <Button label="Starta" onClick={() => onFocus(todo)} />
             <Button
-              label="Starta"
-              onClick={() => onFocus(todo)}
-              className=" text-white font-medium  px-3 py-1.5 rounded-full shadow-sm border-none"
-            />
-            <Button
+              outline
               label="Redigera"
               onClick={() => onEdit(todo)}
-              outline
-              className="bg-white hover:bg-zinc-100 text-zinc-800 font-medium  px-3 py-1.5 rounded-full shadow-sm border border-zinc-600"
+              className="border-zinc-600"
             />
           </div>
         </>
