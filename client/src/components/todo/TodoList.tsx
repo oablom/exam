@@ -225,9 +225,9 @@ const TodoList: React.FC = () => {
       <button
         aria-label="Lägg till todo"
         onClick={() => setModal({ mode: "new" })}
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-16 h-16 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors sm:hidden"
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-16 h-16 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors sm:hidden flex items-center justify-center"
       >
-        <Plus size={32} />
+        <Plus size={36} />
       </button>
 
       <div className="hidden sm:flex justify-center mt-4">
