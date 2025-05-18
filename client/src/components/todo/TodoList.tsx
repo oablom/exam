@@ -100,7 +100,7 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      <section className="flex flex-col gap-4 w-full max-w-md px-4 pb-28 sm:pb-4">
+      <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4">
         <div className="text-center mt-6 mb-4">
           <h1 className="text-2xl font-hand font-bold text-zinc-800 dark:text-white">
             {view === "today"
