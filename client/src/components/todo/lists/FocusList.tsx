@@ -46,8 +46,8 @@ const FocusList: React.FC<FocusListProps> = ({
             <button
               onClick={() => onToggleFocus(todo)}
               className="absolute top-2 right-2 text-xs px-2 py-1 rounded-full
-                         bg-yellow-100 hover:bg-yellow-200 text-yellow-800
-                         border border-yellow-300"
+                         bg-indigo-100 hover:bg-indigo-200 text-indigo-800
+                         border border-indigo-300"
             >
               Ta bort
             </button>

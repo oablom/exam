@@ -7,9 +7,7 @@ import { sv } from "date-fns/locale";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import TodoActions from "@/components/todo/TodoActions";
-import DeadlineTodayList from "./lists/DeadlineTodayList";
-import FocusList from "./lists/FocusList";
-import CompletedList from "./lists/CompletedList";
+import TodoSection from "./TodoSection";
 import FocusModal from "../modals/FocusModal";
 import TodoModal from "./TodoModal";
 import { useTodoStore } from "@/store/todo";
@@ -28,31 +26,32 @@ const TodoList: React.FC = () => {
     todo?: Todo;
   } | null>(null);
 
-  /* ------------------------------------------------------------------ */
-  /* Lifecycles                                                         */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /* Lifecycles                                                     */
+  /* -------------------------------------------------------------- */
   useEffect(() => {
     fetchTodos();
   }, [fetchTodos]);
 
-  /* ------------------------------------------------------------------ */
-  /* Handlers                                                           */
-  /* ------------------------------------------------------------------ */
-
-  const handleOpenFocus = (todo: Todo) => {
-    setFocusTodo(todo);
-    setIsFocusOpen(true);
+  /* -------------------------------------------------------------- */
+  /* Handlers                                                       */
+  /* -------------------------------------------------------------- */
+  const handleAddToFocus = async (ids: string[]) => {
+    ids.forEach((id) => updateTodo(id, { isFocus: true }));
+    setSelectedIds([]);
   };
 
-  const handleSelectToggle = (id: string) => {
+  const handleToggleFocus = async (todo: Todo) => {
+    updateTodo(todo.id, { isFocus: !todo.isFocus });
+  };
+
+  const handleSelectToggle = (id: string) =>
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
-  };
 
   const handleDelete = async (ids: string[]) => {
-    await Promise.all(ids.map((id) => deleteTodo(id)));
+    await Promise.all(ids.map(deleteTodo));
     setSelectedIds([]);
   };
 
@@ -66,41 +65,14 @@ const TodoList: React.FC = () => {
     setSelectedIds([]);
   };
 
-  //  🔑 Uppdaterar state genom fetch efter varje patch
-  const handleAddToFocus = async (ids: string[]) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    await Promise.all(
-      ids.map(async (id) => {
-        const t = todos.find((x) => x.id === id);
-        if (t && !t.isFocus) {
-          await updateTodo(id, {
-            isFocus: true,
-            dueDate: today.toISOString(),
-          });
-        }
-      })
-    );
-
-    await fetchTodos(); // ← lägg till
-    setSelectedIds([]);
-  };
-
-  const handleToggleFocus = async (todo: Todo) => {
-    await updateTodo(todo.id, { isFocus: !todo.isFocus });
-    await fetchTodos(); // ← valfritt; ger direkt visuellt svar
-  };
-
-  /* ------------------------------------------------------------------ */
-  /* Derived data                                                       */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /* Derived data                                                   */
+  /* -------------------------------------------------------------- */
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const dueToday = todos.filter((t) => {
-    if (!t.dueDate || t.completed) return false;
+    if (!t.dueDate || t.completed || t.isFocus) return false;
     const d = new Date(t.dueDate);
     d.setHours(0, 0, 0, 0);
     return d.getTime() === today.getTime();
@@ -118,27 +90,24 @@ const TodoList: React.FC = () => {
           !completedTodos.some((ct) => ct.id === t.id)
       );
 
-  /* ------------------------------------------------------------------ */
-  /* Button style helpers                                               */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /* Button style helpers                                           */
+  /* -------------------------------------------------------------- */
   const baseBtn =
     "text-xs border-2 border-zinc-500 rounded-full px-2 py-1 transition active:scale-95";
   const activeBtn =
     "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700";
   const inactiveBtn =
-    "bg-white text-zinc-800 border-zinc-300 hover:bg-zinc-100";
+    "bg-white text-zinc-800 border-zinc-300 hover:bg-indigo-100";
 
-  /* ------------------------------------------------------------------ */
-  /* Render                                                             */
-  /* ------------------------------------------------------------------ */
-
+  /* -------------------------------------------------------------- */
+  /* Render                                                         */
+  /* -------------------------------------------------------------- */
   return (
     <>
       <section className="flex flex-col gap-4 w-full max-w-md px-4 pb-28 sm:pb-4">
-        {/* Header ----------------------------------------------------- */}
         <div className="text-center mt-6 mb-4">
-          <h1 className="text-2xl font-bold text-zinc-800 dark:text-white">
+          <h1 className="text-2xl font-hand font-bold text-zinc-800 dark:text-white">
             {showAll ? "Alla uppgifter" : "Dagens fokus"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
@@ -146,27 +115,21 @@ const TodoList: React.FC = () => {
           </p>
         </div>
 
-        {/* Vy-väljare -------------------------------------------------- */}
         <div className="flex justify-between items-center mb-2 px-2">
           <button
             onClick={() =>
               setSelectedIds((prev) =>
-                prev.length === remainingTodos.length
-                  ? []
-                  : remainingTodos.map((x) => x.id)
+                prev.length === todos.length ? [] : todos.map((x) => x.id)
               )
             }
             className={`${baseBtn} ${
-              selectedIds.length === remainingTodos.length
-                ? activeBtn
-                : inactiveBtn
+              selectedIds.length === todos.length ? activeBtn : inactiveBtn
             }`}
           >
-            {selectedIds.length === remainingTodos.length
+            {selectedIds.length === todos.length
               ? "Avmarkera alla"
               : "Markera alla"}
           </button>
-
           <div className="flex gap-2">
             <button
               onClick={() => setShowAll(false)}
@@ -174,7 +137,6 @@ const TodoList: React.FC = () => {
             >
               <CalendarDays size={14} className="inline mr-1 -mt-0.5" /> Idag
             </button>
-
             <button
               onClick={() => setShowAll(true)}
               className={`${baseBtn} ${showAll ? activeBtn : inactiveBtn}`}
@@ -184,7 +146,6 @@ const TodoList: React.FC = () => {
           </div>
         </div>
 
-        {/* Bulk-actions ---------------------------------------------- */}
         <TodoActions
           todos={todos}
           selectedIds={selectedIds}
@@ -194,67 +155,44 @@ const TodoList: React.FC = () => {
           onAddToFocus={handleAddToFocus}
         />
 
-        {/* 1) Deadline i dag ------------------------------------------ */}
-        {dueToday.length > 0 && (
-          <DeadlineTodayList
-            todos={todos}
-            onEdit={(t) => setModal({ mode: "edit", todo: t })}
-            onFocus={handleOpenFocus}
-            onSelectToggle={handleSelectToggle}
-            onDelete={handleDelete}
-            selectedIds={selectedIds}
-          />
-        )}
-
-        {/* 2) Fokus i dag --------------------------------------------- */}
-        {focusTodos.length > 0 && (
-          <FocusList
-            todos={todos}
-            onEdit={(t) => setModal({ mode: "edit", todo: t })}
-            onFocus={handleOpenFocus}
-            onSelectToggle={handleSelectToggle}
-            onDelete={handleDelete}
-            onToggleFocus={handleToggleFocus}
-            selectedIds={selectedIds}
-          />
-        )}
-
-        {/* 3) Slutförda ---------------------------------------------- */}
-        {completedTodos.length > 0 && (
-          <CompletedList
-            todos={todos}
-            onEdit={(t) => setModal({ mode: "edit", todo: t })}
-            onComplete={handleComplete}
-            onSelectToggle={handleSelectToggle}
-            selectedIds={selectedIds}
-          />
-        )}
-
-        {/* 4) Övriga uppgifter ---------------------------------------- */}
-        {remainingTodos.length > 0 && (
-          <section className="mt-4 px-2">
-            <h2 className="text-lg font-bold text-zinc-800 dark:text-white mb-2">
-              {showAll ? "Alla uppgifter" : "Övriga uppgifter"}
-            </h2>
-
-            <div className="flex flex-col gap-3">
-              {remainingTodos.map((todo) => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  isSelected={selectedIds.includes(todo.id)}
-                  onSelectToggle={handleSelectToggle}
-                  onDelete={handleDelete}
-                  onFocus={handleOpenFocus}
-                  onEdit={(t) => setModal({ mode: "edit", todo: t })}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+        {/* <TodoSection
+          title="⏰ Deadline i dag"
+          todos={dueToday}
+          selectedIds={selectedIds}
+          onEdit={(t) => setModal({ mode: "edit", todo: t })}
+          onFocus={setFocusTodo}
+          onSelectToggle={handleSelectToggle}
+          onDelete={handleDelete}
+        /> */}
+        <TodoSection
+          title="🎯 Priolista"
+          todos={focusTodos}
+          selectedIds={selectedIds}
+          onEdit={(t) => setModal({ mode: "edit", todo: t })}
+          onFocus={setFocusTodo}
+          onSelectToggle={handleSelectToggle}
+          onDelete={handleDelete}
+          onToggleFocus={handleToggleFocus}
+        />
+        <TodoSection
+          title="✅ Klart"
+          todos={completedTodos}
+          selectedIds={selectedIds}
+          onEdit={(t) => setModal({ mode: "edit", todo: t })}
+          onComplete={handleComplete}
+          onSelectToggle={handleSelectToggle}
+        />
+        {/* <TodoSection
+          title="📋 Övriga uppgifter"
+          todos={remainingTodos}
+          selectedIds={selectedIds}
+          onEdit={(t) => setModal({ mode: "edit", todo: t })}
+          onFocus={setFocusTodo}
+          onSelectToggle={handleSelectToggle}
+          onDelete={handleDelete}
+        /> */}
       </section>
 
-      {/* Lägg till-knapp (mobil) -------------------------------------- */}
       <button
         aria-label="Lägg till todo"
         onClick={() => setModal({ mode: "new" })}
@@ -262,8 +200,6 @@ const TodoList: React.FC = () => {
       >
         <Plus size={32} />
       </button>
-
-      {/* Lägg till-knapp (desktop) ------------------------------------ */}
       <div className="hidden sm:flex justify-center mt-4">
         <Button
           label="Lägg till todo"
@@ -271,14 +207,12 @@ const TodoList: React.FC = () => {
         />
       </div>
 
-      {/* Modaler ------------------------------------------------------ */}
       <TodoModal
         isOpen={!!modal}
         mode={modal?.mode as "new" | "edit"}
         todo={modal?.todo}
         onClose={() => setModal(null)}
       />
-
       <FocusModal
         todo={focusTodo}
         isOpen={isFocusOpen}

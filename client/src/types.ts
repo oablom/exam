@@ -56,6 +56,7 @@ export interface TodoItemProps {
   onDelete: (ids: string[]) => void;
   onFocus: (todo: Todo) => void;
   onEdit: (todo: Todo) => void;
+  onToggleFocus?: (todo: Todo) => void;
 }
 
 export interface Todo {

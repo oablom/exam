@@ -43,7 +43,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       body: JSON.stringify(updates),
     });
     const updated = await res.json();
-    set({ todos: get().todos.map((t) => (t.id === id ? updated : t)) });
+    set({
+      todos: get().todos.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+    });
   },
 
   deleteTodo: async (id) => {

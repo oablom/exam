@@ -32,6 +32,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onSelectToggle,
   onEdit,
   onFocus,
+  onToggleFocus,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
@@ -140,6 +141,16 @@ const TodoItem: React.FC<TodoItemProps> = ({
             className="flex gap-2 justify-center mt-4"
             onClick={(e) => e.stopPropagation()}
           >
+            {onToggleFocus && (
+              <button
+                onClick={() => onToggleFocus(todo)}
+                className="text-xs px-3 py-1.5 rounded-full
+                     bg-yellow-100 hover:bg-yellow-200 text-yellow-800
+                     border border-yellow-300"
+              >
+                Ta bort från fokus
+              </button>
+            )}
             <Button
               label="Starta"
               onClick={() => onFocus(todo)}

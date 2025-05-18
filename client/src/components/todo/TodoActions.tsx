@@ -51,7 +51,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
         className={` ${isSelected ? "opacity-100" : "opacity-50"} `}
       />
       <Button
-        label="🎯 Fokusläge"
+        label="🎯 Priolista"
         // onClick={() => navigate("/focus", { state: { todos: selectedTodos } })}
         onClick={() => onAddToFocus(selectedIds)}
         outline
