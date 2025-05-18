@@ -8,6 +8,8 @@ import FocusModal from "../modals/FocusModal";
 import { useTodoStore } from "@/store/todo";
 import TodoModal from "./TodoModal";
 import { CalendarDays, CalendarRange } from "lucide-react";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale";
 
 // ...imports
 const TodoList = () => {
@@ -68,10 +70,11 @@ const TodoList = () => {
   };
 
   const baseButton =
-    "text-xs border-2 transition rounded-full px-2 py-1 active:scale-95";
+    "text-xs border-2 border-zinc-500 transition rounded-full px-2 py-1 active:scale-95 ";
 
-  const activeStyle = "bg-indigo-600 text-white border-indigo-600";
-  const inactiveStyle = "bg-gray-100 text-gray-700 hover:bg-gray-200";
+  const activeStyle =
+    "bg-indigo-600 text-white border-indigo-600 hover:opacity-80";
+  const inactiveStyle = " text-gray-700 hover:bg-indigo-200";
 
   function getSmartTodayTodos(): Todo[] {
     const today = new Date();
@@ -107,15 +110,24 @@ const TodoList = () => {
     <>
       <section className="flex flex-col gap-4 w-full max-w-md px-4 pb-28 sm:pb-4">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-hand">Dagens prioriterade Todos!,</h2>
+        <div className="text-center mt-6 mb-4">
+          <h1 className="text-2xl font-bold text-zinc-800 dark:text-white">
+            {showAll ? "Alla uppgifter" : "Fokus idag"}
+          </h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+            {format(new Date(), "EEEE d MMMM", { locale: sv })}
+          </p>
         </div>
 
         {filteredTodos.length > 1 && (
           <div className="flex justify-between pr-2 -mt-2">
             <button
               onClick={handleToggleAll}
-              className="text-xs font-medium text-indigo-700 border-2 border-indigo-300 bg-zinc-100 hover:bg-indigo-100 transition rounded-md px-3 py-1 active:scale-95"
+              className={`${baseButton} ${
+                selectedTodoIds.length === filteredTodos.length
+                  ? activeStyle
+                  : inactiveStyle
+              }`}
             >
               {selectedTodoIds.length === filteredTodos.length
                 ? "Avmarkera alla"
@@ -175,9 +187,9 @@ const TodoList = () => {
       <button
         aria-label="Lägg till todo"
         onClick={() => setModal({ mode: "new" })}
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors sm:hidden"
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-16 h-16 rounded-full bg-indigo-600 text-white shadow-lg hover:bg-indigo-700 transition-colors sm:hidden"
       >
-        <Plus size={28} className="mx-auto" />
+        <Plus size={32} className="mx-auto" />
       </button>
 
       {/* Add-knapp på desktop */}
