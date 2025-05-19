@@ -12,34 +12,13 @@ import {
 } from "lucide-react";
 import { TodoItemProps } from "@/types";
 import Button from "@/components/layout/Button";
+import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
 // Label helpers
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
 
 /* Return TRUE om todo har deadline som är passerad */
-const isOverdue = (todo: TodoItemProps["todo"]): boolean => {
-  if (!todo.dueDate || todo.completed) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const target = new Date(todo.dueDate);
-  target.setHours(0, 0, 0, 0);
-  return target.getTime() < today.getTime();
-};
-
-const deadlineLabel = (iso?: string) => {
-  if (!iso) return "Ingen";
-  const date = new Date(iso);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const diffMs = date.setHours(0, 0, 0, 0) - today.getTime();
-  const day = 86_400_000;
-  if (diffMs === 0) return "Idag";
-  if (diffMs === day) return "Imorgon";
-  if (diffMs > 0 && diffMs <= 6 * day) return "Den här veckan";
-  if (diffMs > 6 * day && diffMs <= 13 * day) return "Nästa vecka";
-  return date.toLocaleDateString("sv-SE");
-};
 
 const TodoItem: React.FC<TodoItemProps> = ({
   todo,
@@ -61,7 +40,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
       ? "border-orange-400"
       : "border-yellow-300";
 
-  const overdue = isOverdue(todo);
+  const overdue = isOverdue(dueDate, completed);
+  const dueToday = isDueToday(dueDate);
 
   return (
     <div
@@ -75,8 +55,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
           ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
           : ""
       } 
-      ${overdue ? "bg-red-50 dark:bg-red-900/40" : ""}
-      border-l-[4px] ${priorityBorder} ${
+      ${overdue ? " !bg-red-200  !dark:bg-red-900/40" : ""}
+      // ${dueToday ? " !bg-red-50  !dark:bg-red-600/40" : ""}
+      border-l-[4px] border-b-[3px] ${priorityBorder} ${
         completed ? "opacity-60 scale-[0.98]" : ""
       }`}
     >

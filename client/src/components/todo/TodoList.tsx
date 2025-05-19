@@ -11,6 +11,9 @@ import {
   HandCoins,
   HandHelping,
   Bird,
+  AlarmCheck,
+  AlarmClockIcon,
+  AlarmClockMinus,
 } from "lucide-react";
 import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -23,6 +26,7 @@ import FocusModal from "../modals/FocusModal";
 import TodoModal from "./TodoModal";
 import { useTodoStore } from "@/store/todo";
 import Button from "@/components/layout/Button";
+import { isDueToday, isOverdue } from "@/utils/dateHelpers";
 
 const TodoList: React.FC = () => {
   const { todos, deleteTodo, toggleTodo, updateTodo, fetchTodos } =
@@ -87,19 +91,8 @@ const TodoList: React.FC = () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const dueToday = todos.filter((t) => {
-    if (!t.dueDate || t.completed) return false;
-    const d = new Date(t.dueDate);
-    d.setHours(0, 0, 0, 0);
-    return d.getTime() === today.getTime();
-  });
-
-  const overdue = todos.filter((t) => {
-    if (!t.dueDate || t.completed) return false;
-    const d = new Date(t.dueDate);
-    d.setHours(0, 0, 0, 0);
-    return d.getTime() < today.getTime();
-  });
+  const dueToday = todos.filter((t) => !t.completed && isDueToday(t.dueDate));
+  const overdue = todos.filter((t) => !t.completed && isOverdue(t.dueDate));
 
   const focusTodos = todos.filter((t) => t.isFocus && !t.completed);
   const completedTodos = todos.filter((t) => t.completed);
@@ -204,7 +197,8 @@ const TodoList: React.FC = () => {
         {view === "today" && (
           <>
             <TodoSection
-              title="⏰ Deadline i dag"
+              title="Deadline idag"
+              icon={<AlarmClockMinus className="text-red-600" size={20} />}
               todos={dueToday}
               selectedIds={selectedIds}
               onEdit={(t) => setModal({ mode: "edit", todo: t })}
@@ -286,7 +280,8 @@ const TodoList: React.FC = () => {
         )}
         {completedTodos.length > 0 && view !== "prio" && (
           <TodoSection
-            title="✅ Klart"
+            title=" Klart"
+            icon={<CheckCircle className="text-green-500" size={20} />}
             todos={completedTodos}
             selectedIds={selectedIds}
             onDelete={handleDelete}
