@@ -32,7 +32,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
-  const [wasJustCompleted, setWasJustCompleted] = useState(false);
 
   const priorityBorder =
     priority === 1
@@ -45,15 +44,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const dueToday = isDueToday(dueDate);
   const prevCompletedRef = useRef(completed);
 
-  useEffect(() => {
-    if (!prevCompletedRef.current && completed) {
-      setWasJustCompleted(true);
-      const t = setTimeout(() => setWasJustCompleted(false), 500);
-      return () => clearTimeout(t);
-    }
-    prevCompletedRef.current = completed;
-  }, [completed]);
-
   return (
     <div
       onClick={() => setOpen((p) => !p)}
@@ -62,8 +52,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
       focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500  duration-500 ease-in-out 
         ${completed ? "opacity-60 scale-[0.98] line-through blur-[0.3px]" : ""}
 
-  
-${wasJustCompleted ? "animate-bounce" : ""}
 
   
       ${
