@@ -2,12 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    @apply text-zinc-800 bg-white font-sans;
+@layer utilities {
+  @keyframes completePop {
+    0% {
+      transform: scale(1);
+      background-color: #d1fae5;
+    }
+    50% {
+      transform: scale(1.08);
+      background-color: #6ee7b7;
+    }
+    100% {
+      transform: scale(1);
+      background-color: inherit;
+    }
   }
 
-  html.dark {
-    @apply text-zinc-100 bg-zinc-900;
+  .animate-complete-pop {
+    animation: completePop 0.5s ease-out;
   }
 }
