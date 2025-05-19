@@ -124,10 +124,10 @@ const TodoList: React.FC = () => {
         <div className="text-center mt-6 mb-4">
           <h1 className="text-2xl font-hand font-bold text-zinc-800 dark:text-white">
             {view === "today"
-              ? "Dagens uppgifter"
+              ? "🌞 Dagens uppgifter"
               : view === "prio"
-              ? "Prioriterade"
-              : "Alla uppgifter"}
+              ? "🧘 Fokuslistan"
+              : "📋 Alla uppgifter"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             {format(new Date(), "EEEE d MMMM", { locale: sv })}
@@ -257,7 +257,7 @@ const TodoList: React.FC = () => {
         )}
         {view === "all" && (
           <TodoSection
-            title="📋 Alla Todos"
+            title="🏃 Aktiva Todos"
             todos={activeTodos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
