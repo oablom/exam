@@ -81,16 +81,24 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
     const parsedDueDate =
       dueDate && !isNaN(Date.parse(dueDate)) ? new Date(dueDate) : undefined;
 
+    const dataToUpdate: Record<string, any> = {
+      title,
+      completed,
+      priority,
+      estimatedTime,
+      dueDate: parsedDueDate,
+      isFocus,
+    };
+
+    Object.keys(dataToUpdate).forEach((key) => {
+      if (dataToUpdate[key] === undefined) {
+        delete dataToUpdate[key];
+      }
+    });
+
     const todo = await prisma.todo.update({
       where: { id: req.params.id },
-      data: {
-        title,
-        completed,
-        priority,
-        estimatedTime,
-        dueDate: parsedDueDate,
-        isFocus,
-      },
+      data: dataToUpdate,
     });
 
     res.json(todo);
