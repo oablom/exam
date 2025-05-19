@@ -58,9 +58,9 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
         userId,
         priority,
         estimatedTime,
-        completed,
         dueDate: parsedDueDate,
-        isFocus,
+        completed: completed ?? false,
+        isFocus: isFocus ?? false,
       },
     });
 
@@ -103,7 +103,7 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
 
     res.json(todo);
   } catch (err) {
-    console.error("❌ PATCH error:", err);
+    console.error("PATCH error:", err);
     res.status(500).json({ error: "Kunde inte uppdatera todo" });
   }
 });
