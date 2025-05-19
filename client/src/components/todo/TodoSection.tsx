@@ -34,13 +34,13 @@ const TodoSection: React.FC<TodoSectionProps> = ({
 
   return (
     <section className="bg-white/60 dark:bg-zinc-800/40 backdrop-blur-md border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-sm overflow-hidden">
-      <header className="flex items-center gap-3 px-4 pt-4 pb-2">
+      <header className="flex items-center justify-center gap-3 px-4 pt-4 pb-2">
         {icon && (
           <span className="text-xl shrink-0" aria-hidden="true">
             {icon}
           </span>
         )}
-        <h2 className="text-lg font-semibold text-zinc-800 dark:text-white">
+        <h2 className="text-lg  font-semibold text-zinc-800 dark:text-white">
           {title}
         </h2>
       </header>

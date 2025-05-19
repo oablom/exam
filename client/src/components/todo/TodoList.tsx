@@ -7,6 +7,10 @@ import {
   ListTodo,
   CheckCircle,
   Circle,
+  AlarmClock,
+  HandCoins,
+  HandHelping,
+  Bird,
 } from "lucide-react";
 import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -122,7 +126,7 @@ const TodoList: React.FC = () => {
     <>
       <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4">
         <div className="text-center mt-6 mb-4">
-          <h1 className="text-2xl font-hand font-bold text-zinc-800 dark:text-white">
+          <h1 className="text-3xl font-hand font-bold text-zinc-800 dark:text-white">
             {view === "today"
               ? "🌞 Dagens uppgifter"
               : view === "prio"
@@ -208,7 +212,7 @@ const TodoList: React.FC = () => {
               onSelectToggle={handleSelectToggle}
               onDelete={handleDelete}
             />
-            {dueToday.length === 0 && (
+            {dueToday.length === 0 && overdue.length === 0 && (
               <div className="flex items-center text-center flex-col justify-center text-zinc-500 dark:text-zinc-400">
                 <CalendarDays
                   size={42}
@@ -221,7 +225,8 @@ const TodoList: React.FC = () => {
               </div>
             )}
             <TodoSection
-              title="🚨 Försenade"
+              title="Försenade"
+              icon={<AlarmClock className="text-red-500" size={20} />}
               todos={overdue}
               selectedIds={selectedIds}
               onEdit={(t) => setModal({ mode: "edit", todo: t })}
@@ -233,7 +238,8 @@ const TodoList: React.FC = () => {
         )}
         {view === "prio" && (
           <TodoSection
-            title="🎯 Priolista"
+            title="En åt gången"
+            icon={<Bird className="text-indigo-500" size={20} />}
             todos={focusTodos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}

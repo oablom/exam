@@ -44,7 +44,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
         onClick={() => onDelete(selectedIds)}
         outline
         small
-        className={isSelected ? "opacity-100" : "opacity-50"}
+        className={`${isSelected ? "opacity-100" : "opacity-50"} flex flex-col`}
       />
       <Button
         icon={
@@ -58,7 +58,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
         onClick={() => onComplete(selectedIds, newValue)}
         outline
         small
-        className={isSelected ? "opacity-100" : "opacity-50"}
+        className={`${isSelected ? "opacity-100" : "opacity-50"} flex flex-col`}
       />
       <Button
         icon={
@@ -72,7 +72,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
         onClick={() => onAddToFocus(selectedIds)}
         outline
         small
-        className={isSelected ? "opacity-100" : "opacity-50"}
+        className={`${isSelected ? "opacity-100" : "opacity-50"} flex flex-col`}
       />
       {/* <Button icon={<X size={16} stroke="#ef4444" />} label="Avbryt" onClick={onClear} outline small /> */}
     </div>
