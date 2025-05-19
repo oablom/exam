@@ -5,7 +5,7 @@ import { Todo } from "@/types";
 interface TodoModalProps {
   isOpen: boolean;
   mode: "new" | "edit";
-  todo?: Todo; // krävs vid edit
+  todo?: Todo;
   onClose: () => void;
 }
 

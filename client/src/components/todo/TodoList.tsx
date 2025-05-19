@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import {
   Plus,
   CalendarDays,
@@ -8,7 +8,7 @@ import {
   CheckCircle,
   Circle,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
 
 import { Todo } from "@/types";
@@ -43,7 +43,12 @@ const TodoList: React.FC = () => {
   }, [fetchTodos]);
 
   const handleAddToFocus = async (ids: string[]) => {
-    ids.forEach((id) => updateTodo(id, { isFocus: true }));
+    await Promise.all(ids.map((id) => updateTodo(id, { isFocus: true })));
+    setSelectedIds([]);
+  };
+
+  const handleRemoveFromFocus = async (ids: string[]) => {
+    await Promise.all(ids.map((id) => updateTodo(id, { isFocus: false })));
     setSelectedIds([]);
   };
 
@@ -71,6 +76,10 @@ const TodoList: React.FC = () => {
     setSelectedIds([]);
   };
 
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [view]);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -88,8 +97,19 @@ const TodoList: React.FC = () => {
     return d.getTime() < today.getTime();
   });
 
-  const focusTodos = todos.filter((t) => t.isFocus);
+  const focusTodos = todos.filter((t) => t.isFocus && !t.completed);
   const completedTodos = todos.filter((t) => t.completed);
+  const activeTodos = todos.filter((t) => !t.completed);
+
+  const visibleTodos =
+    view === "today"
+      ? [...dueToday, ...overdue, ...completedTodos]
+      : view === "prio"
+      ? focusTodos
+      : [...activeTodos, ...completedTodos];
+
+  const selectedTodos = todos.filter((t) => selectedIds.includes(t.id));
+  const allSelectedAreFocus = selectedTodos.every((t) => t.isFocus);
 
   const baseBtn =
     "text-xs border-2 border-zinc-500 rounded-full px-2 py-1 transition active:scale-95";
@@ -113,24 +133,27 @@ const TodoList: React.FC = () => {
             {format(new Date(), "EEEE d MMMM", { locale: sv })}
           </p>
         </div>
-
         <div
           className={`flex ${
-            todos.length > 0 ? "justify-between" : "justify-end"
+            visibleTodos.length > 0 ? "justify-between" : "justify-end"
           } items-center mb-2 px-2`}
         >
-          {todos.length > 0 && (
+          {visibleTodos.length > 0 && (
             <button
               onClick={() =>
                 setSelectedIds((prev) =>
-                  prev.length === todos.length ? [] : todos.map((x) => x.id)
+                  prev.length === visibleTodos.length
+                    ? []
+                    : visibleTodos.map((x) => x.id)
                 )
               }
               className={`${baseBtn} ${
-                selectedIds.length === todos.length ? activeBtn : inactiveBtn
+                selectedIds.length === visibleTodos.length
+                  ? activeBtn
+                  : inactiveBtn
               }`}
             >
-              {selectedIds.length === todos.length
+              {selectedIds.length === visibleTodos.length
                 ? "Avmarkera alla"
                 : "Markera alla"}
             </button>
@@ -162,16 +185,18 @@ const TodoList: React.FC = () => {
             </button>
           </div>
         </div>
-
         <TodoActions
           todos={todos}
           selectedIds={selectedIds}
           onClear={() => setSelectedIds([])}
           onDelete={handleDelete}
           onComplete={handleComplete}
-          onAddToFocus={handleAddToFocus}
+          onAddToFocus={
+            view === "prio" && allSelectedAreFocus
+              ? handleRemoveFromFocus
+              : handleAddToFocus
+          }
         />
-
         {view === "today" && (
           <>
             <TodoSection
@@ -183,6 +208,18 @@ const TodoList: React.FC = () => {
               onSelectToggle={handleSelectToggle}
               onDelete={handleDelete}
             />
+            {dueToday.length === 0 && (
+              <div className="flex items-center text-center flex-col justify-center text-zinc-500 dark:text-zinc-400">
+                <CalendarDays
+                  size={42}
+                  className="mr-2 text-indigo-400 dark:text-indigo-300"
+                />
+                <br />
+                <span className="font-semibold ">
+                  Inga todos med deadline idag. <br /> Kolla priolistan!
+                </span>
+              </div>
+            )}
             <TodoSection
               title="🚨 Försenade"
               todos={overdue}
@@ -194,7 +231,6 @@ const TodoList: React.FC = () => {
             />
           </>
         )}
-
         {view === "prio" && (
           <TodoSection
             title="🎯 Priolista"
@@ -207,24 +243,47 @@ const TodoList: React.FC = () => {
             onToggleFocus={handleToggleFocus}
           />
         )}
-
+        {focusTodos.length === 0 && view === "prio" && (
+          <div className="flex items-center text-center flex-col justify-center text-zinc-500 dark:text-zinc-400">
+            <Target
+              size={42}
+              className="mb-2 text-indigo-400 dark:text-indigo-300"
+            />
+            <span className="font-semibold ">
+              Inga todos i priolistan. <br /> Lägg till genom att markera en
+              todo och trycka på "Lägg till i fokus" knappen.
+            </span>
+          </div>
+        )}
         {view === "all" && (
           <TodoSection
             title="📋 Alla Todos"
-            todos={todos}
+            todos={activeTodos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onFocus={handleStartFocus}
             onSelectToggle={handleSelectToggle}
             onDelete={handleDelete}
           />
+        )}{" "}
+        {activeTodos.length === 0 && view === "all" && (
+          <div className="flex items-center text-center flex-col justify-center text-zinc-500 dark:text-zinc-400">
+            <ListTodo
+              size={42}
+              className="mb-2 text-indigo-400 dark:text-indigo-300"
+            />
+            <span className="font-semibold ">
+              Inga aktiva todos. <br /> Lägg till genom att trycka på knappen
+              nedan.
+            </span>
+          </div>
         )}
-
         {completedTodos.length > 0 && view !== "prio" && (
           <TodoSection
             title="✅ Klart"
             todos={completedTodos}
             selectedIds={selectedIds}
+            onDelete={handleDelete}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onComplete={handleComplete}
             onSelectToggle={handleSelectToggle}

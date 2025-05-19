@@ -2,7 +2,14 @@
 // TodoItem.tsx  – Hel ersättning
 // ------------------------------------------------------------
 import React, { useState } from "react";
-import { CheckCircle, Circle, Pencil, Play } from "lucide-react";
+import {
+  CheckCircle,
+  Circle,
+  Pencil,
+  Play,
+  Trash2,
+  RotateCcw,
+} from "lucide-react";
 import { TodoItemProps } from "@/types";
 import Button from "@/components/layout/Button";
 
@@ -41,6 +48,8 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onEdit,
   onFocus,
   onToggleFocus,
+  onDelete,
+  onComplete,
 }) => {
   const [open, setOpen] = useState(false);
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
@@ -65,9 +74,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
         isSelected
           ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
           : ""
-      }
+      } 
       ${overdue ? "bg-red-50 dark:bg-red-900/40" : ""}
-      border-l-[4px] ${priorityBorder}`}
+      border-l-[4px] ${priorityBorder} ${
+        completed ? "opacity-60 scale-[0.98]" : ""
+      }`}
     >
       {/* ─── Top row ──────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
@@ -88,9 +99,9 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
         {/* Title */}
         <p
-          className={`flex-1 mx-3 font-semibold text-lg truncate 
-          
-          `}
+          className={`flex-1 mx-3 font-semibold text-lg truncate ${
+            completed ? "opacity-60 scale-[0.98] line-through" : ""
+          }`}
         >
           {title}
         </p>
@@ -98,26 +109,52 @@ const TodoItem: React.FC<TodoItemProps> = ({
         {/* Mini‑actions när raden är stängd */}
         {!open && (
           <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(todo);
-              }}
-              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-indigo-100"
-              aria-label="Redigera"
-            >
-              <Pencil size={22} className="text-indigo-600" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onFocus(todo);
-              }}
-              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-100"
-              aria-label="Starta"
-            >
-              <Play size={22} className="text-green-600" />
-            </button>
+            {completed ? (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete([id]);
+                  }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-100"
+                  aria-label="Radera"
+                >
+                  <Trash2 size={22} className="text-red-500" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-100"
+                  aria-label="Ångra"
+                >
+                  <RotateCcw size={22} className="text-blue-500" />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(todo);
+                  }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-indigo-100"
+                  aria-label="Redigera"
+                >
+                  <Pencil size={22} className="text-indigo-600" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onFocus(todo);
+                  }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-100"
+                  aria-label="Starta"
+                >
+                  <Play size={22} className="text-green-600" />
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -145,12 +182,14 @@ const TodoItem: React.FC<TodoItemProps> = ({
             className="flex gap-2 justify-center mt-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <Button label="Starta" onClick={() => onFocus(todo)} />
+            {!completed && (
+              <Button label="Starta" onClick={() => onFocus(todo)} />
+            )}
             <Button
               outline
               label="Redigera"
               onClick={() => onEdit(todo)}
-              className="border-zinc-600"
+              className="border-zinc-600 "
             />
           </div>
         </>

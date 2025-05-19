@@ -110,7 +110,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="T.ex. Deklarera"
-          className="w-full rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         {title.trim() && (
           <CheckCircle2 className="absolute right-3 top-[36px] h-5 w-5 text-green-500" />
@@ -120,7 +120,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
       {/* Prioritet */}
       <div className="mb-8 space-y-3">
         <p className="text-base font-medium">Prioritet:</p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 ">
           {[
             {
               level: 1,
@@ -132,20 +132,20 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
               level: 2,
               text: "Medel",
               icon: <Tag className="h-4 w-4" />,
-              bg: "bg-yellow-400",
+              bg: "bg-orange-400",
             },
             {
               level: 3,
               text: "Låg",
               icon: <Circle className="h-4 w-4" />,
-              bg: "bg-green-500",
+              bg: "bg-yellow-300",
             },
           ].map(({ level, text, icon, bg }) => (
             <button
               key={level}
               onClick={() => setPriority(level as 1 | 2 | 3)}
-              className={`flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-white shadow-sm transition active:scale-95 ${bg} ${
-                priority === level ? "ring-2 ring-blue-600 ring-offset-2" : ""
+              className={`flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium shadow-sm transition active:scale-95 text-gray-800  ${bg} ${
+                priority === level ? "ring-2 ring-indigo-600 ring-offset-2" : ""
               }`}
             >
               {icon}
@@ -165,7 +165,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
               onClick={() => setEstimated((prev) => (prev === m ? 0 : m))}
               className={`flex items-center gap-1 rounded-xl px-4 py-1.5 text-sm shadow-sm transition active:scale-95 ${
                 estimated === m
-                  ? "bg-blue-600 text-white"
+                  ? "bg-indigo-600 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
@@ -178,7 +178,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
             onClick={() => setShowCustomTime(!showCustomTime)}
             className={`rounded-xl px-4 py-1.5 text-sm shadow-sm transition active:scale-95 ${
               !isPreset && hasEstimate
-                ? "bg-blue-600 text-white"
+                ? "bg-indigo-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
@@ -193,11 +193,11 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
               value={estimated || ""}
               onChange={(e) => setEstimated(Number(e.target.value))}
               placeholder="minuter"
-              className="w-24 rounded-xl bg-gray-50 px-3 py-2 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
+              className="w-24 rounded-xl bg-gray-50 px-3 py-2 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500"
             />
             <button
               onClick={() => setShowCustomTime(false)}
-              className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm active:scale-95"
+              className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm active:scale-95"
             >
               OK
             </button>
@@ -213,7 +213,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
             onClick={() => setDueDate(dueDate === todayKey ? "" : todayKey)}
             className={`flex items-center gap-1 rounded-xl px-4 py-1.5 text-sm shadow-sm active:scale-95 ${
               dueDate === todayKey
-                ? "bg-blue-600 text-white"
+                ? "bg-indigo-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
@@ -225,7 +225,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
             }
             className={`rounded-xl px-4 py-1.5 text-sm shadow-sm active:scale-95 ${
               dueDate === tomorrowKey
-                ? "bg-blue-600 text-white"
+                ? "bg-indigo-600 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
@@ -243,7 +243,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="mt-3 w-full rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500"
+            className="mt-3 w-full rounded-xl bg-gray-50 px-4 py-3 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500"
           />
         )}
       </div>
@@ -251,7 +251,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose }) => {
       <button
         onClick={handleSubmit}
         disabled={!title.trim()}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-blue-600 to-blue-700 px-6 py-3 text-lg font-semibold text-white shadow-lg transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-indigo-600 to-indigo-700 px-6 py-3 text-lg font-semibold text-white shadow-lg transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <CheckCircle2 className="h-5 w-5" /> {isEdit ? "Spara" : "Skapa"}
       </button>

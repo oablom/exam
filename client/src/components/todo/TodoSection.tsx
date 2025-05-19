@@ -56,6 +56,7 @@ const TodoSection: React.FC<TodoSectionProps> = ({
             onToggleFocus={onToggleFocus ?? (() => {})}
             onSelectToggle={onSelectToggle}
             onDelete={onDelete ?? (() => {})}
+            onComplete={onComplete ?? (() => {})}
           />
         ))}
       </div>
