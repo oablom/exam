@@ -135,13 +135,11 @@ const FocusModal: React.FC<FocusModalProps> = ({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* reset when todo changes */
   useEffect(() => {
-    setSecondsLeft(totalSeconds);
+    setSecondsLeft((todo?.estimatedTime ?? 0) * 60);
     setRunning(false);
-  }, [totalSeconds]);
+  }, [todo?.id]);
 
-  /* countdown */
   useEffect(() => {
     if (!running) return;
     if (secondsLeft === 0) {
@@ -155,7 +153,6 @@ const FocusModal: React.FC<FocusModalProps> = ({
     return () => clearInterval(intv);
   }, [running, secondsLeft, todo, onComplete]);
 
-  /* helpers */
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60)
       .toString()
@@ -206,11 +203,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
             label={running ? "⏸ Pausa" : "▶ Starta"}
             onClick={() => setRunning((v) => !v)}
             outline={false}
-            className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none ${
-              running
-                ? "bg-red-500 hover:bg-red-600 "
-                : "bg-green-600 hover:bg-green-700"
-            }`}
+            className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
           />
           <div className="flex flex-row gap-2 w-full max-w-md">
             <Button

@@ -301,7 +301,14 @@ const TodoList: React.FC = () => {
         <Plus size={36} />
       </button>
 
-      <div className="hidden sm:flex justify-center mt-4">
+      <div
+        className="
+    hidden sm:flex              
+    fixed bottom-5 left-1/2      
+    -translate-x-1/2 z-50
+    w-80                      
+  "
+      >
         <Button
           label="Lägg till todo"
           onClick={() => setModal({ mode: "new" })}
@@ -313,7 +320,6 @@ const TodoList: React.FC = () => {
         mode={modal?.mode as "new" | "edit"}
         todo={modal?.todo}
         onAdd={(dueDate) => {
-          // Använd matchesView från utils
           if (view !== "all" && !matchesView(view as View, dueDate, todayKey)) {
             setView("all");
           }
