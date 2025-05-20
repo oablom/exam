@@ -106,8 +106,10 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
+  token: string | null;
   loading: boolean;
   setAuth: (user: User) => void;
+  setToken: (token: string) => void;
   logout: () => void;
   setLoading: (loading: boolean) => void;
 }

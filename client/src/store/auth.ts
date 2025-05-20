@@ -1,24 +1,34 @@
-// store/auth.ts
 import { create } from "zustand";
-
-interface User {
-  id: string;
-  name?: string;
-  email: string;
-}
-
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  setAuth: (user: User) => void;
-  logout: () => void;
-  setLoading: (loading: boolean) => void;
-}
+import { AuthState, User } from "@/types";
 
 export const useAuth = create<AuthState>((set) => ({
-  user: null,
+  user: JSON.parse(localStorage.getItem("user") || "null"),
+  token: localStorage.getItem("token"),
   loading: true,
-  setAuth: (user) => set({ user, loading: false }),
-  logout: () => set({ user: null, loading: false }),
+
+  setAuth: (user) => {
+    localStorage.setItem("user", JSON.stringify(user));
+  },
+
+  setToken: (token) => {
+    localStorage.setItem("token", token);
+    set({ token });
+  },
+
+  logout: async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error("Kunde inte logga ut från servern", e);
+    }
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    set({ user: null, token: null, loading: false });
+  },
+
   setLoading: (loading) => set({ loading }),
 }));

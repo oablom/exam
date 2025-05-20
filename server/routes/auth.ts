@@ -51,11 +51,11 @@ router.post("/login", async (req: Request, res: Response) => {
     maxAge: 1000 * 60 * 60 * 24,
   });
 
-  res.status(200).json({ user });
+  res.status(200).json({ user, token });
 });
 
 router.get("/me", async (req: Request, res: Response) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Ingen token hittades" });
