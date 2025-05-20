@@ -8,7 +8,6 @@ export const useAuth = create<AuthState>((set) => ({
 
   setAuth: (user) => {
     localStorage.setItem("user", JSON.stringify(user));
-    set({ user, loading: false });
   },
 
   setToken: (token) => {
@@ -16,7 +15,16 @@ export const useAuth = create<AuthState>((set) => ({
     set({ token });
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (e) {
+      console.error("Kunde inte logga ut från servern", e);
+    }
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     set({ user: null, token: null, loading: false });

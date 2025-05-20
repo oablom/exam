@@ -7,28 +7,27 @@ const AuthLoader = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-
-      if (token) {
-        setToken(token); // 🧠 Lagrar token i Zustand
-
-        try {
-          const res = await axios.get(
-            `${import.meta.env.VITE_API_URL}/api/auth/me`,
-            {
+      try {
+        const res = await axios.get("/api/auth/me", {
+          withCredentials: true,
+        });
+        setAuth(res.data);
+      } catch {
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const res = await axios.get("/api/auth/me", {
               headers: { Authorization: `Bearer ${token}` },
-              withCredentials: true, // om du även använder cookies
-            }
-          );
-          setAuth(res.data);
-        } catch {
-          localStorage.removeItem("token");
-          logout();
-        } finally {
-          setLoading(false);
+            });
+            setToken(token);
+            setAuth(res.data);
+            return;
+          } catch {
+            localStorage.removeItem("token");
+          }
         }
-      } else {
-        logout(); // säkerställer att inget gammalt tillstånd lever kvar
+        logout();
+      } finally {
         setLoading(false);
       }
     };

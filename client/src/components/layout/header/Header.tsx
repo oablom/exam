@@ -14,17 +14,6 @@ const Header = () => {
   const registerModal = useRegisterModal();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        `${VITE_API_URL}/api/auth/logout`,
-        {},
-        { withCredentials: true }
-      );
-    } catch {}
-    logout();
-  };
-
   const hamburgerButtonStyle =
     "block w-full text-left px-4 py-2 text-sm text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700";
 
@@ -41,7 +30,7 @@ const Header = () => {
           {user ? (
             <>
               <WelcomeLabel name={user.name} compact />
-              <Button label="Logga ut" onClick={handleLogout} />
+              <Button label="Logga ut" onClick={logout} />
             </>
           ) : (
             <>
