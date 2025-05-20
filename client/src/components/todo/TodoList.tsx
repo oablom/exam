@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
+import { useAuth } from "@/store/auth";
 
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
@@ -40,6 +41,7 @@ const TodoList: React.FC = () => {
     mode: "new" | "edit";
     todo?: Todo;
   } | null>(null);
+  const { user, loading } = useAuth(); // 👈 lägg till detta
 
   const handleStartFocus = (todo: Todo) => {
     setFocusTodo(todo);
@@ -47,8 +49,10 @@ const TodoList: React.FC = () => {
   };
 
   useEffect(() => {
-    void fetchTodos();
-  }, [fetchTodos]);
+    if (!loading && user) {
+      fetchTodos();
+    }
+  }, [loading, user, fetchTodos]);
 
   const handleAddToFocus = async (ids: string[]) => {
     await Promise.all(ids.map((id) => updateTodo(id, { isFocus: true })));
