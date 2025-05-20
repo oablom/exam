@@ -1,19 +1,14 @@
 import { MouseEvent } from "react";
 import TodoForm from "./TodoForm";
 import { Todo } from "@/types";
-
-interface TodoModalProps {
-  isOpen: boolean;
-  mode: "new" | "edit";
-  todo?: Todo;
-  onClose: () => void;
-}
+import { TodoModalProps } from "@/types";
 
 const TodoModal: React.FC<TodoModalProps> = ({
   isOpen,
   mode,
   todo,
   onClose,
+  onAdd,
 }) => {
   if (!isOpen) return null;
 
@@ -26,7 +21,7 @@ const TodoModal: React.FC<TodoModalProps> = ({
       onClick={closeOnBackdrop}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
     >
-      <TodoForm mode={mode} todo={todo} onClose={onClose} />
+      <TodoForm mode={mode} todo={todo} onClose={onClose} onAdd={onAdd} />
     </div>
   );
 };

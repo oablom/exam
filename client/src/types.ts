@@ -111,3 +111,17 @@ export interface AuthState {
   logout: () => void;
   setLoading: (loading: boolean) => void;
 }
+export interface TodoModalProps {
+  isOpen: boolean;
+  mode: "new" | "edit";
+  todo?: Todo;
+  onClose: () => void;
+  onAdd?: (dueDate: string) => void;
+}
+
+export interface TodoFormProps {
+  mode: "new" | "edit";
+  todo?: Todo;
+  onClose?: () => void;
+  onAdd?: (dueDate: string) => void;
+}
