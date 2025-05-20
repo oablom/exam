@@ -1,6 +1,6 @@
-// ✅ Skapa fil: src/store/todo.ts
 import { create } from "zustand";
 import { Todo } from "@/types";
+import { authFetch } from "@/lib/authFetch";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,9 +18,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
   fetchTodos: async () => {
     try {
-      const res = await fetch(`${API_URL}/api/todos`, {
-        credentials: "include",
-      });
+      const res = await authFetch(`${API_URL}/api/todos`);
       if (!res.ok) return;
       const data = await res.json();
       set({ todos: data });
@@ -31,10 +29,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
   addTodo: async (todo) => {
     try {
-      const res = await fetch(`${API_URL}/api/todos`, {
+      const res = await authFetch(`${API_URL}/api/todos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(todo),
       });
       if (!res.ok) return;
@@ -45,12 +42,11 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     }
   },
 
-  updateTodo: async (id: string, updates: Partial<Todo>) => {
+  updateTodo: async (id, updates) => {
     try {
-      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+      const res = await authFetch(`${API_URL}/api/todos/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(updates),
       });
       if (!res.ok) return;
@@ -65,9 +61,8 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
   deleteTodo: async (id) => {
     try {
-      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+      const res = await authFetch(`${API_URL}/api/todos/${id}`, {
         method: "DELETE",
-        credentials: "include",
       });
       if (!res.ok) return;
       set({ todos: get().todos.filter((t) => t.id !== id) });
@@ -83,10 +78,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     const updated = { ...todo, completed: !todo.completed };
 
     try {
-      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+      const res = await authFetch(`${API_URL}/api/todos/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify(updated),
       });
       if (!res.ok) return;

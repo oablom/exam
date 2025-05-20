@@ -23,7 +23,7 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
 
     ping();
 
-    const interval = setInterval(ping, 5000);
+    const interval = setInterval(ping, 600000);
     const fallbackTimeout = setTimeout(() => setFallbackMessage(true), 5000);
 
     return () => {
