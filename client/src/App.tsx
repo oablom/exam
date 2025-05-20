@@ -1,4 +1,3 @@
-// src/App.tsx
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/store/auth";
@@ -29,7 +28,7 @@ export default function App() {
         <ToasterProvider />
         <Header />
 
-        <main className="flex-grow flex flex-col gap-4 items-center justify-center mt-20">
+        <main className="flex-grow flex flex-col gap-4 items-center justify-center my-10 ">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/focus" element={<FocusPage />} />

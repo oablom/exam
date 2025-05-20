@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Plus,
   CalendarDays,
@@ -27,6 +27,7 @@ import TodoModal from "./TodoModal";
 import { useTodoStore } from "@/store/todo";
 import Button from "@/components/layout/Button";
 import { isDueToday, isOverdue } from "@/utils/dateHelpers";
+import { matchesView, View } from "@/utils/viewHelpers";
 
 const TodoList: React.FC = () => {
   const { todos, deleteTodo, toggleTodo, updateTodo, fetchTodos } =
@@ -40,7 +41,7 @@ const TodoList: React.FC = () => {
     mode: "new" | "edit";
     todo?: Todo;
   } | null>(null);
-
+  const todayKey = useMemo(() => new Date().toISOString().split("T")[0], []);
   const handleStartFocus = (todo: Todo) => {
     setFocusTodo(todo);
     setIsFocusOpen(true);
@@ -311,6 +312,12 @@ const TodoList: React.FC = () => {
         isOpen={!!modal}
         mode={modal?.mode as "new" | "edit"}
         todo={modal?.todo}
+        onAdd={(dueDate) => {
+          // Använd matchesView från utils
+          if (view !== "all" && !matchesView(view as View, dueDate, todayKey)) {
+            setView("all");
+          }
+        }}
         onClose={() => setModal(null)}
       />
 
