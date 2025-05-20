@@ -5,12 +5,25 @@ import Button from "@/components/layout/Button";
 import WelcomeLabel from "./WelcomeLabel";
 import { Menu } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
+import { VITE_API_URL } from "@/lib/api";
 
 const Header = () => {
   const { user, logout } = useAuth();
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${VITE_API_URL}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+    } catch {}
+    logout();
+  };
 
   const hamburgerButtonStyle =
     "block w-full text-left px-4 py-2 text-sm text-zinc-800 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-700";
@@ -28,7 +41,7 @@ const Header = () => {
           {user ? (
             <>
               <WelcomeLabel name={user.name} compact />
-              <Button label="Logga ut" onClick={logout} />
+              <Button label="Logga ut" onClick={handleLogout} />
             </>
           ) : (
             <>

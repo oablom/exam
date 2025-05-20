@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// src/App.tsx
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/store/auth";
+import useLoginModal from "@/hooks/useLoginModal";
 import Home from "@/pages/Home";
 import FocusPage from "@/pages/FocusPage";
 import Header from "@/components/layout/header/Header";
@@ -7,10 +11,16 @@ import RegisterModal from "@/components/modals/RegisterModal";
 import InstallPrompt from "@/components/InstallPrompt";
 import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
-
 import BackendStatus from "./system/BackendStatus";
 
-const App = () => {
+export default function App() {
+  const { user, loading } = useAuth();
+  const loginModal = useLoginModal();
+
+  useEffect(() => {
+    if (!loading && !user) loginModal.onOpen();
+  }, [loading, user]);
+
   return (
     <>
       <BackendStatus message="Connecting to server..." />
@@ -23,6 +33,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/focus" element={<FocusPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <InstallPrompt />
         </main>
@@ -32,6 +43,4 @@ const App = () => {
       </BrowserRouter>
     </>
   );
-};
-
-export default App;
+}

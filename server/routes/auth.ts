@@ -77,4 +77,13 @@ router.get("/me", async (req: Request, res: Response) => {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res.sendStatus(200);
+});
+
 export default router;
