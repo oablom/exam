@@ -17,59 +17,84 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   todos: [],
 
   fetchTodos: async () => {
-    const res = await fetch(`${API_URL}/api/todos`, {
-      credentials: "include",
-    });
-    const data = await res.json();
-    set({ todos: data });
+    try {
+      const res = await fetch(`${API_URL}/api/todos`, {
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      set({ todos: data });
+    } catch (err) {
+      console.error("fetchTodos error:", err);
+    }
   },
 
   addTodo: async (todo) => {
-    const res = await fetch(`${API_URL}/api/todos`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(todo),
-    });
-    const newTodo = await res.json();
-    set({ todos: [...get().todos, newTodo] });
+    try {
+      const res = await fetch(`${API_URL}/api/todos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(todo),
+      });
+      if (!res.ok) return;
+      const newTodo = await res.json();
+      set({ todos: [...get().todos, newTodo] });
+    } catch (err) {
+      console.error("addTodo error:", err);
+    }
   },
 
   updateTodo: async (id: string, updates: Partial<Todo>) => {
-    const res = await fetch(`${API_URL}/api/todos/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(updates),
-    });
-    const updated = await res.json();
-    set({
-      todos: get().todos.map((t) => (t.id === id ? { ...t, ...updates } : t)),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updates),
+      });
+      if (!res.ok) return;
+      const updated = await res.json();
+      set({
+        todos: get().todos.map((t) => (t.id === id ? { ...t, ...updated } : t)),
+      });
+    } catch (err) {
+      console.error("updateTodo error:", err);
+    }
   },
 
   deleteTodo: async (id) => {
-    await fetch(`${API_URL}/api/todos/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    set({ todos: get().todos.filter((t) => t.id !== id) });
+    try {
+      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      set({ todos: get().todos.filter((t) => t.id !== id) });
+    } catch (err) {
+      console.error("deleteTodo error:", err);
+    }
   },
 
   toggleTodo: async (id) => {
     const todo = get().todos.find((t) => t.id === id);
     if (!todo) return;
+
     const updated = { ...todo, completed: !todo.completed };
 
-    await fetch(`${API_URL}/api/todos/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(updated),
-    });
-
-    set({
-      todos: get().todos.map((t) => (t.id === id ? updated : t)),
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updated),
+      });
+      if (!res.ok) return;
+      set({
+        todos: get().todos.map((t) => (t.id === id ? updated : t)),
+      });
+    } catch (err) {
+      console.error("toggleTodo error:", err);
+    }
   },
 }));
