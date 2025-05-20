@@ -24,7 +24,7 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
     ping();
 
     const interval = setInterval(ping, 5000);
-    const fallbackTimeout = setTimeout(() => setFallbackMessage(true), 10000);
+    const fallbackTimeout = setTimeout(() => setFallbackMessage(true), 5000);
 
     return () => {
       clearInterval(interval);
@@ -35,10 +35,14 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
   if (isOnline) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+    <div className="flex flex-col items-center justify-center h-screen text-center px-4 ">
       <LoadingSpinner message={message} />
       {fallbackMessage && (
         <p className="text-sm text-zinc-500 mt-2 max-w-sm">
+          <span className="font-bold">
+            This might take 15 seconds or more. Please be patient.
+          </span>
+          <br /> <br />
           The server is hosted via a third party and may take some time to
           respond. If the issue persists, please try refreshing the page or
           check back later. Thank you for your understanding!

@@ -6,7 +6,7 @@ type Props = {
 const LoadingSpinner = ({ fullPage = false, message }: Props) => {
   const spinner = (
     <div className="flex flex-col items-center justify-center gap-2 py-4">
-      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
       {message && <p className="text-gray-600 text-sm">{message}</p>}
     </div>
   );
