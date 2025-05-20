@@ -36,6 +36,7 @@ const LoginModal = () => {
 
       setAuth(data.user);
       setToken(data.token);
+      localStorage.setItem("token", data.token);
 
       toast.success("Inloggad!");
       loginModal.onClose();

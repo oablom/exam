@@ -11,5 +11,6 @@ export const authFetch = async (input: RequestInfo, init: RequestInit = {}) => {
   return fetch(input, {
     ...init,
     headers,
+    credentials: "include",
   });
 };
