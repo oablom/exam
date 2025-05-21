@@ -1,10 +1,12 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import webpush from "web-push";
 import authRoutes from "./routes/auth";
 import todoRoutes from "./routes/todo";
-import webpush from "web-push";
+import prisma from "./lib/prisma";
+import cron from "node-cron";
 
 dotenv.config();
 const app = express();
@@ -37,89 +39,103 @@ const subscriptions: any[] = [];
 app.post("/api/subscribe", (req, res) => {
   const newSub = req.body;
 
-  const alreadyExists = subscriptions.some(
-    (sub) => sub.endpoint === newSub.endpoint
-  );
+  // Ta bort tidigare med samma endpoint
+  const index = subscriptions.findIndex((s) => s.endpoint === newSub.endpoint);
 
-  if (!alreadyExists) {
-    subscriptions.push(newSub);
-    console.log("📌 Lade till ny prenumeration");
+  if (index !== -1) {
+    subscriptions.splice(index, 1);
   }
 
-  console.log("Unika prenumerationer:", subscriptions.length);
+  subscriptions.push(newSub);
 
-  res.status(201).json({ message: "Prenumeration mottagen ✅" });
+  res.status(201).json({ message: "Prenumeration mottagen" });
 });
 
-app.post("/api/send", async (req, res) => {
-  const payload = JSON.stringify({
-    title: "Påminnelse!",
-    body: "Dags att göra din uppgift ✅",
+cron.schedule("* * * * *", async () => {
+  const now = new Date();
+
+  const todos = await prisma.todo.findMany({
+    where: {
+      dueDate: { lte: now },
+      reminderSent: false,
+    },
   });
 
-  console.log("📤 Skickar payload:", payload);
+  for (const todo of todos) {
+    const payload = JSON.stringify({
+      title: "⏰ Påminnelse!",
+      body: `Kom ihåg att: ${todo.title}`,
+    });
 
-  const validSubscriptions: any[] = [];
+    await Promise.allSettled(
+      subscriptions.map((sub) =>
+        webpush.sendNotification(sub, payload).catch(() => {})
+      )
+    );
 
-  await Promise.allSettled(
-    subscriptions.map((sub, i) =>
-      webpush
-        .sendNotification(sub, payload)
-        .then(() => {
-          console.log(`✅ Notis skickad till sub ${i}`);
-          validSubscriptions.push(sub);
-        })
-        .catch((err) => {
-          console.error(`❌ Push-fel till sub ${i}:`, err.message);
-          if (err.statusCode === 404 || err.statusCode === 410) {
-            console.log(`🧼 Tog bort sub ${i}`);
-          }
-        })
-    )
-  );
-
-  subscriptions.length = 0;
-  subscriptions.push(...validSubscriptions);
-
-  res.status(200).json({ message: "Notiser skickade" });
+    await prisma.todo.update({
+      where: { id: todo.id },
+      data: { reminderSent: true },
+    });
+  }
 });
 
-app.post("/api/scheduleReminder", (req, res) => {
-  const delay = 10 * 1000;
+interface AuthRequest extends Request {
+  userId: string;
+}
 
-  const payload = JSON.stringify({
-    title: "⏰ Påminnelse!",
-    body: "Det har gått 10 sekunder – dags att göra något!",
-  });
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies.token;
+  if (!token) return res.sendStatus(401);
 
-  setTimeout(async () => {
-    console.log("🚀 Skickar schemalagd notis...");
+  try {
+    const decoded = require("jsonwebtoken").verify(
+      token,
+      process.env.JWT_SECRET!
+    ) as { id: string };
+    (req as AuthRequest).userId = decoded.id;
+    next();
+  } catch {
+    res.sendStatus(403);
+  }
+};
+
+app.post(
+  "/api/remind/:id",
+  authenticate,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { userId } = req as AuthRequest;
+
+    const todo = await prisma.todo.findUnique({ where: { id } });
+
+    if (!todo || todo.userId !== userId) {
+      return res.status(404).json({ error: "Todo hittades inte" });
+    }
+
+    const payload = JSON.stringify({
+      title: todo.title,
+      body: "Dags att göra detta nu!",
+    });
+
     const validSubscriptions: any[] = [];
 
-    const results = await Promise.allSettled(
+    await Promise.allSettled(
       subscriptions.map((sub, i) =>
-        webpush.sendNotification(sub, payload).then(
-          () => {
-            console.log(`✅ Notis skickad till sub ${i}`);
-            validSubscriptions.push(sub);
-          },
-          (err) => {
-            console.error(`❌ Push-fel till sub ${i}:`, err.message);
-            if (err.statusCode === 404 || err.statusCode === 410) {
-              console.log(`🧼 Sub ${i} är ogiltig – tas bort`);
-            }
-          }
-        )
+        webpush
+          .sendNotification(sub, payload)
+          .then(() => validSubscriptions.push(sub))
+          .catch(() => {})
       )
     );
 
     subscriptions.length = 0;
     subscriptions.push(...validSubscriptions);
-  }, delay);
 
-  res.status(200).json({ message: "Push skickas om 10 sekunder" });
-});
+    res.status(200).json({ message: "Push skickad" });
+  }
+);
 
 app.get("/api/ping", (req, res) => {
-  res.status(200).json({ message: "Pong 🏓" });
+  res.status(200).json({ message: "Pong " });
 });

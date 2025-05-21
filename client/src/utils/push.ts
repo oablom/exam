@@ -5,37 +5,34 @@ const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
 export const subscribeToPush = async () => {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-    console.warn("❌ Push-notiser stöds inte i denna webbläsare");
+    console.warn("Push-notiser stöds inte i denna webbläsare");
     return;
   }
 
   const registration = await navigator.serviceWorker.ready;
 
   try {
-    // ♻️ Ta bort gammal prenumeration
     const existingSubscription =
       await registration.pushManager.getSubscription();
     if (existingSubscription) {
       await existingSubscription.unsubscribe();
-      console.log("♻️ Tidigare prenumeration togs bort");
+      console.log(" Tidigare prenumeration togs bort");
     }
 
-    // 🆕 Skapa ny prenumeration
     const newSubscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     });
 
-    // ☁️ Skicka till backend
     await axios.post(
       `${import.meta.env.VITE_API_URL}/api/subscribe`,
       newSubscription,
       { withCredentials: true }
     );
 
-    console.log("✅ Ny push-prenumeration skapad");
+    console.log(" Ny push-prenumeration skapad");
     return newSubscription;
   } catch (err) {
-    console.error("❌ Fel vid prenumeration:", err);
+    console.error(" Fel vid prenumeration:", err);
   }
 };
