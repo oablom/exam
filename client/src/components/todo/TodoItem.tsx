@@ -41,13 +41,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
 
-  const priorityBorder =
-    priority === 1
-      ? "border-red-500"
-      : priority === 2
-      ? "border-orange-400"
-      : "border-yellow-300";
-
   const overdue = isOverdue(dueDate, completed);
   const dueToday = isDueToday(dueDate);
 
@@ -59,19 +52,20 @@ const TodoItem: React.FC<TodoItemProps> = ({
     playCompletionBeep();
   }, [justCompleted]);
 
+  const priorityBorder =
+    priority === 1
+      ? "border-red-500"
+      : priority === 2
+      ? "border-orange-300"
+      : "border-yellow-300";
+
   const base = `
     flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
     hover:shadow-lg hover:scale-[1.01]
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
     duration-500 ease-in-out
     border-l-[4px] border-b-[2px]
-    ${
-      priority === 1
-        ? "border-red-500"
-        : priority === 2
-        ? "border-orange-400"
-        : "border-yellow-300"
-    }
+    ${priorityBorder}
     ${isSelected ? "ring-2 ring-indigo-400" : ""}
   `;
 
@@ -79,7 +73,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   let bg = "";
   if (completed) {
     bg =
-      "!bg-green-50 hover:!bg-green-200 border-green-700 dark:bg-green-900/40";
+      "!bg-green-50 hover:!bg-green-200 !border-green-700 dark:bg-green-900/40";
   } else if (overdue) {
     bg = "bg-red-200 hover:bg-red-300 dark:hover:bg-red-900/40";
   } else if (dueToday) {

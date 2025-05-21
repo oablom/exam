@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import { Todo } from "@/types";
 import Modal from "./Modal";
 import Button from "../layout/Button";
+import { Play, Pause, CheckCircle, RotateCcw } from "lucide-react";
 
 /**
  * VisualTimer
@@ -199,19 +200,22 @@ const FocusModal: React.FC<FocusModalProps> = ({
       footer={
         <div className="flex flex-col gap-3 w-full items-center max-w-md m-auto">
           <Button
-            label={running ? "⏸ Pausa" : "▶ Starta"}
+            icon={running ? <Pause /> : <Play />}
+            label={running ? "Pausa" : "Starta"}
             onClick={() => setRunning((v) => !v)}
             outline={false}
             className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
           />
           <div className="flex flex-row gap-2 w-full max-w-md">
             <Button
+              icon={<RotateCcw />}
               label="Reset"
               outline
               onClick={reset}
               className="flex-1 bg-white hover:bg-zinc-300 text-zinc-800 font-medium py-3 rounded-full border-2 border-dotted border-zinc-600"
             />
             <Button
+              icon={<CheckCircle />}
               label="Klart!"
               onClick={finishEarly}
               outline

@@ -140,6 +140,15 @@ const TodoList: React.FC = () => {
   const inactiveBtn =
     "bg-white text-zinc-800 border-zinc-300 hover:bg-indigo-100";
 
+  const prioDisplayTodos =
+    view === "prio"
+      ? [
+          ...focusTodos,
+
+          ...completedTodos.filter((t) => animatedIds.includes(t.id)),
+        ]
+      : [];
+
   return (
     <>
       <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4 mb-10">
@@ -259,13 +268,15 @@ const TodoList: React.FC = () => {
           <TodoSection
             title="En åt gången"
             icon={<Bird className="text-indigo-500" size={20} />}
-            todos={focusTodos}
+            todos={prioDisplayTodos}
             selectedIds={selectedIds}
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onFocus={handleStartFocus}
             onSelectToggle={handleSelectToggle}
             onDelete={handleDelete}
             onToggleFocus={handleToggleFocus}
+            justCompletedIds={animatedIds}
+            onComplete={handleComplete}
           />
         )}
         {focusTodos.length === 0 && view === "prio" && (
