@@ -36,6 +36,8 @@ const TodoList: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
+  const [animatedIds, setAnimatedIds] = useState<string[]>([]);
+
   const [view, setView] = useState<"today" | "prio" | "all">("today");
   const [modal, setModal] = useState<{
     mode: "new" | "edit";
@@ -74,14 +76,20 @@ const TodoList: React.FC = () => {
     await Promise.all(ids.map(deleteTodo));
     setSelectedIds([]);
   };
-
   const handleComplete = async (ids: string[], complete: boolean) => {
-    await Promise.all(
-      ids.map(async (id) => {
-        const t = todos.find((x) => x.id === id);
-        if (t && t.completed !== complete) await toggleTodo(id);
-      })
-    );
+    for (const id of ids) {
+      const t = todos.find((x) => x.id === id);
+      if (t && t.completed !== complete) {
+        await toggleTodo(id);
+
+        if (complete) {
+          // Vänta lite så att todo:n hinner flyttas till completedTodos
+          setTimeout(() => {
+            setAnimatedIds((prev) => [...prev, id]);
+          }, 30); // <= detta ger React tid att flytta itemet
+        }
+      }
+    }
     setSelectedIds([]);
   };
 
@@ -289,6 +297,7 @@ const TodoList: React.FC = () => {
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onComplete={handleComplete}
             onSelectToggle={handleSelectToggle}
+            justCompleted={animatedIds}
           />
         )}
       </section>
@@ -301,7 +310,14 @@ const TodoList: React.FC = () => {
         <Plus size={36} />
       </button>
 
-      <div className="hidden sm:flex justify-center mt-4">
+      <div
+        className="
+    hidden sm:flex              
+    fixed bottom-5 left-1/2      
+    -translate-x-1/2 z-50
+    w-80                      
+  "
+      >
         <Button
           label="Lägg till todo"
           onClick={() => setModal({ mode: "new" })}
@@ -313,7 +329,6 @@ const TodoList: React.FC = () => {
         mode={modal?.mode as "new" | "edit"}
         todo={modal?.todo}
         onAdd={(dueDate) => {
-          // Använd matchesView från utils
           if (view !== "all" && !matchesView(view as View, dueDate, todayKey)) {
             setView("all");
           }

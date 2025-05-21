@@ -58,6 +58,7 @@ export interface TodoItemProps {
   onFocus: (todo: Todo) => void;
   onEdit: (todo: Todo) => void;
   onToggleFocus?: (todo: Todo) => void;
+  justCompleted?: boolean;
 }
 
 export interface Todo {

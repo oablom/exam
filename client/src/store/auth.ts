@@ -1,4 +1,3 @@
-// store/auth.ts
 import { create } from "zustand";
 
 interface User {
