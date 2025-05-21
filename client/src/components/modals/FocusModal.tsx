@@ -124,7 +124,6 @@ const FocusModal: React.FC<FocusModalProps> = ({
   const [mode, setMode] = useState<"disc" | "bar">(initialTimerMode);
   const [size, setSize] = useState(240);
 
-  /* Responsive size: 60% of viewport width, 40% of viewport height, cap at 320 */
   const computeSize = () =>
     Math.min(320, window.innerWidth * 0.6, window.innerHeight * 0.4);
 

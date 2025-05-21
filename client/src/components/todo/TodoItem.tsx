@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, use } from "react";
 import {
   CheckCircle,
   Circle,
@@ -35,7 +35,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
   justCompleted,
 }) => {
   const [open, setOpen] = useState(false);
-  const [shouldAnimate, setShouldAnimate] = useState(false);
 
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
 
@@ -49,28 +48,60 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const overdue = isOverdue(dueDate, completed);
   const dueToday = isDueToday(dueDate);
 
+  // useEffect(() => {
+  //   if (justCompleted) {
+  //     // Poppa confetti
+  //     confetti({
+  //       particleCount: 30,
+  //       spread: 60,
+  //       origin: { y: 0.6 }
+  //     });
+  //     // Spela ljud
+  //     new Audio(completedSfx).play().catch(() => {});
+  //   }
+  // }, [justCompleted]);
+
+  const base = `
+    flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
+    hover:shadow-lg hover:scale-[1.01]
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500
+    duration-500 ease-in-out
+    border-l-[4px] border-b-[2px]
+    ${
+      priority === 1
+        ? "border-red-500"
+        : priority === 2
+        ? "border-orange-400"
+        : "border-yellow-300"
+    }
+    ${isSelected ? "ring-2 ring-indigo-400" : ""}
+  `;
+
+  // 2) Bakgrundar i rätt ordning (completed först)
+  let bg = "";
+  if (completed) {
+    bg =
+      "!bg-green-100 hover:!bg-green-200 border-green-700 dark:bg-green-900/40";
+  } else if (overdue) {
+    bg = "bg-red-200 hover:bg-red-300 dark:hover:bg-red-900/40";
+  } else if (dueToday) {
+    bg = "bg-red-50 hover:bg-red-100 dark:hover:bg-red-600/40";
+  } else {
+    bg = "bg-white dark:bg-zinc-800 hover:bg-indigo-50";
+  }
+
   return (
     <div
       onClick={() => setOpen((p) => !p)}
-      className={`flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
-      hover:shadow-lg hover:scale-[1.01] bg-white dark:bg-zinc-800 hover:bg-indigo-50
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 duration-500 ease-in-out
-      ${completed ? "opacity-60 scale-[0.98] line-through blur-[0.3px]" : ""}
-      ${shouldAnimate ? "animate-complete" : ""}
-      ${
-        isSelected
-          ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
-          : ""
-      }
-      ${
-        overdue ? "!bg-red-200 hover:!bg-red-300 dark:hover:!bg-red-900/40" : ""
-      }
-      ${
-        dueToday ? "!bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""
-      }
-      border-l-[4px] border-b-[2px] ${priorityBorder}`}
+      className={`
+        ${base}
+        ${bg}
+        ${completed ? " opacity-60" : ""}
+        ${
+          justCompleted ? "animate-complete-pop animate-blink blur-[0.3px]" : ""
+        }
+      `}
     >
-      {/* Top row */}
       <div className="flex items-center justify-between">
         <div
           onClick={(e) => {
@@ -88,7 +119,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
         <p
           className={`flex-1 mx-3 font-semibold text-lg truncate ${
-            completed ? "opacity-60 scale-[0.98] line-through" : ""
+            completed ? "opacity-60 line-through" : ""
           }`}
         >
           {title}
