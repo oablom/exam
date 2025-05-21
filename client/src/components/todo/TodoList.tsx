@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, use } from "react";
 import {
   Plus,
   CalendarDays,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
-
+import { toast } from "react-hot-toast";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import TodoActions from "@/components/todo/TodoActions";
@@ -32,8 +32,7 @@ import { matchesView, View } from "@/utils/viewHelpers";
 const TodoList: React.FC = () => {
   const { todos, deleteTodo, toggleTodo, updateTodo, fetchTodos } =
     useTodoStore();
-  const [justCompletedBool, setJustCompletedBool] = useState<string[]>([]);
-  const [justCompleted, setJustCompleted] = useState<string[]>([]);
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
@@ -100,6 +99,20 @@ const TodoList: React.FC = () => {
     setSelectedIds([]);
   }, [view]);
 
+  useEffect(() => {
+    if (animatedIds.length > 0) {
+      const count = animatedIds.length;
+      toast.success(
+        `🎉 Du har slutfört ${
+          count <= 5
+            ? `${count} uppgift${count === 1 ? "" : "er"}`
+            : "flera uppgifter"
+        }!`,
+        { duration: 2000, position: "top-center" }
+      );
+    }
+  }, [animatedIds]);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -129,7 +142,7 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4">
+      <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4 mb-10">
         <div className="text-center mt-6 mb-4">
           <h1 className="text-3xl font-hand font-bold text-zinc-800 dark:text-white">
             {view === "today"

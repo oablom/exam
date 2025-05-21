@@ -11,6 +11,9 @@ import { TodoItemProps } from "@/types";
 import Button from "@/components/layout/Button";
 import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
+import confetti from "canvas-confetti";
+import { playCompletionBeep } from "@/utils/aduioHelper";
+
 // Hook: returnerar föregående värde mellan renders
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
@@ -48,18 +51,13 @@ const TodoItem: React.FC<TodoItemProps> = ({
   const overdue = isOverdue(dueDate, completed);
   const dueToday = isDueToday(dueDate);
 
-  // useEffect(() => {
-  //   if (justCompleted) {
-  //     // Poppa confetti
-  //     confetti({
-  //       particleCount: 30,
-  //       spread: 60,
-  //       origin: { y: 0.6 }
-  //     });
-  //     // Spela ljud
-  //     new Audio(completedSfx).play().catch(() => {});
-  //   }
-  // }, [justCompleted]);
+  useEffect(() => {
+    if (!justCompleted) return;
+
+    confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
+
+    playCompletionBeep();
+  }, [justCompleted]);
 
   const base = `
     flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
@@ -81,7 +79,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   let bg = "";
   if (completed) {
     bg =
-      "!bg-green-100 hover:!bg-green-200 border-green-700 dark:bg-green-900/40";
+      "!bg-green-50 hover:!bg-green-200 border-green-700 dark:bg-green-900/40";
   } else if (overdue) {
     bg = "bg-red-200 hover:bg-red-300 dark:hover:bg-red-900/40";
   } else if (dueToday) {
