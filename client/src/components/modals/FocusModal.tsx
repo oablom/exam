@@ -1,22 +1,17 @@
 import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
+import confetti from "canvas-confetti";
+import { playTimerEndBell, resumeAudioContext } from "@/utils/audioHelper";
 import { Todo } from "@/types";
 import Modal from "./Modal";
 import Button from "../layout/Button";
 import { Play, Pause, CheckCircle, RotateCcw } from "lucide-react";
 
-/**
- * VisualTimer
- * - "disc": shrinking circular stroke (TimeTimer‑liknande)
- * - "bar": vertikal stapel med segment‑streck (delmål)
- *
- * Klicka på timern för att växla läge.
- */
 const VisualTimer: React.FC<{
   secondsLeft: number;
   totalSeconds: number;
   mode: "disc" | "bar";
-  size: number; // absolute px
-  segmentSeconds: number; // length of each sub‑goal in seconds
+  size: number;
+  segmentSeconds: number;
   onToggleMode: () => void;
 }> = ({
   secondsLeft,
@@ -28,7 +23,6 @@ const VisualTimer: React.FC<{
 }) => {
   const pct = totalSeconds === 0 ? 0 : secondsLeft / totalSeconds;
 
-  /** BAR mode with segment lines */
   if (mode === "bar") {
     const segments = Math.floor(totalSeconds / segmentSeconds);
     const segmentLines = Array.from({ length: segments - 1 }, (_, i) => {
@@ -54,14 +48,13 @@ const VisualTimer: React.FC<{
           className="absolute left-0 right-0 bottom-0 bg-green-500 transition-all duration-1000 ease-linear"
           style={{ height: `${pct * 100}%` }}
         />
-        {/* segment lines */}
+
         {segmentLines}
       </button>
     );
   }
 
-  /** DISC mode */
-  const radius = size / 2 - 12; // some padding
+  const radius = size / 2 - 12;
   const dashArray = 2 * Math.PI * radius;
   const dashOffset = dashArray * (1 - pct);
 
@@ -108,7 +101,7 @@ interface FocusModalProps {
   onClose: () => void;
   onComplete: (id: string) => void;
   initialTimerMode?: "disc" | "bar";
-  segmentMinutes?: number; // length of each sub‑goal
+  segmentMinutes?: number;
 }
 
 const FocusModal: React.FC<FocusModalProps> = ({
@@ -119,11 +112,33 @@ const FocusModal: React.FC<FocusModalProps> = ({
   initialTimerMode = "disc",
   segmentMinutes = 5,
 }) => {
-  const totalSeconds = useMemo(() => (todo?.estimatedTime ?? 0) * 60, [todo]);
+  const totalSeconds = useMemo(
+    () => Math.round((todo?.estimatedTime ?? 0) * 60),
+    [todo?.estimatedTime, todo?.id]
+  );
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [running, setRunning] = useState(false);
   const [mode, setMode] = useState<"disc" | "bar">(initialTimerMode);
   const [size, setSize] = useState(240);
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    setSecondsLeft(totalSeconds);
+    setRunning(false);
+    setExpired(false);
+  }, [totalSeconds, isOpen]);
+
+  const handleExpire = () => {
+    setExpired(true);
+    playTimerEndBell();
+    confetti({ particleCount: 15, spread: 40, origin: { y: 0.5 } });
+  };
+
+  const handleDone = () => {
+    onComplete(todo!.id);
+    setExpired(false);
+    onClose();
+  };
 
   const computeSize = () =>
     Math.min(320, window.innerWidth * 0.6, window.innerHeight * 0.4);
@@ -136,14 +151,9 @@ const FocusModal: React.FC<FocusModalProps> = ({
   }, []);
 
   useEffect(() => {
-    setSecondsLeft((todo?.estimatedTime ?? 0) * 60);
-    setRunning(false);
-  }, [todo?.id]);
-
-  useEffect(() => {
     if (!running) return;
     if (secondsLeft === 0) {
-      todo && onComplete(todo.id);
+      handleExpire();
       setRunning(false);
       return;
     }
@@ -165,11 +175,13 @@ const FocusModal: React.FC<FocusModalProps> = ({
     setRunning(false);
   };
   const finishEarly = () => {
-    if (todo) onComplete(todo.id);
-    setRunning(false);
+    handleDone();
   };
 
-  /* UI */
+  const handleStart = () => {
+    resumeAudioContext().then(() => setRunning(true));
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -202,7 +214,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
           <Button
             icon={running ? <Pause /> : <Play />}
             label={running ? "Pausa" : "Starta"}
-            onClick={() => setRunning((v) => !v)}
+            onClick={handleStart}
             outline={false}
             className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
           />

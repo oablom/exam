@@ -78,19 +78,25 @@ const TodoList: React.FC = () => {
   };
 
   const handleComplete = async (ids: string[], complete: boolean) => {
-    for (const id of ids) {
-      const t = todos.find((x) => x.id === id);
-      if (t && t.completed !== complete) {
-        await toggleTodo(id);
+    if (complete && ids.length) {
+      setAnimatedIds(ids);
+      setTimeout(
+        () => setAnimatedIds((prev) => prev.filter((x) => !ids.includes(x))),
+        1000
+      );
 
-        if (complete) {
-          setAnimatedIds((prev) => [...prev, id]);
-          setTimeout(
-            () => setAnimatedIds((prev) => prev.filter((x) => x !== id)),
-            1000
-          );
-        }
-      }
+      await Promise.all(ids.map((id) => toggleTodo(id)));
+
+      toast.success(
+        `🎉 Du har slutfört ${
+          ids.length <= 5
+            ? `${ids.length} uppgift${ids.length === 1 ? "" : "er"}`
+            : "flera uppgifter"
+        }!`,
+        { duration: 2000, position: "top-center" }
+      );
+    } else {
+      await Promise.all(ids.map((id) => toggleTodo(id)));
     }
     setSelectedIds([]);
   };
@@ -98,20 +104,6 @@ const TodoList: React.FC = () => {
   useEffect(() => {
     setSelectedIds([]);
   }, [view]);
-
-  useEffect(() => {
-    if (animatedIds.length > 0) {
-      const count = animatedIds.length;
-      toast.success(
-        `🎉 Du har slutfört ${
-          count <= 5
-            ? `${count} uppgift${count === 1 ? "" : "er"}`
-            : "flera uppgifter"
-        }!`,
-        { duration: 2000, position: "top-center" }
-      );
-    }
-  }, [animatedIds]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);

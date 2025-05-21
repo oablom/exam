@@ -1,8 +1,6 @@
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 import { ChangeEvent } from "react";
 
-// ✅ Centralized TypeScript interfaces
-
 export interface ButtonProps {
   label: string;
   onClick: () => void;

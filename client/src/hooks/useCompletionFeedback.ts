@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import confetti from "canvas-confetti";
-import { playCompletionBeep } from "@/utils/aduioHelper";
+import { playCompletionBeep } from "@/utils/audioHelper";
 
 export function useCompletionFeedback(justCompleted: boolean) {
   useEffect(() => {

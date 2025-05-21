@@ -175,11 +175,13 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose, onAdd }) => {
         </div>
         {showCustomTime && (
           <div className="mt-3 flex items-center gap-2">
+            +{" "}
             <input
               type="number"
-              min="1"
+              min="0.1"
+              step="0.1"
               value={estimated || ""}
-              onChange={(e) => setEstimated(Number(e.target.value))}
+              onChange={(e) => setEstimated(parseFloat(e.target.value) || 0)}
               placeholder="minuter"
               className="w-24 rounded-xl bg-gray-50 px-3 py-2 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500"
             />
