@@ -1,15 +1,12 @@
 import axios from "axios";
-import { AiFillGithub } from "react-icons/ai";
 import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Modal from "./Modal";
 import Heading from "../Heading";
 import Input from "../layout/Input";
-import Button from "../layout/Button";
 import toast from "react-hot-toast";
 import useRegisterModal from "@/hooks/useRegisterModal";
 import useLoginModal from "@/hooks/useLoginModal";
-import { FcGoogle } from "react-icons/fc";
 import { VITE_API_URL } from "@/lib/api";
 
 const RegisterModal = () => {
@@ -40,7 +37,6 @@ const RegisterModal = () => {
       registerModal.onClose();
       loginModal.onOpen();
 
-      //   setAuth(user, token);
       //   localStorage.setItem("user", JSON.stringify(user));
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Fel vid registrering");

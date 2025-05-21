@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
 import Button from "../layout/Button";
-import { Phone } from "lucide-react";
+import { AppWindow } from "lucide-react";
 
 const InstallPwatModal = () => {
   const [showModal, setShowModal] = useState(false);
@@ -38,7 +38,7 @@ const InstallPwatModal = () => {
         <div className="flex gap-2">
           <Button
             label="Installera"
-            icon={<Phone className="mr-2" />}
+            icon={<AppWindow className="mr-2" />}
             onClick={handleInstallClick}
           />
           <Button label="Senare" onClick={handleClose} outline />

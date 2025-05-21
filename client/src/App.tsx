@@ -11,6 +11,7 @@ import InstallPwatModal from "./components/modals/InstallPwaModal";
 import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
 import BackendStatus from "./system/BackendStatus";
+import { subscribeToPush } from "./utils/push";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -19,6 +20,12 @@ export default function App() {
   useEffect(() => {
     if (!loading && !user) loginModal.onOpen();
   }, [loading, user]);
+
+  useEffect(() => {
+    if (user) {
+      subscribeToPush();
+    }
+  }, [user]);
 
   return (
     <>

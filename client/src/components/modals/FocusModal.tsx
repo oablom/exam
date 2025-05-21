@@ -1,10 +1,18 @@
-import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import confetti from "canvas-confetti";
 import { playTimerEndBell, resumeAudioContext } from "@/utils/audioHelper";
 import { Todo } from "@/types";
 import Modal from "./Modal";
 import Button from "../layout/Button";
 import { Play, Pause, CheckCircle, RotateCcw } from "lucide-react";
+import axios from "axios";
+import { VITE_API_URL } from "@/lib/api";
 
 const VisualTimer: React.FC<{
   secondsLeft: number;
@@ -121,6 +129,9 @@ const FocusModal: React.FC<FocusModalProps> = ({
   const [mode, setMode] = useState<"disc" | "bar">(initialTimerMode);
   const [size, setSize] = useState(240);
   const [expired, setExpired] = useState(false);
+  const [expiredOnce, setExpiredOnce] = useState(false);
+  const [manuallyFinished, setManuallyFinished] = useState(false);
+  const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     setSecondsLeft(totalSeconds);
@@ -129,10 +140,41 @@ const FocusModal: React.FC<FocusModalProps> = ({
   }, [totalSeconds, isOpen]);
 
   const handleExpire = () => {
+    if (expiredOnce || manuallyFinished) return;
+    setExpiredOnce(true);
+
     setExpired(true);
     playTimerEndBell();
     confetti({ particleCount: 15, spread: 40, origin: { y: 0.5 } });
+
+    axios
+      .post(
+        `${VITE_API_URL}/api/schedule-focus-push`,
+        {
+          title: todo?.title || "Fokuspass klart",
+          delayMs: 0,
+        },
+        { withCredentials: true }
+      )
+      .catch((err) => console.error("❌ Push-fel:", err));
   };
+
+  useEffect(() => {
+    setSecondsLeft(totalSeconds);
+    setRunning(false);
+    setExpired(false);
+    setExpiredOnce(false);
+  }, [totalSeconds, isOpen]);
+
+  useEffect(() => {
+    if (!running) return;
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft((s) => Math.max(s - 1, 0));
+    }, 1000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [running]);
 
   const handleDone = () => {
     onComplete(todo!.id);
@@ -150,19 +192,6 @@ const FocusModal: React.FC<FocusModalProps> = ({
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    if (!running) return;
-    if (secondsLeft === 0) {
-      handleExpire();
-      setRunning(false);
-      return;
-    }
-    const intv = setInterval(() => {
-      setSecondsLeft((s) => Math.max(s - 1, 0));
-    }, 1000);
-    return () => clearInterval(intv);
-  }, [running, secondsLeft, todo, onComplete]);
-
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60)
       .toString()
@@ -171,16 +200,34 @@ const FocusModal: React.FC<FocusModalProps> = ({
     return `${m}:${s}`;
   };
   const reset = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
     setSecondsLeft(totalSeconds);
     setRunning(false);
+    setManuallyFinished(true);
   };
+
   const finishEarly = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    setManuallyFinished(true);
     handleDone();
   };
 
-  const handleStart = () => {
-    resumeAudioContext().then(() => setRunning(true));
+  const toggleRun = () => {
+    if (running) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      setRunning(false);
+    } else {
+      resumeAudioContext().then(() => setRunning(true));
+    }
   };
+
+  useEffect(() => {
+    if (running && secondsLeft === 0) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      setRunning(false);
+      handleExpire();
+    }
+  }, [secondsLeft, running]);
 
   return (
     <Modal
@@ -214,7 +261,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
           <Button
             icon={running ? <Pause /> : <Play />}
             label={running ? "Pausa" : "Starta"}
-            onClick={handleStart}
+            onClick={toggleRun}
             outline={false}
             className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
           />

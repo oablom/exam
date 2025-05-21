@@ -1,12 +1,18 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import webpush from "web-push";
+import jwt from "jsonwebtoken";
+import cron from "node-cron";
+import { PushSub } from "@prisma/client";
+
 import authRoutes from "./routes/auth";
 import todoRoutes from "./routes/todo";
-import webpush from "web-push";
+import prisma from "./lib/prisma";
 
 dotenv.config();
+
 const app = express();
 
 app.use(
@@ -15,111 +21,172 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(cookieParser());
 app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/todos", todoRoutes);
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 webpush.setVapidDetails(
-  "mailto:din@email.com",
+  "mailto:support@example.com",
   process.env.VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );
 
-const subscriptions: any[] = [];
+interface PushSubscriptionJSON {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+  expirationTime?: number | null;
+}
 
-app.post("/api/subscribe", (req, res) => {
-  const newSub = req.body;
+interface AuthRequest extends Request {
+  userId: string;
+}
 
-  const alreadyExists = subscriptions.some(
-    (sub) => sub.endpoint === newSub.endpoint
-  );
+function authenticate(req: Request, res: Response, next: NextFunction) {
+  const token = req.cookies.token;
+  if (!token) return res.sendStatus(401);
 
-  if (!alreadyExists) {
-    subscriptions.push(newSub);
-    console.log("📌 Lade till ny prenumeration");
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+    };
+    (req as AuthRequest).userId = decoded.id;
+    next();
+  } catch {
+    res.sendStatus(403);
   }
+}
 
-  console.log("Unika prenumerationer:", subscriptions.length);
+app.post("/api/subscribe", authenticate, async (req, res) => {
+  const { endpoint, keys, expirationTime } = req.body as PushSubscriptionJSON;
+  if (!endpoint || !keys)
+    return res.status(400).json({ error: "Invalid push subscription" });
 
-  res.status(201).json({ message: "Prenumeration mottagen ✅" });
-});
-
-app.post("/api/send", async (req, res) => {
-  const payload = JSON.stringify({
-    title: "Påminnelse!",
-    body: "Dags att göra din uppgift ✅",
+  await prisma.pushSub.upsert({
+    where: { endpoint },
+    create: {
+      endpoint,
+      p256dh: keys.p256dh,
+      auth: keys.auth,
+      expiration: expirationTime ? new Date(expirationTime) : null,
+      userId: (req as AuthRequest).userId,
+    },
+    update: {
+      p256dh: keys.p256dh,
+      auth: keys.auth,
+      expiration: expirationTime ? new Date(expirationTime) : null,
+    },
   });
 
-  console.log("📤 Skickar payload:", payload);
+  res.status(201).end();
+});
 
-  const validSubscriptions: any[] = [];
+app.post("/api/remind/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req as AuthRequest;
+
+  const todo = await prisma.todo.findUnique({ where: { id } });
+  if (!todo || todo.userId !== userId)
+    return res.status(404).json({ error: "Todo not found" });
+
+  const payload = JSON.stringify({
+    title: todo.title,
+    body: "Dags att göra detta nu!",
+  });
+  const subs: PushSub[] = await prisma.pushSub.findMany({ where: { userId } });
 
   await Promise.allSettled(
-    subscriptions.map((sub, i) =>
+    subs.map((s: PushSub) =>
       webpush
-        .sendNotification(sub, payload)
-        .then(() => {
-          console.log(`✅ Notis skickad till sub ${i}`);
-          validSubscriptions.push(sub);
-        })
-        .catch((err) => {
-          console.error(`❌ Push-fel till sub ${i}:`, err.message);
-          if (err.statusCode === 404 || err.statusCode === 410) {
-            console.log(`🧼 Tog bort sub ${i}`);
+        .sendNotification(
+          { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+          payload
+        )
+        .catch(async (err) => {
+          if (err.statusCode === 410 || err.statusCode === 404) {
+            await prisma.pushSub.delete({ where: { endpoint: s.endpoint } });
           }
         })
     )
   );
 
-  subscriptions.length = 0;
-  subscriptions.push(...validSubscriptions);
-
-  res.status(200).json({ message: "Notiser skickade" });
+  res.status(200).json({ message: "Push skickad" });
 });
 
-app.post("/api/scheduleReminder", (req, res) => {
-  const delay = 10 * 1000;
-
-  const payload = JSON.stringify({
-    title: "⏰ Påminnelse!",
-    body: "Det har gått 10 sekunder – dags att göra något!",
-  });
+app.post("/api/schedule-focus-push", authenticate, async (req, res) => {
+  const { title, delayMs } = req.body as { title: string; delayMs: number };
+  const { userId } = req as AuthRequest;
 
   setTimeout(async () => {
-    console.log("🚀 Skickar schemalagd notis...");
-    const validSubscriptions: any[] = [];
+    const payload = JSON.stringify({
+      title,
+      body: "⏰ Fokustiden är slut - bra jobbat!",
+    });
+    const subs: PushSub[] = await prisma.pushSub.findMany({
+      where: { userId },
+    });
 
-    const results = await Promise.allSettled(
-      subscriptions.map((sub, i) =>
-        webpush.sendNotification(sub, payload).then(
-          () => {
-            console.log(`✅ Notis skickad till sub ${i}`);
-            validSubscriptions.push(sub);
-          },
-          (err) => {
-            console.error(`❌ Push-fel till sub ${i}:`, err.message);
-            if (err.statusCode === 404 || err.statusCode === 410) {
-              console.log(`🧼 Sub ${i} är ogiltig – tas bort`);
+    await Promise.allSettled(
+      subs.map((s: PushSub) =>
+        webpush
+          .sendNotification(
+            { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+            payload
+          )
+          .catch(async (err) => {
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              await prisma.pushSub.delete({ where: { endpoint: s.endpoint } });
             }
-          }
-        )
+          })
+      )
+    );
+  }, delayMs);
+
+  res.status(200).json({ message: "Push schemalagd" });
+});
+
+app.get("/api/ping", (_req, res) => res.json({ message: "Pong" }));
+
+cron.schedule("* * * * *", async () => {
+  const now = new Date();
+  const todos = await prisma.todo.findMany({
+    where: { dueDate: { lte: now }, reminderSent: false },
+  });
+
+  for (const todo of todos) {
+    const subs: PushSub[] = await prisma.pushSub.findMany({
+      where: { userId: todo.userId },
+    });
+    if (!subs.length) continue;
+
+    const payload = JSON.stringify({
+      title: "⏰ Påminnelse!",
+      body: `Idag är deadline för: ${todo.title}`,
+    });
+
+    await Promise.allSettled(
+      subs.map((s: PushSub) =>
+        webpush
+          .sendNotification(
+            { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+            payload
+          )
+          .catch(async (err) => {
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              await prisma.pushSub.delete({ where: { endpoint: s.endpoint } });
+            }
+          })
       )
     );
 
-    subscriptions.length = 0;
-    subscriptions.push(...validSubscriptions);
-  }, delay);
-
-  res.status(200).json({ message: "Push skickas om 10 sekunder" });
+    await prisma.todo.update({
+      where: { id: todo.id },
+      data: { reminderSent: true },
+    });
+  }
 });
 
-app.get("/api/ping", (req, res) => {
-  res.status(200).json({ message: "Pong 🏓" });
-});
+// ---------- start server ----------
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

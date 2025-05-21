@@ -13,14 +13,7 @@ import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
 import confetti from "canvas-confetti";
 import { playCompletionBeep, playTimerEndBell } from "@/utils/audioHelper";
-
-function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T | undefined>(undefined);
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-}
+import axios from "axios";
 
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
@@ -161,6 +154,23 @@ const TodoItem: React.FC<TodoItemProps> = ({
                   aria-label="Starta"
                 >
                   <Play size={22} className="text-green-600" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    axios
+                      .post(
+                        `${import.meta.env.VITE_API_URL}/api/remind/${id}`,
+                        {},
+                        { withCredentials: true }
+                      )
+                      .then(() => console.log("✅ Push skickad"))
+                      .catch((err) => console.error("❌ Push-fel:", err));
+                  }}
+                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yellow-100"
+                  aria-label="Påminn mig"
+                >
+                  ⏰
                 </button>
               </>
             )}

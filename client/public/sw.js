@@ -1,5 +1,5 @@
 self.addEventListener("push", (event) => {
-  console.log("📩 PUSH mottagen i service worker");
+  console.log("PUSH mottagen i service worker");
 
   let data = {
     title: "Påminnelse!",
@@ -9,10 +9,10 @@ self.addEventListener("push", (event) => {
   try {
     if (event.data) {
       data = event.data.json();
-      console.log("📦 Push-data:", data);
+      console.log(" Push-data:", data);
     }
   } catch (err) {
-    console.error("❌ Kunde inte tolka push-data", err);
+    console.error("Kunde inte tolka push-data", err);
   }
 
   const options = {

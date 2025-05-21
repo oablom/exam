@@ -61,14 +61,15 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
         dueDate: parsedDueDate,
         completed: completed ?? false,
         isFocus: isFocus ?? false,
+        reminderSent: false,
       },
     });
 
-    console.log("✅ Todo sparad:", todo);
+    console.log("Todo sparad:", todo);
 
     res.status(201).json(todo);
   } catch (err) {
-    console.error("🔥 Fel när todo skulle sparas:", err);
+    console.error(" Fel när todo skulle sparas:", err);
     res.status(500).json({ error: "Kunde inte spara todo" });
   }
 });
@@ -100,6 +101,21 @@ router.patch("/:id", authenticate, async (req: Request, res: Response) => {
         delete dataToUpdate[key];
       }
     });
+
+    const existing = await prisma.todo.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: "Todo hittades inte" });
+    }
+
+    const dueDateChanged =
+      parsedDueDate && existing.dueDate?.getTime() !== parsedDueDate.getTime();
+
+    if (dueDateChanged) {
+      dataToUpdate.reminderSent = false;
+    }
 
     const todo = await prisma.todo.update({
       where: { id: req.params.id },
