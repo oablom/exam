@@ -7,7 +7,7 @@ import FocusPage from "@/pages/FocusPage";
 import Header from "@/components/layout/header/Header";
 import LoginModal from "@/components/modals/LoginModal";
 import RegisterModal from "@/components/modals/RegisterModal";
-import InstallPrompt from "@/components/InstallPrompt";
+import InstallPwatModal from "./components/modals/InstallPwaModal";
 import ToasterProvider from "@/providers/ToasterProvider";
 import AuthLoader from "@/components/AuthLoader";
 import BackendStatus from "./system/BackendStatus";
@@ -34,7 +34,7 @@ export default function App() {
             <Route path="/focus" element={<FocusPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <InstallPrompt />
+          {user && <InstallPwatModal />}
         </main>
 
         <LoginModal />

@@ -28,6 +28,7 @@ import { useTodoStore } from "@/store/todo";
 import Button from "@/components/layout/Button";
 import { isDueToday, isOverdue } from "@/utils/dateHelpers";
 import { matchesView, View } from "@/utils/viewHelpers";
+import ConfirmModal from "../modals/ConfirmModal";
 
 const TodoList: React.FC = () => {
   const { todos, deleteTodo, toggleTodo, updateTodo, fetchTodos } =
@@ -37,6 +38,8 @@ const TodoList: React.FC = () => {
   const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
   const [animatedIds, setAnimatedIds] = useState<string[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [idsToDelete, setIdsToDelete] = useState<string[]>([]);
 
   const [view, setView] = useState<"today" | "prio" | "all">("today");
   const [modal, setModal] = useState<{
@@ -72,9 +75,14 @@ const TodoList: React.FC = () => {
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
 
-  const handleDelete = async (ids: string[]) => {
-    await Promise.all(ids.map(deleteTodo));
+  const handleDelete = (ids: string[]) => {
+    setIdsToDelete(ids);
+    setConfirmOpen(true);
+  };
+  const confirmDeletion = async () => {
+    await Promise.all(idsToDelete.map(deleteTodo));
     setSelectedIds([]);
+    setConfirmOpen(false);
   };
 
   const handleComplete = async (ids: string[], complete: boolean) => {
@@ -363,6 +371,15 @@ const TodoList: React.FC = () => {
           handleComplete([id], true);
           setIsFocusOpen(false);
         }}
+      />
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={confirmDeletion}
+        title="Vill du radera denna todo?"
+        message="Detta går inte att ångra."
+        confirmLabel="Ja, ta bort"
+        cancelLabel="Avbryt"
       />
     </>
   );
