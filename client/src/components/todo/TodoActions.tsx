@@ -50,7 +50,7 @@ const TodoActions: React.FC<TodoActionsProps> = ({
       className: buttonStyles,
     },
     {
-      label: allAreFocus ? "Ta bort från fokus" : "Lägg till i fokus",
+      label: allAreFocus ? "Ta bort från prio" : "Lägg till i prio",
       icon: allAreFocus ? (
         <StarOff size={16} stroke="#4b5563" />
       ) : (

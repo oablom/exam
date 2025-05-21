@@ -157,7 +157,7 @@ const TodoList: React.FC = () => {
             {view === "today"
               ? "🌞 Dagens uppgifter"
               : view === "prio"
-              ? "🧘 Fokuslistan"
+              ? "🧘 Zen mode"
               : "📋 Alla uppgifter"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
@@ -287,7 +287,7 @@ const TodoList: React.FC = () => {
             />
             <span className="font-semibold ">
               Inga todos i priolistan. <br /> Lägg till genom att markera en
-              todo och trycka på "Lägg till i fokus" knappen.
+              todo och trycka på "Lägg till i prio" knappen.
             </span>
           </div>
         )}
