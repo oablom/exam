@@ -38,7 +38,7 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   const { title, priority, estimatedTime, dueDate, completed, isFocus } =
     req.body;
 
-  console.log("📩 Todo-mottaget i backend:", {
+  console.log("Todo-mottaget i backend:", {
     title,
     priority,
     estimatedTime,
@@ -75,8 +75,13 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
 
 router.patch("/:id", authenticate, async (req: Request, res: Response) => {
   try {
-    const { title, completed, priority, estimatedTime, dueDate, isFocus } =
+    let { title, completed, priority, estimatedTime, dueDate, isFocus } =
       req.body;
+
+    if (estimatedTime !== undefined) {
+      const parsed = parseFloat(estimatedTime);
+      estimatedTime = isNaN(parsed) ? undefined : parsed;
+    }
 
     const parsedDueDate =
       dueDate && !isNaN(Date.parse(dueDate)) ? new Date(dueDate) : undefined;

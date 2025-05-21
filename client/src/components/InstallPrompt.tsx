@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Phone } from "lucide-react";
+import Button from "./layout/Button";
 
 const InstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -25,9 +27,9 @@ const InstallPrompt = () => {
 
     const result = await deferredPrompt.userChoice;
     if (result.outcome === "accepted") {
-      console.log("✅ Appen installerades");
+      console.log("Appen installerades");
     } else {
-      console.log("❌ Användaren nekade installation");
+      console.log("Användaren nekade installation");
     }
 
     setDeferredPrompt(null);
@@ -38,7 +40,11 @@ const InstallPrompt = () => {
 
   return (
     <div className="fixed top-4 right-6 p-4 bg-blue-600 text-white rounded-xl shadow-xl z-50">
-      <button onClick={handleInstallClick}>📲 Installera appen</button>
+      <Button
+        label={"Installera appen"}
+        icon={<Phone className="mr-2" />}
+        onClick={handleInstallClick}
+      />
     </div>
   );
 };
