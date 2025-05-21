@@ -22,8 +22,10 @@ export default function App() {
   }, [loading, user]);
 
   useEffect(() => {
-    subscribeToPush();
-  }, []);
+    if (user) {
+      subscribeToPush();
+    }
+  }, [user]);
 
   return (
     <>

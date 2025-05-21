@@ -15,14 +15,6 @@ import confetti from "canvas-confetti";
 import { playCompletionBeep, playTimerEndBell } from "@/utils/audioHelper";
 import axios from "axios";
 
-function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T | undefined>(undefined);
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-  return ref.current;
-}
-
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
 

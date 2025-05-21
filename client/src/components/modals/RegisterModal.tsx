@@ -37,7 +37,6 @@ const RegisterModal = () => {
       registerModal.onClose();
       loginModal.onOpen();
 
-      //   setAuth(user, token);
       //   localStorage.setItem("user", JSON.stringify(user));
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Fel vid registrering");

@@ -175,7 +175,6 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose, onAdd }) => {
         </div>
         {showCustomTime && (
           <div className="mt-3 flex items-center gap-2">
-            +{" "}
             <input
               type="number"
               min="0.1"

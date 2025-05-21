@@ -31,3 +31,15 @@ model Todo {
   updatedAt DateTime @updatedAt
   isFocus      Boolean  @default(false)
 }
+
+model PushSub {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  endpoint String @unique
+  p256dh   String
+  auth     String
+  expiration DateTime?
+  userId   String @db.ObjectId      // matchar User.id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
