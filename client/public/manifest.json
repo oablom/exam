@@ -8,12 +8,12 @@
   "description": "En todo-app byggd för personer med ADHD.",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/zenbuddy.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/zenbuddy.png",
       "sizes": "512x512",
       "type": "image/png"
     }

@@ -33,7 +33,7 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Vänster: Titel */}
         <h1 className="text-2xl font-bold font-hand text-gray-800 dark:text-white">
-          FocusFlow
+          ZenBuddy
         </h1>
 
         {/* Höger: Auth / Hamburger */}

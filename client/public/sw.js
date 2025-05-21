@@ -17,8 +17,8 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: data.body,
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
+    icon: "/zenbuddy.png",
+    badge: "/zenbuddy.png",
     vibrate: [200, 100, 200],
     requireInteraction: true,
     data: {
