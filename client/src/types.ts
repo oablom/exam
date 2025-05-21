@@ -124,3 +124,14 @@ export interface TodoFormProps {
   onClose?: () => void;
   onAdd?: (dueDate: string) => void;
 }
+
+export interface ConfirmModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title?: string;
+  message?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  loading?: boolean;
+}
