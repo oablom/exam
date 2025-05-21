@@ -202,7 +202,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
           <p className="text-5xl font-mono select-none">
             {formatTime(secondsLeft)}
           </p>
-          <p className="text-sm text-zinc-500 text-center px-4">
+          <p className="text-lg text-zinc-600 text-center px-4">
             {running
               ? "Jobba på nu, du är så grym!"
               : "Klicka STARTA för att börja nedräkningen (klicka timern för att byta stil)"}
