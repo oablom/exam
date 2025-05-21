@@ -12,7 +12,7 @@ import Button from "@/components/layout/Button";
 import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
 import confetti from "canvas-confetti";
-import { playCompletionBeep } from "@/utils/aduioHelper";
+import { playCompletionBeep, playTimerEndBell } from "@/utils/audioHelper";
 
 // Hook: returnerar föregående värde mellan renders
 function usePrevious<T>(value: T): T | undefined {
