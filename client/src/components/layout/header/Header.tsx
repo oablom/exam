@@ -7,6 +7,7 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { VITE_API_URL } from "@/lib/api";
+import ZenBuddyIcon from "/public/zenbuddy.png";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -31,12 +32,15 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 shadow-md border-b border-zinc-200 dark:border-zinc-800">
       <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Vänster: Titel */}
         <h1 className="text-2xl font-bold font-hand text-gray-800 dark:text-white">
-          ZenBuddy
+          ZenBuddy{" "}
+          <img
+            src={ZenBuddyIcon}
+            alt="ZenBuddy Logo"
+            className="inline-block w-8 h-8"
+          />
         </h1>
 
-        {/* Höger: Auth / Hamburger */}
         <div className="relative flex items-center gap-3">
           {user ? (
             <>
@@ -45,7 +49,6 @@ const Header = () => {
             </>
           ) : (
             <>
-              {/* Desktop */}
               <div className="hidden sm:flex gap-3">
                 <Button label="Logga in" onClick={loginModal.onOpen} />
                 <Button
@@ -56,7 +59,6 @@ const Header = () => {
                 />
               </div>
 
-              {/* Mobile menu button */}
               <div className="sm:hidden">
                 <button
                   onClick={() => setMenuOpen(!menuOpen)}
