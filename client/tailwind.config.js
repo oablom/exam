@@ -6,17 +6,17 @@ module.exports = {
     extend: {
       animation: {
         "complete-pop": "completePop 0.5s ease-out",
-        wiggle: "wiggle 0.2s ease-in-out",
+        blink: "blink 1s step-end 2",
       },
       keyframes: {
         completePop: {
           "0%": { transform: "scale(1)", backgroundColor: "#d1fae5" },
-          "50%": { transform: "scale(2)", backgroundColor: "#6ee7b7" },
-          "100%": { transform: "scale(1)", backgroundColor: "!inherit" },
+          "50%": { transform: "scale(1.2)", backgroundColor: "#6ee7b7" },
+          "100%": { transform: "scale(1)", backgroundColor: "inherit" },
         },
-        wiggle: {
-          "0%,100%": { transform: "rotate(-10deg)" },
-          "50%": { transform: "rotate(10deg)" },
+        blink: {
+          "0%,100%": { opacity: 1 },
+          "50%": { opacity: 0.5 },
         },
       },
       fontFamily: {

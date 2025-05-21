@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, use } from "react";
 import {
   Plus,
   CalendarDays,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { format, set } from "date-fns";
 import { sv } from "date-fns/locale";
-
+import { toast } from "react-hot-toast";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";
 import TodoActions from "@/components/todo/TodoActions";
@@ -76,6 +76,7 @@ const TodoList: React.FC = () => {
     await Promise.all(ids.map(deleteTodo));
     setSelectedIds([]);
   };
+
   const handleComplete = async (ids: string[], complete: boolean) => {
     for (const id of ids) {
       const t = todos.find((x) => x.id === id);
@@ -83,10 +84,11 @@ const TodoList: React.FC = () => {
         await toggleTodo(id);
 
         if (complete) {
-          // Vänta lite så att todo:n hinner flyttas till completedTodos
-          setTimeout(() => {
-            setAnimatedIds((prev) => [...prev, id]);
-          }, 30); // <= detta ger React tid att flytta itemet
+          setAnimatedIds((prev) => [...prev, id]);
+          setTimeout(
+            () => setAnimatedIds((prev) => prev.filter((x) => x !== id)),
+            1000
+          );
         }
       }
     }
@@ -96,6 +98,20 @@ const TodoList: React.FC = () => {
   useEffect(() => {
     setSelectedIds([]);
   }, [view]);
+
+  useEffect(() => {
+    if (animatedIds.length > 0) {
+      const count = animatedIds.length;
+      toast.success(
+        `🎉 Du har slutfört ${
+          count <= 5
+            ? `${count} uppgift${count === 1 ? "" : "er"}`
+            : "flera uppgifter"
+        }!`,
+        { duration: 2000, position: "top-center" }
+      );
+    }
+  }, [animatedIds]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -126,7 +142,7 @@ const TodoList: React.FC = () => {
 
   return (
     <>
-      <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4">
+      <section className="flex flex-col gap-4 w-full max-w-md px-2 pb-28 sm:pb-4 mb-10">
         <div className="text-center mt-6 mb-4">
           <h1 className="text-3xl font-hand font-bold text-zinc-800 dark:text-white">
             {view === "today"
@@ -297,7 +313,7 @@ const TodoList: React.FC = () => {
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onComplete={handleComplete}
             onSelectToggle={handleSelectToggle}
-            justCompleted={animatedIds}
+            justCompletedIds={animatedIds}
           />
         )}
       </section>
@@ -341,7 +357,7 @@ const TodoList: React.FC = () => {
         isOpen={isFocusOpen}
         onClose={() => setIsFocusOpen(false)}
         onComplete={(id) => {
-          toggleTodo(id);
+          handleComplete([id], true);
           setIsFocusOpen(false);
         }}
       />
