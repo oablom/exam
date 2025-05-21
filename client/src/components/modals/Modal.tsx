@@ -41,7 +41,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-neutral-800/70 flex items-center justify-center overflow-x-hidden overflow-y-auto">
-      <div className="relative w-full h-full md:w-4/6 md:h-auto lg:w-3/6 xl:w-2/5 md:my-6 my-0 mx-auto">
+      <div className="relative w-full min-h-dvh md:w-4/6 md:max-h-screen lg:w-3/6 xl:w-2/5 md:my-6 my-0 mx-auto overflow-y-auto">
         <div
           className={`
             translate duration-300 h-full
@@ -52,7 +52,7 @@ const Modal: React.FC<ModalProps> = ({
             }
           `}
         >
-          <div className="translate h-full lg:h-auto md:h-auto border-0 shadow-lg relative flex flex-col w-full bg-white dark:bg-gray-700 outline-none focus:outline-none rounded-none md:rounded-lg">
+          <div className="translate flex flex-col justify-between w-full min-h-dvh md:max-h-screen border-0 shadow-lg bg-white dark:bg-gray-700 outline-none focus:outline-none rounded-none md:rounded-lg overflow-y-auto">
             {/* Header */}
             <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px] border-gray-200 dark:border-gray-600">
               <button
