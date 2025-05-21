@@ -79,6 +79,11 @@ const TodoList: React.FC = () => {
     setIdsToDelete(ids);
     setConfirmOpen(true);
   };
+  const confirmDeletion = async () => {
+    await Promise.all(idsToDelete.map(deleteTodo));
+    setSelectedIds([]);
+    setConfirmOpen(false);
+  };
 
   const handleComplete = async (ids: string[], complete: boolean) => {
     if (complete && ids.length) {
@@ -366,6 +371,15 @@ const TodoList: React.FC = () => {
           handleComplete([id], true);
           setIsFocusOpen(false);
         }}
+      />
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={confirmDeletion}
+        title="Vill du radera denna todo?"
+        message="Detta går inte att ångra."
+        confirmLabel="Ja, ta bort"
+        cancelLabel="Avbryt"
       />
     </>
   );
