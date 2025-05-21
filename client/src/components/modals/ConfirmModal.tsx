@@ -1,16 +1,6 @@
 import Modal from "./Modal";
 import Heading from "../Heading";
-
-interface ConfirmModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title?: string;
-  message?: string;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  loading?: boolean;
-}
+import { ConfirmModalProps } from "@/types";
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
@@ -23,8 +13,9 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   loading = false,
 }) => {
   const bodyContent = (
-    <div className="flex flex-col gap-4">
-      <Heading title={title} subtitle={message} center />
+    <div className="flex flex-col gap-4 text-[18px]">
+      <Heading title={title} center />
+      <p className="text-zinc-600 text-center px-4">{message}</p>
     </div>
   );
 

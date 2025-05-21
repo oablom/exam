@@ -203,7 +203,9 @@ const FocusModal: React.FC<FocusModalProps> = ({
     if (intervalRef.current) clearInterval(intervalRef.current);
     setSecondsLeft(totalSeconds);
     setRunning(false);
-    setManuallyFinished(true);
+    setManuallyFinished(false);
+    setExpiredOnce(false);
+    setExpired(false);
   };
 
   const finishEarly = () => {
@@ -217,6 +219,8 @@ const FocusModal: React.FC<FocusModalProps> = ({
       if (intervalRef.current) clearInterval(intervalRef.current);
       setRunning(false);
     } else {
+      setManuallyFinished(false);
+      setExpiredOnce(false);
       resumeAudioContext().then(() => setRunning(true));
     }
   };
