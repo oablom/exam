@@ -15,7 +15,8 @@ interface TodoSectionProps {
   onToggleFocus?: (todo: Todo) => void;
   onSelectToggle: (id: string) => void;
   onDelete?: (ids: string[]) => void;
-  onComplete?: (ids: string[], complete: boolean) => void; // ny – låter Completed‑sektionen fungera
+  onComplete?: (ids: string[], complete: boolean) => void;
+  justCompleted?: string[];
 }
 
 const TodoSection: React.FC<TodoSectionProps> = ({
@@ -29,6 +30,7 @@ const TodoSection: React.FC<TodoSectionProps> = ({
   onSelectToggle,
   onDelete,
   onComplete,
+  justCompleted,
 }) => {
   if (todos.length === 0) return null;
 
@@ -57,6 +59,7 @@ const TodoSection: React.FC<TodoSectionProps> = ({
             onSelectToggle={onSelectToggle}
             onDelete={onDelete ?? (() => {})}
             onComplete={onComplete ?? (() => {})}
+            // justCompleted={justCompletedId?.includes(todo.id)}
           />
         ))}
       </div>

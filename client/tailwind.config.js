@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "false",
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -11,8 +11,8 @@ module.exports = {
       keyframes: {
         completePop: {
           "0%": { transform: "scale(1)", backgroundColor: "#d1fae5" },
-          "50%": { transform: "scale(1.08)", backgroundColor: "#6ee7b7" },
-          "100%": { transform: "scale(1)", backgroundColor: "inherit" },
+          "50%": { transform: "scale(2)", backgroundColor: "#6ee7b7" },
+          "100%": { transform: "scale(1)", backgroundColor: "!inherit" },
         },
         wiggle: {
           "0%,100%": { transform: "rotate(-10deg)" },

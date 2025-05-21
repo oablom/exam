@@ -29,7 +29,8 @@ const TodoActions: React.FC<TodoActionsProps> = ({
   );
   const newValue = !allAreCompleted;
 
-  const buttonStyles = "flex flex-col border-[1.5px] border-indigo-400";
+  const buttonStyles =
+    "flex flex-col border-[1.5px] hover:bg-indigo-500 border-indigo-500 hover:text-white";
 
   const actionButtons = [
     {

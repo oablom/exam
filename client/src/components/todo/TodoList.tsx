@@ -36,6 +36,8 @@ const TodoList: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [focusTodo, setFocusTodo] = useState<Todo | null>(null);
   const [isFocusOpen, setIsFocusOpen] = useState(false);
+  const [animatedIds, setAnimatedIds] = useState<string[]>([]);
+
   const [view, setView] = useState<"today" | "prio" | "all">("today");
   const [modal, setModal] = useState<{
     mode: "new" | "edit";
@@ -74,14 +76,20 @@ const TodoList: React.FC = () => {
     await Promise.all(ids.map(deleteTodo));
     setSelectedIds([]);
   };
-
   const handleComplete = async (ids: string[], complete: boolean) => {
-    await Promise.all(
-      ids.map(async (id) => {
-        const t = todos.find((x) => x.id === id);
-        if (t && t.completed !== complete) await toggleTodo(id);
-      })
-    );
+    for (const id of ids) {
+      const t = todos.find((x) => x.id === id);
+      if (t && t.completed !== complete) {
+        await toggleTodo(id);
+
+        if (complete) {
+          // Vänta lite så att todo:n hinner flyttas till completedTodos
+          setTimeout(() => {
+            setAnimatedIds((prev) => [...prev, id]);
+          }, 30); // <= detta ger React tid att flytta itemet
+        }
+      }
+    }
     setSelectedIds([]);
   };
 
@@ -289,6 +297,7 @@ const TodoList: React.FC = () => {
             onEdit={(t) => setModal({ mode: "edit", todo: t })}
             onComplete={handleComplete}
             onSelectToggle={handleSelectToggle}
+            justCompleted={animatedIds}
           />
         )}
       </section>

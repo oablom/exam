@@ -1,6 +1,3 @@
-// ------------------------------------------------------------
-// TodoItem.tsx  – Hel ersättning
-// ------------------------------------------------------------
 import React, { useState, useEffect, useRef } from "react";
 import {
   CheckCircle,
@@ -14,11 +11,17 @@ import { TodoItemProps } from "@/types";
 import Button from "@/components/layout/Button";
 import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
-// Label helpers
+// Hook: returnerar föregående värde mellan renders
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T | undefined>(undefined);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+}
+
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
-
-/* Return TRUE om todo har deadline som är passerad */
 
 const TodoItem: React.FC<TodoItemProps> = ({
   todo,
@@ -29,8 +32,11 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onToggleFocus,
   onDelete,
   onComplete,
+  justCompleted,
 }) => {
   const [open, setOpen] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
   const { id, title, completed, priority, estimatedTime, dueDate } = todo;
 
   const priorityBorder =
@@ -42,33 +48,30 @@ const TodoItem: React.FC<TodoItemProps> = ({
 
   const overdue = isOverdue(dueDate, completed);
   const dueToday = isDueToday(dueDate);
-  const prevCompletedRef = useRef(completed);
 
   return (
     <div
       onClick={() => setOpen((p) => !p)}
       className={`flex flex-col gap-2 p-4 rounded-2xl transition-all cursor-pointer
       hover:shadow-lg hover:scale-[1.01] bg-white dark:bg-zinc-800 hover:bg-indigo-50
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500  duration-500 ease-in-out 
-        ${completed ? "opacity-60 scale-[0.98] line-through blur-[0.3px]" : ""}
-
-
-  
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 duration-500 ease-in-out
+      ${completed ? "opacity-60 scale-[0.98] line-through blur-[0.3px]" : ""}
+      ${shouldAnimate ? "animate-complete" : ""}
       ${
         isSelected
           ? "ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/40"
           : ""
       }
-  ${overdue ? " !bg-red-200 hover:!bg-red-300 dark:hover:!bg-red-900/40" : ""}
-${dueToday ? " !bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""}
-
-      border-l-[4px] border-b-[2px] ${priorityBorder} ${
-        completed ? "opacity-60 scale-[0.98]" : ""
-      }`}
+      ${
+        overdue ? "!bg-red-200 hover:!bg-red-300 dark:hover:!bg-red-900/40" : ""
+      }
+      ${
+        dueToday ? "!bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""
+      }
+      border-l-[4px] border-b-[2px] ${priorityBorder}`}
     >
-      {/* ─── Top row ──────────────────────────────────────────── */}
+      {/* Top row */}
       <div className="flex items-center justify-between">
-        {/* Checkbox */}
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -83,7 +86,6 @@ ${dueToday ? " !bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""}
           )}
         </div>
 
-        {/* Title */}
         <p
           className={`flex-1 mx-3 font-semibold text-lg truncate ${
             completed ? "opacity-60 scale-[0.98] line-through" : ""
@@ -92,7 +94,6 @@ ${dueToday ? " !bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""}
           {title}
         </p>
 
-        {/* Mini‑actions när raden är stängd */}
         {!open && (
           <div className="flex items-center gap-2">
             {completed ? (
@@ -146,7 +147,7 @@ ${dueToday ? " !bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""}
         )}
       </div>
 
-      {/* ─── Expanded content ────────────────────────────────── */}
+      {/* Expanded content */}
       {open && (
         <>
           <div className="flex flex-wrap gap-3 text-sm text-zinc-600 dark:text-zinc-300 ml-8">
@@ -155,7 +156,7 @@ ${dueToday ? " !bg-red-50 hover:!bg-red-100 dark:hover:!bg-red-600/40" : ""}
             </span>
             {estimatedTime !== undefined && (
               <span>
-                ⏱️ <b>Tid:</b> {estimatedTime} min
+                ⏱️ <b>Tid:</b> {estimatedTime} min
               </span>
             )}
             {dueDate && (
