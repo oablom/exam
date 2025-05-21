@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import confetti from "canvas-confetti";
-import { playTimerEndBell, playCompletionBeep } from "@/utils/audioHelper";
+import { playTimerEndBell, resumeAudioContext } from "@/utils/audioHelper";
 import { Todo } from "@/types";
 import Modal from "./Modal";
 import Button from "../layout/Button";
@@ -178,6 +178,10 @@ const FocusModal: React.FC<FocusModalProps> = ({
     handleDone();
   };
 
+  const handleStart = () => {
+    resumeAudioContext().then(() => setRunning(true));
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -210,7 +214,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
           <Button
             icon={running ? <Pause /> : <Play />}
             label={running ? "Pausa" : "Starta"}
-            onClick={() => setRunning((v) => !v)}
+            onClick={handleStart}
             outline={false}
             className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
           />

@@ -14,7 +14,6 @@ import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 import confetti from "canvas-confetti";
 import { playCompletionBeep, playTimerEndBell } from "@/utils/audioHelper";
 
-// Hook: returnerar föregående värde mellan renders
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
   useEffect(() => {
@@ -69,7 +68,6 @@ const TodoItem: React.FC<TodoItemProps> = ({
     ${isSelected ? "ring-2 ring-indigo-400" : ""}
   `;
 
-  // 2) Bakgrundar i rätt ordning (completed först)
   let bg = "";
   if (completed) {
     bg =
