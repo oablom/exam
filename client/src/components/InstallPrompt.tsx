@@ -37,7 +37,7 @@ const InstallPrompt = () => {
   if (!showButton) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 p-4 bg-blue-600 text-white rounded-xl shadow-xl z-50">
+    <div className="fixed top-4 right-6 p-4 bg-blue-600 text-white rounded-xl shadow-xl z-50">
       <button onClick={handleInstallClick}>📲 Installera appen</button>
     </div>
   );
