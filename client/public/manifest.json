@@ -1,6 +1,6 @@
 {
-  "name": "Exam Todo",
-  "short_name": "Exam",
+  "name": "ZenBuddy",
+  "short_name": "ZenBuddy",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -8,12 +8,12 @@
   "description": "En todo-app byggd för personer med ADHD.",
   "icons": [
     {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "/zenbuddy.png",
+      "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/zenbuddy.png",
       "sizes": "512x512",
       "type": "image/png"
     }
