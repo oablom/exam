@@ -1,6 +1,6 @@
 {
-  "name": "Exam Todo",
-  "short_name": "Exam",
+  "name": "ZenBuddy",
+  "short_name": "ZenBuddy",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +9,7 @@
   "icons": [
     {
       "src": "/zenbuddy.png",
-      "sizes": "192x192",
+      "sizes": "512x512",
       "type": "image/png"
     },
     {
