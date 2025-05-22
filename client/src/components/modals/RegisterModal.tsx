@@ -55,7 +55,7 @@ const RegisterModal = () => {
   const bodyContent = (
     <div className="flex flex-col gap-4">
       <Heading
-        title="Välkommen till TodoApp"
+        title="Välkommen till ZenBuddy!"
         subtitle="Skapa ett konto"
         center
       />
