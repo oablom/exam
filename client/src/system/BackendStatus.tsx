@@ -16,7 +16,7 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
         if (res.ok) {
           setIsOnline(true);
         }
-      } catch (err) {
+      } catch {
         setIsOnline(false);
       }
     };

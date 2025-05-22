@@ -122,13 +122,13 @@ const FocusModal: React.FC<FocusModalProps> = ({
 }) => {
   const totalSeconds = useMemo(
     () => Math.round((todo?.estimatedTime ?? 0) * 60),
-    [todo?.estimatedTime, todo?.id]
+    [todo?.estimatedTime]
   );
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [running, setRunning] = useState(false);
   const [mode, setMode] = useState<"disc" | "bar">(initialTimerMode);
   const [size, setSize] = useState(240);
-  const [_expired, setExpired] = useState(false);
+  const [, setExpired] = useState(false);
   const [expiredOnce, setExpiredOnce] = useState(false);
   const [manuallyFinished, setManuallyFinished] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -225,6 +225,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (running && secondsLeft === 0) {
       if (intervalRef.current) clearInterval(intervalRef.current);

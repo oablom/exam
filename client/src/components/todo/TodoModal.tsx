@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
 import TodoForm from "./TodoForm";
-import { Todo } from "@/types";
+
 import { TodoModalProps } from "@/types";
 
 const TodoModal: React.FC<TodoModalProps> = ({

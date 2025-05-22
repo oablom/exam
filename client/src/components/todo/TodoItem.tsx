@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect } from "react";
 import {
   CheckCircle,
   Circle,
@@ -12,8 +12,7 @@ import Button from "@/components/layout/Button";
 import { isOverdue, deadlineLabel, isDueToday } from "@/utils/dateHelpers";
 
 import confetti from "canvas-confetti";
-import { playCompletionBeep, playTimerEndBell } from "@/utils/audioHelper";
-import axios from "axios";
+import { playCompletionBeep } from "@/utils/audioHelper";
 
 const priorityLabel = (p: 1 | 2 | 3) =>
   p === 1 ? "Hög" : p === 2 ? "Mellan" : "Låg";
@@ -24,7 +23,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onSelectToggle,
   onEdit,
   onFocus,
-  onToggleFocus,
+  // onToggleFocus,
   onDelete,
   onComplete,
   justCompleted,
@@ -155,30 +154,12 @@ const TodoItem: React.FC<TodoItemProps> = ({
                 >
                   <Play size={22} className="text-green-600" />
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    axios
-                      .post(
-                        `${import.meta.env.VITE_API_URL}/api/remind/${id}`,
-                        {},
-                        { withCredentials: true }
-                      )
-                      .then(() => console.log("✅ Push skickad"))
-                      .catch((err) => console.error("❌ Push-fel:", err));
-                  }}
-                  className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yellow-100"
-                  aria-label="Påminn mig"
-                >
-                  ⏰
-                </button>
               </>
             )}
           </div>
         )}
       </div>
 
-      {/* Expanded content */}
       {open && (
         <>
           <div className="flex flex-wrap gap-3 text-sm text-zinc-600 dark:text-zinc-300 ml-8">
