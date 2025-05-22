@@ -124,6 +124,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
     () => Math.round((todo?.estimatedTime ?? 0) * 60),
     [todo?.estimatedTime]
   );
+  const hasTimer = totalSeconds > 0;
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [running, setRunning] = useState(false);
   const [mode, setMode] = useState<"disc" | "bar">(initialTimerMode);
@@ -243,50 +244,77 @@ const FocusModal: React.FC<FocusModalProps> = ({
       title={todo ? `Fokus: ${todo.title}` : "Fokus"}
       body={
         <div className="flex flex-col items-center gap-6 py-4 w-full max-h-[65vh] overflow-y-auto">
-          <VisualTimer
-            secondsLeft={secondsLeft}
-            totalSeconds={totalSeconds}
-            mode={mode}
-            onToggleMode={() => setMode((m) => (m === "disc" ? "bar" : "disc"))}
-            size={size}
-            segmentSeconds={segmentMinutes * 60}
-          />
-          <p className="text-5xl font-mono select-none">
-            {formatTime(secondsLeft)}
-          </p>
-          <p className="text-lg text-zinc-600 text-center px-4">
-            {running
-              ? "Jobba på nu, du är så grym!"
-              : "Klicka STARTA för att börja nedräkningen (klicka timern för att byta stil)"}
-          </p>
+          {hasTimer ? (
+            <>
+              <VisualTimer
+                secondsLeft={secondsLeft}
+                totalSeconds={totalSeconds}
+                mode={mode}
+                onToggleMode={() =>
+                  setMode((m) => (m === "disc" ? "bar" : "disc"))
+                }
+                size={size}
+                segmentSeconds={segmentMinutes * 60}
+              />
+              <p className="text-5xl font-mono select-none">
+                {formatTime(secondsLeft)}
+              </p>
+              <p className="text-lg text-zinc-600 text-center px-4">
+                {running
+                  ? "Jobba på nu, du är så grym!"
+                  : "Klicka STARTA för att börja nedräkningen (klicka timern för att byta stil)"}
+              </p>
+            </>
+          ) : (
+            <p className="text-lg text-zinc-600 text-center px-4">
+              Ingen uppskattad tid – du bestämmer när du är klar.
+            </p>
+          )}
         </div>
       }
       footer={
-        <div className="flex flex-col gap-3 w-full items-center max-w-md m-auto">
-          <Button
-            icon={running ? <Pause /> : <Play />}
-            label={running ? "Pausa" : "Starta"}
-            onClick={toggleRun}
-            outline={false}
-            className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
-          />
-          <div className="flex flex-row gap-2 w-full max-w-md">
+        hasTimer ? (
+          <div className="flex flex-col gap-3 w-full items-center max-w-md m-auto">
             <Button
-              icon={<RotateCcw />}
-              label="Reset"
-              outline
-              onClick={reset}
-              className="flex-1 bg-white hover:bg-zinc-300 text-zinc-800 font-medium py-3 rounded-full border-2 border-dotted border-zinc-600"
+              icon={running ? <Pause /> : <Play />}
+              label={running ? "Pausa" : "Starta"}
+              onClick={toggleRun}
+              outline={false}
+              className={`w-full text-white font-semibold text-xl py-4 rounded-full border-none `}
             />
+            <div className="flex flex-row gap-2 w-full max-w-md">
+              <Button
+                icon={<RotateCcw />}
+                label="Reset"
+                outline
+                onClick={reset}
+                className="flex-1 bg-white hover:bg-zinc-300 text-zinc-800 font-medium py-3 rounded-full border-2 border-dotted border-zinc-600"
+              />
+              <Button
+                icon={<CheckCircle />}
+                label="Klart!"
+                onClick={finishEarly}
+                outline
+                className="flex-1 bg-white text-zinc-800 font-medium py-3 rounded-full border-2 border-zinc-500 hover:bg-green-700 hover:border-green-700 hover:text-white"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-row justify-center gap-3 mt-6">
             <Button
               icon={<CheckCircle />}
-              label="Klart!"
+              label="Klar med uppgift"
               onClick={finishEarly}
-              outline
-              className="flex-1 bg-white text-zinc-800 font-medium py-3 rounded-full border-2 border-zinc-500 hover:bg-green-700 hover:border-green-700 hover:text-white"
+              className="px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-full font-semibold"
+            />
+            <Button
+              icon={<RotateCcw />}
+              label="Stäng fokusläge"
+              onClick={onClose}
+              className="px-6 py-3 text-zinc-800 bg-white border border-zinc-300 hover:bg-zinc-100 rounded-full font-medium"
             />
           </div>
-        </div>
+        )
       }
     />
   );
