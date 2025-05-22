@@ -2,7 +2,7 @@ import React from "react";
 
 interface WelcomeLabelProps {
   name?: string;
-  compact?: boolean; // visa bara förnamn eller inget
+  compact?: boolean;
 }
 
 const WelcomeLabel: React.FC<WelcomeLabelProps> = ({

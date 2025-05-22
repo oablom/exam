@@ -38,7 +38,7 @@ model PushSub {
   p256dh   String
   auth     String
   expiration DateTime?
-  userId   String @db.ObjectId      // matchar User.id
+  userId   String @db.ObjectId      
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
