@@ -32,13 +32,13 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
     };
   }, []);
 
-  if (isOnline) return null;
+  if (!isOnline) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen text-center px-4 ">
+    <div className=" fixed inset-0 z-[1000] bg-zinc-500 bg-opacity-20 flex flex-col items-center justify-center h-screen text-center px-4 ">
       <LoadingSpinner message={message} />
       {fallbackMessage && (
-        <p className="text-sm text-zinc-500 mt-2 max-w-sm">
+        <p className="text-sm text-zinc-900 mt-2 max-w-sm">
           <span className="font-bold">
             This might take 15 seconds or more. Please be patient.
           </span>
