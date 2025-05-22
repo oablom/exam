@@ -22,7 +22,9 @@ const Header = () => {
         {},
         { withCredentials: true }
       );
-    } catch {}
+    } catch {
+      console.error("Logout failed");
+    }
     logout();
   };
 
