@@ -1,5 +1,4 @@
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
-import { ChangeEvent } from "react";
 
 export interface ButtonProps {
   label: string;

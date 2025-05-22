@@ -1,5 +1,7 @@
-const AudioContextClass = (window.AudioContext ??
-  (window as any).webkitAudioContext) as { new (): AudioContext };
+const AudioContextClass =
+  window.AudioContext ??
+  (window as unknown as { webkitAudioContext: typeof AudioContext })
+    .webkitAudioContext;
 
 const ctx = new AudioContextClass();
 

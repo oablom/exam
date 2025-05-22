@@ -53,7 +53,6 @@ const Modal: React.FC<ModalProps> = ({
           `}
         >
           <div className="translate flex flex-col justify-between w-full min-h-dvh md:max-h-screen border-0 shadow-lg bg-white dark:bg-gray-700 outline-none focus:outline-none rounded-none md:rounded-lg overflow-y-auto">
-            {/* Header */}
             <div className="flex items-center p-6 rounded-t justify-center relative border-b-[1px] border-gray-200 dark:border-gray-600">
               <button
                 onClick={handleOnClose}
@@ -66,12 +65,10 @@ const Modal: React.FC<ModalProps> = ({
               </div>
             </div>
 
-            {/* Body */}
             <div className="relative p-6 flex-auto text-gray-700 dark:text-gray-200">
               {body}
             </div>
 
-            {/* Footer */}
             <div className="flex flex-col gap-2 p-6">
               <div className="flex flex-row items-center gap-4 w-full">
                 {secondaryAction && secondaryActionLabel && (

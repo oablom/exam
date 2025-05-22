@@ -7,13 +7,11 @@ import Input from "../layout/Input";
 import Heading from "../Heading";
 import toast from "react-hot-toast";
 import { VITE_API_URL } from "@/lib/api";
-import { set } from "react-hook-form";
 
 const LoginModal = () => {
   const loginModal = useLoginModal();
   const registerModal = useRegisterModal();
   const { setAuth } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +33,7 @@ const LoginModal = () => {
       setAuth(data.user);
       toast.success("Inloggad!");
       loginModal.onClose();
-    } catch (error) {
+    } catch {
       toast.error("Fel vid inloggning");
     } finally {
       setLoading(false);

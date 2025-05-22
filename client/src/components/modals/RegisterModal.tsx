@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Modal from "./Modal";
@@ -38,8 +39,9 @@ const RegisterModal = () => {
       loginModal.onOpen();
 
       //   localStorage.setItem("user", JSON.stringify(user));
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Fel vid registrering");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Fel vid registrering");
     } finally {
       setIsLoading(false);
     }

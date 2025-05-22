@@ -19,7 +19,7 @@ const AuthLoader = () => {
     };
 
     checkAuth();
-  }, []);
+  }, [setAuth, logout]);
 
   return null;
 };

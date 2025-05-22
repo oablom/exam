@@ -1,6 +1,3 @@
-// ------------------------------------------------------------
-// TodoSection.tsx – Ikon‑prop + onComplete (valfri) tillagd
-// ------------------------------------------------------------
 import React from "react";
 import { Todo } from "@/types";
 import TodoItem from "./TodoItem";

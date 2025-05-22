@@ -2,14 +2,23 @@ import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import Button from "./layout/Button";
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+}
+
 const InstallPrompt = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    const handler = (e: any) => {
+    const handler = (e: Event) => {
       e.preventDefault();
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowButton(true);
     };
 
@@ -23,9 +32,9 @@ const InstallPrompt = () => {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    deferredPrompt.prompt();
-
+    await deferredPrompt.prompt();
     const result = await deferredPrompt.userChoice;
+
     if (result.outcome === "accepted") {
       console.log("Appen installerades");
     } else {

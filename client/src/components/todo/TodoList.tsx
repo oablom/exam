@@ -1,25 +1,19 @@
-import React, { useState, useEffect, useMemo, use } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Plus,
   CalendarDays,
-  CalendarClock,
   Target,
   ListTodo,
   CheckCircle,
-  Circle,
   AlarmClock,
-  HandCoins,
-  HandHelping,
   Bird,
-  AlarmCheck,
-  AlarmClockIcon,
   AlarmClockMinus,
 } from "lucide-react";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { toast } from "react-hot-toast";
 import { Todo } from "@/types";
-import TodoItem from "./TodoItem";
+// import TodoItem from "./TodoItem";
 import TodoActions from "@/components/todo/TodoActions";
 import TodoSection from "./TodoSection";
 import FocusModal from "../modals/FocusModal";

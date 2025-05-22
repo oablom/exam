@@ -21,7 +21,6 @@ const PRESETS = [5, 10, 20] as const;
 const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
   const { addTodo } = useTodoStore();
 
-  /* ---------- state ---------- */
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<1 | 2 | 3>(2);
   const [estimated, setEstimated] = useState<number>(20);
@@ -29,7 +28,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [showCustomTime, setShowCustomTime] = useState(false);
 
-  /* ---------- helpers ---------- */
   const today = useMemo(() => new Date(), []);
   const tomorrow = useMemo(() => {
     const d = new Date();
@@ -44,7 +42,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
   const isPreset = PRESETS.includes(estimated as (typeof PRESETS)[number]);
   const hasEstimate = estimated > 0;
 
-  /* ---------- submit ---------- */
   const handleSubmit = async () => {
     if (!title.trim()) return;
     try {
@@ -62,8 +59,9 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
       setShowCustomTime(false);
       toast.success("Todo tillagd!");
       onClose?.();
-    } catch (err: any) {
-      toast.error(err.message || "Fel vid skapande");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || "Fel vid skapande");
     }
   };
 
@@ -71,10 +69,8 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
     setFormRef?.({ submit: handleSubmit });
   }, [title, priority, estimated, dueDate]);
 
-  /* ---------- UI ---------- */
   return (
     <div className="font-lexend w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-gray-100">
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <h2 className="text-3xl font-semibold">Ny Todo</h2>
         <button
@@ -86,7 +82,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
         </button>
       </div>
 
-      {/* Titel */}
       <div className="relative mb-8 space-y-2">
         <label htmlFor="title" className="text-base font-medium">
           Vad ska du göra?
@@ -104,7 +99,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
         )}
       </div>
 
-      {/* Prioritet */}
       <div className="mb-8 space-y-3">
         <p className="text-base font-medium">Prioritet:</p>
         <div className="grid grid-cols-3 gap-3">
@@ -142,11 +136,9 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
         </div>
       </div>
 
-      {/* Tid */}
       <div className="mb-8 space-y-3">
         <p className="text-base font-medium">Tid (est.):</p>
         <div className="flex flex-wrap items-center gap-2">
-          {/* preset chips */}
           {PRESETS.map((m) => (
             <button
               key={m}
@@ -161,7 +153,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
             </button>
           ))}
 
-          {/* custom button */}
           <button
             onClick={() => setShowCustomTime(!showCustomTime)}
             className={`rounded-xl px-4 py-1.5 text-sm shadow-sm transition active:scale-95 ${
@@ -193,7 +184,6 @@ const NewTodoForm: React.FC<NewTodoFormProps> = ({ setFormRef, onClose }) => {
         )}
       </div>
 
-      {/* Deadline */}
       <div className="mb-10 space-y-3">
         <p className="text-base font-medium">Deadline:</p>
         <div className="flex flex-wrap gap-2">

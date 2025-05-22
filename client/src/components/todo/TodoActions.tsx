@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { TodoActionsProps } from "@/types";
 import Button from "@/components/layout/Button";
 import { useEffect, useState } from "react";
@@ -8,12 +7,11 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 const TodoActions: React.FC<TodoActionsProps> = ({
   selectedIds,
   todos,
-  onClear,
+  // onClear,
   onDelete,
   onComplete,
   onAddToFocus,
 }) => {
-  const navigate = useNavigate();
   const [isSelected, setIsSelected] = useState(false);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   X,
@@ -9,7 +9,7 @@ import {
   AlertTriangle,
   Circle,
 } from "lucide-react";
-import { Todo } from "@/types";
+
 import { useTodoStore } from "@/store/todo";
 import { TodoFormProps } from "@/types";
 
@@ -19,7 +19,6 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose, onAdd }) => {
   const { addTodo, updateTodo } = useTodoStore();
   const isEdit = mode === "edit";
 
-  /* ---------- state (initieras beroende på läge) ---------- */
   const [title, setTitle] = useState(isEdit ? todo!.title : "");
   const [priority, setPriority] = useState<1 | 2 | 3>(
     isEdit ? (todo!.priority as 1 | 2 | 3) : 2
@@ -71,8 +70,9 @@ const TodoForm: React.FC<TodoFormProps> = ({ mode, todo, onClose, onAdd }) => {
         onAdd?.(dueDate);
       }
       onClose?.();
-    } catch (err: any) {
-      toast.error(err.message || "Något gick fel");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || "Något gick fel");
     }
   };
 
