@@ -32,22 +32,24 @@ const BackendStatus = ({ message }: BackendStatusProps) => {
     };
   }, []);
 
-  if (!isOnline) return null;
+  if (isOnline) return null;
 
   return (
-    <div className=" fixed inset-0 z-[1000] bg-zinc-500 bg-opacity-20 flex flex-col items-center justify-center h-screen text-center px-4 ">
-      <LoadingSpinner message={message} />
-      {fallbackMessage && (
-        <p className="text-sm text-zinc-900 mt-2 max-w-sm">
-          <span className="font-bold">
-            This might take 15 seconds or more. Please be patient.
-          </span>
-          <br /> <br />
-          The server is hosted via a third party and may take some time to
-          respond. If the issue persists, please try refreshing the page or
-          check back later. Thank you for your understanding!
-        </p>
-      )}
+    <div className=" fixed inset-0 z-[1000] bg-zinc-500 bg-opacity-50 flex flex-col items-center justify-center h-screen text-center px-4 ">
+      <div className="bg-zinc-50 dark:bg-zinc-900 shadow-lg rounded-lg p-6 max-w-md w-full">
+        <LoadingSpinner message={message} />
+        {fallbackMessage && (
+          <p className="text-sm text-zinc-900 mt-2 max-w-sm">
+            <span className="font-bold">
+              This might take 15 seconds or more. Please be patient.
+            </span>
+            <br /> <br />
+            The server is hosted via a third party and may take some time to
+            respond. If the issue persists, please try refreshing the page or
+            check back later. Thank you for your understanding!
+          </p>
+        )}
+      </div>
     </div>
   );
 };
