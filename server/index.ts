@@ -21,6 +21,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -28,7 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/todos", todoRoutes);
 
 webpush.setVapidDetails(
-  "mailto:support@example.com",
+  "mailto:oablom@gmail.com",
   process.env.VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );
